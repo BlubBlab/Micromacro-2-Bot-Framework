@@ -1,0 +1,585 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<link rel="stylesheet" href="stylesheet.css" type="text/css"/>
+	</head>
+<body>
+<div id="container">
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div>
+<div id="main">
+	<div id="navigation">
+		<h2>Modules</h2>
+			<ul><li>
+				<a href="index.html">index</a>
+			</li></ul>
+		<ul>
+					<li><a href="CTask.html">CTask</a></li>
+					<li><a href="CTaskStack.html">CTaskStack</a></li>
+					<li><a href="CTaskTimer.html">CTaskTimer</a></li>
+					<li>lib2</li>
+					<li><a href="main.html">main</a></li>
+		</ul>
+	</div>
+	<div id="content">
+   <h1>Module <code>lib2</code></h1>
+   
+<p>The Help Modul</p>
+
+	<h2>Global(s)</h2>
+	<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#cli">cli</a></td>
+		<td class="summary">
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#deepcopy">deepcopy(orig)</a></td>
+		<td class="summary">
+<p>Make a deep copy of a table </p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#deltaTime">deltaTime(time_a, time_c, time_b)</a></td>
+		<td class="summary">
+<p>Time delta in milliseconds</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#getTime">getTime</a></td>
+		<td class="summary">
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#hoursToTimer">hoursToTimer(hours)</a></td>
+		<td class="summary">
+<p>Convert hours to timer value</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#minutesToTimer">minutesToTimer(minutes)</a></td>
+		<td class="summary">
+<p>Convert minutes to timer value</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#rest">rest(msec)</a></td>
+		<td class="summary">
+<p>Wait function</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#restTask">restTask(msec)</a></td>
+		<td class="summary">
+<p>Create a new Task for the purpose of waiting</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#secondsToTimer">secondsToTimer(secounds, seconds)</a></td>
+		<td class="summary">
+<p>Converts seconds to timer value</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#setTextColor">setTextColor(...)</a></td>
+		<td class="summary">
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#taskFactory">taskFactory(name, func, ...)</a></td>
+		<td class="summary">
+<p>Factory function for making a new task</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#timerFactory">timerFactory(name, time, func, ...)</a></td>
+		<td class="summary">
+<p>Factory function for making a new scheduled task</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#unpack2">unpack2(...)</a></td>
+		<td class="summary">
+<p>unpack function with number of arguments on the end.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#yrest">yrest(msec)</a></td>
+		<td class="summary">
+<p>Wait function but let scheduled tasks run if possible.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#yrestTask">yrestTask(msec)</a></td>
+		<td class="summary">
+<p>Create a new Task for the purpose of waiting</p>
+
+<p>This function generate a task in which MM will wait and let scheduled tasks run if possible.</p>
+</td>
+		</tr>
+	</table>
+	<h2>Global(s)</h2>
+		<dl class="function">
+<dt>
+
+		<em></em>
+<a id="cli" >
+<strong>cli</strong>
+</a>
+</dt>
+<dd>
+	
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="deepcopy" >
+<strong>deepcopy(orig)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Make a deep copy of a table </p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#table orig </em></code>: 
+The table which should be copy</p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#table:</em>
+copy Your new copy</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="deltaTime" >
+<strong>deltaTime(time_a, time_c, time_b)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Time delta in milliseconds</p>
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#table time_a </em></code>: 
+The first time table for compare</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#table time_c </em></code>: 
+The second time table for compare</p>
+
+				</li>
+				<li>
+				
+<p><code><em> time_b </em></code>: </p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+diffrence in milliseconds between the two times.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em></em>
+<a id="getTime" >
+<strong>getTime</strong>
+</a>
+</dt>
+<dd>
+	
+
+
+	
+<p> function redirection for compatibility</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="hoursToTimer" >
+<strong>hoursToTimer(hours)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Convert hours to timer value</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number hours </em></code>: 
+ The time in hours </p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+The time in milliseconds</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="minutesToTimer" >
+<strong>minutesToTimer(minutes)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Convert minutes to timer value</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number minutes </em></code>: 
+ The time in minutes</p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+The time in milliseconds</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="rest" >
+<strong>rest(msec)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Wait function</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number msec </em></code>: 
+Time in milliseconds to wait.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="restTask" >
+<strong>restTask(msec)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Create a new Task for the purpose of waiting</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number msec </em></code>: 
+Time in milliseconds to wait.</p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+CTask#STATE_PENNDING</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="secondsToTimer" >
+<strong>secondsToTimer(secounds, seconds)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Converts seconds to timer value</p>
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number secounds </em></code>: 
+The time in secounds</p>
+
+				</li>
+				<li>
+				
+<p><code><em> seconds </em></code>: </p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+The time in milliseconds</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="setTextColor" >
+<strong>setTextColor(...)</strong>
+</a>
+</dt>
+<dd>
+	
+
+
+	
+<p> dummy function for compatibility</p>
+
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em> ... </em></code>: </p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="taskFactory" >
+<strong>taskFactory(name, func, ...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Factory function for making a new task</p>
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#string name </em></code>: 
+The label for the task</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function func </em></code>: 
+The function which should be called for the task</p>
+
+				</li>
+				<li>
+				
+<p><code><em><a href="##(vars)">#vars</a> ... </em></code>: 
+Any additional args for the task.</p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+STATE_PENNDING</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="timerFactory" >
+<strong>timerFactory(name, time, func, ...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Factory function for making a new scheduled task</p>
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#string name </em></code>: 
+The label for the task </p>
+
+				</li>
+				<li>
+				
+<p><code><em>#number time </em></code>: 
+The interval for the task in  milliseconds.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function func </em></code>: 
+The function which should be called for the task</p>
+
+				</li>
+				<li>
+				
+<p><code><em><a href="##(vars)">#vars</a> ... </em></code>: 
+Any additional args for the task.</p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+STATE_PENNDING</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="unpack2" >
+<strong>unpack2(...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>unpack function with number of arguments on the end.</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em><a href="##(vars)">#vars</a> ... </em></code>: 
+Args to unpack.</p>
+
+				</li>
+		</ul>
+		<h3>Return values</h3>
+			<ol>
+				<li>
+				
+<p><em>#table:</em>
+t the unpacked args</p>
+
+				</li>
+				<li>
+				
+<p><em>#number:</em>
+n Number of args.</p>
+
+
+				</li>
+			</ol>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="yrest" >
+<strong>yrest(msec)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Wait function but let scheduled tasks run if possible.</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number msec </em></code>: 
+Time in milliseconds to wait.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="yrestTask" >
+<strong>yrestTask(msec)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Create a new Task for the purpose of waiting</p>
+
+<p>This function generate a task in which MM will wait and let scheduled tasks run if possible.</p>
+
+	
+<p>so that the scheduled tasks will have a greater priority</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number msec </em></code>: 
+Time in milliseconds to wait.</p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+CTask#STATE_PENNDING</p>
+
+
+</dd>
+</dl>
+	<h2><a id="#(lib2)" >Type <code>lib2</code></a></h2>
+	
+			<h2><a id="#(var)" >Type <code>var</code></a></h2>
+				
+<p>Any type of var including lists</p>
+
+
+			<h2><a id="#(vars)" >Type <code>vars</code></a></h2>
+				
+<p>One or more incoming argument.</p>
+
+
+</div>
+
+</div>
+</body>
+</html>

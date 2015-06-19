@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<link rel="stylesheet" href="stylesheet.css" type="text/css"/>
+	</head>
+<body>
+<div id="container">
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div>
+<div id="main">
+	<div id="navigation">
+		<h2>Modules</h2>
+			<ul><li>
+				<a href="index.html">index</a>
+			</li></ul>
+		<ul>
+					<li><a href="CTask.html">CTask</a></li>
+					<li><a href="CTaskStack.html">CTaskStack</a></li>
+					<li>CTaskTimer</li>
+					<li><a href="lib2.html">lib2</a></li>
+					<li><a href="main.html">main</a></li>
+		</ul>
+	</div>
+	<div id="content">
+   <h1>Module <code>CTaskTimer</code></h1>
+   
+<p>The class for task</p>
+
+<p>This is version 0.9 beta of the class for tasks</p>
+
+
+	<h2>Global(s)</h2>
+	<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#CTaskTimer">CTaskTimer()</a></td>
+		<td class="summary">
+<p>Constructor of the class CTaskTimer</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#tasktimer">tasktimer</a></td>
+		<td class="summary">
+<p>A global object of the class CTaskTimer
+ This is the default object</p>
+
+</td>
+		</tr>
+	</table>
+	<h2><a id="#(CTaskTimer)" >Type <code>CTaskTimer</code></a></h2>
+		<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskTimer).empty">CTaskTimer.empty()</a></td>
+		<td class="summary">
+<p>Get if the list is empty?</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskTimer).getn">CTaskTimer.getn()</a></td>
+		<td class="summary">
+<p>Get the size of the list</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskTimer).list">CTaskTimer.list()</a></td>
+		<td class="summary">
+<p>List values on screen</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskTimer).new">CTaskTimer.new()</a></td>
+		<td class="summary">
+<p>It's a fabric method for objects of the class CTaskStack</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskTimer).registerTask">CTaskTimer.registerTask(name, time, func, ...)</a></td>
+		<td class="summary">
+<p>Add a task with a timer to the taskplaner so it can run when expected.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskTimer).timed_run">CTaskTimer.timed_run(msec)</a></td>
+		<td class="summary">
+<p>Let the planned tasks run</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskTimer).unregisterTaskTimer">CTaskTimer.unregisterTaskTimer(name)</a></td>
+		<td class="summary">
+<p>Remove a planed task from the entry</p>
+</td>
+		</tr>
+	</table>
+
+	<h2>Global(s)</h2>
+		<dl class="function">
+<dt>
+
+<a id="CTaskTimer" >
+<strong>CTaskTimer()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Constructor of the class CTaskTimer</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em></em>
+<a id="tasktimer" >
+<strong>tasktimer</strong>
+</a>
+</dt>
+<dd>
+	
+<p>A global object of the class CTaskTimer
+ This is the default object</p>
+
+
+</dd>
+</dl>
+	<h2><a id="#(CTaskTimer)" >Type <code>CTaskTimer</code></a></h2>
+		<h3>Field(s)</h3>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskTimer).empty" >
+<strong>CTaskTimer.empty()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Get if the list is empty?</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#boolean:</em>
+if the stack is empty or not.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskTimer).getn" >
+<strong>CTaskTimer.getn()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Get the size of the list</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+size of the list..</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskTimer).list" >
+<strong>CTaskTimer.list()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>List values on screen</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskTimer).new" >
+<strong>CTaskTimer.new()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>It's a fabric method for objects of the class CTaskStack</p>
+
+		<h3>Return value</h3>
+				
+<p><em><a href="##(CTaskTimer)">#CTaskTimer</a>:</em>
+new instanced object of CTaskTimer</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskTimer).registerTask" >
+<strong>CTaskTimer.registerTask(name, time, func, ...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Add a task with a timer to the taskplaner so it can run when expected.</p>
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#string name </em></code>: 
+The name of the label for this task</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#number time </em></code>: 
+In which interval the task should be called in millisecounds.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function func </em></code>: 
+The function which should be called in this task</p>
+
+				</li>
+				<li>
+				
+<p><code><em><a href="##(vars)">#vars</a> ... </em></code>: 
+List of args which should append on this task</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskTimer).timed_run" >
+<strong>CTaskTimer.timed_run(msec)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Let the planned tasks run</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number msec </em></code>: 
+How much time the timedisk should consume</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskTimer).unregisterTaskTimer" >
+<strong>CTaskTimer.unregisterTaskTimer(name)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Remove a planed task from the entry</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#string name </em></code>: 
+The name of the label for this task</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+
+			<h2><a id="#(var)" >Type <code>var</code></a></h2>
+				
+<p>Any type of var including lists</p>
+
+
+			<h2><a id="#(vars)" >Type <code>vars</code></a></h2>
+				
+<p>One or more incoming argument.</p>
+
+
+</div>
+
+</div>
+</body>
+</html>

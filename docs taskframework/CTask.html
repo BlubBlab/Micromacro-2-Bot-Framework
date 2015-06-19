@@ -1,0 +1,794 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<link rel="stylesheet" href="stylesheet.css" type="text/css"/>
+	</head>
+<body>
+<div id="container">
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div>
+<div id="main">
+	<div id="navigation">
+		<h2>Modules</h2>
+			<ul><li>
+				<a href="index.html">index</a>
+			</li></ul>
+		<ul>
+					<li>CTask</li>
+					<li><a href="CTaskStack.html">CTaskStack</a></li>
+					<li><a href="CTaskTimer.html">CTaskTimer</a></li>
+					<li><a href="lib2.html">lib2</a></li>
+					<li><a href="main.html">main</a></li>
+		</ul>
+	</div>
+	<div id="content">
+   <h1>Module <code>CTask</code></h1>
+   
+<p>The class for the tasks</p>
+
+<p> version 0.5 beta for the task class
+ </p>
+
+	<h2>Global(s)</h2>
+	<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#CTask">CTask(name, func, fail_name, fail_func, success_name, success_func)</a></td>
+		<td class="summary">
+<p>Constructor of the class CTask</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#STATE_FAILED">STATE_FAILED</a></td>
+		<td class="summary">
+<p>CONSTANCE For the case the task has failed</p>
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#STATE_NIL">STATE_NIL</a></td>
+		<td class="summary">
+<p>CONSTANCE For the case there is no task on the stack</p>
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#STATE_PENNDING">STATE_PENNDING</a></td>
+		<td class="summary">
+<p>CONSTANCE For the case the task should run</p>
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#STATE_SUCCESS">STATE_SUCCESS</a></td>
+		<td class="summary">
+<p>CONSTANCE For the case the task has success</p>
+
+</td>
+		</tr>
+	</table>
+	<h2><a id="#(CTask)" >Type <code>CTask</code></a></h2>
+		<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).appendArgs">CTask.appendArgs(...)</a></td>
+		<td class="summary">
+<p>Add the args to the task</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).appendArgsSwitch">CTask.appendArgsSwitch(args, fail_args, success_args)</a></td>
+		<td class="summary">
+<p>Add the args to the task for a logical switch</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).getFailArgs">CTask.getFailArgs()</a></td>
+		<td class="summary">
+<p>Return the fails args.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).getFailTask">CTask.getFailTask()</a></td>
+		<td class="summary">
+<p>Return and generate the task on the fail case</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).getSuccessArgs">CTask.getSuccessArgs()</a></td>
+		<td class="summary">
+<p>Return the success args</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).getSuccessTask">CTask.getSuccessTask()</a></td>
+		<td class="summary">
+<p>Return and generate the task on the success case</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).getVar">CTask.getVar(var_name)</a></td>
+		<td class="summary">
+<p>Return a custom var for the task</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).hasArgsInfo">CTask.hasArgsInfo()</a></td>
+		<td class="summary">
+<p>Return if the task has args.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).hasFailInfo">CTask.hasFailInfo()</a></td>
+		<td class="summary">
+<p>Return if the task has infos about what to do in the fail case.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).hasSuccessInfo">CTask.hasSuccessInfo()</a></td>
+		<td class="summary">
+<p>Return if the task has infos about what to do in the success case.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).run">CTask.run()</a></td>
+		<td class="summary">
+<p>Run the function for this task</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).setVar">CTask.setVar(var_name, var)</a></td>
+		<td class="summary">
+<p>Set a custom var for the task</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTask).update">CTask.update()</a></td>
+		<td class="summary">
+<p>Update the time for the last finished run of the task</p>
+</td>
+		</tr>
+	</table>
+
+			<h2><a id="#(state)">Type <code>state</code></a></h2>
+				<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).args">state.args</a></td>
+		<td class="summary">
+<p>List of args with which the current state will be called.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).fail_args">state.fail_args</a></td>
+		<td class="summary">
+<p>List of args with which the next state if the current fail will be called.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).fail_func">state.fail_func</a></td>
+		<td class="summary">
+<p>Function which are called for the next state if the current fails.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).fail_name">state.fail_name</a></td>
+		<td class="summary">
+<p>Label of the next state if the current fails.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).last_call">state.last_call</a></td>
+		<td class="summary">
+<p>The Time millisec from GetTime() when the last call was.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).last_success">state.last_success</a></td>
+		<td class="summary">
+<p>The Time millisec from GetTime() when the last successful call was.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).state_func">state.state_func</a></td>
+		<td class="summary">
+<p>Function which are called for the state</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).state_name">state.state_name</a></td>
+		<td class="summary">
+<p>Label of the state</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).success_args">state.success_args</a></td>
+		<td class="summary">
+<p>List of args with which the next state if the current success will be called.</p>
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).success_func">state.success_func</a></td>
+		<td class="summary">
+<p>Function which are called for the next state if the current success.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(state).success_name">state.success_name</a></td>
+		<td class="summary">
+<p>Label of the next state if the current successed.</p>
+</td>
+		</tr>
+	</table>
+
+	<h2>Global(s)</h2>
+		<dl class="function">
+<dt>
+
+<a id="CTask" >
+<strong>CTask(name, func, fail_name, fail_func, success_name, success_func)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Constructor of the class CTask</p>
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#string name </em></code>: 
+The name of the label for this task</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function func </em></code>: 
+The function which should be called in this task</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#string fail_name </em></code>: 
+(optional) Name for the label of the task which should be called if the previous task fails.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function fail_func </em></code>: 
+(optional)The function which should be called if the previous task fails.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#string success_name </em></code>: 
+(optional) Name for the label of the task which should be called if the previous task success.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function success_func </em></code>: 
+(optional)The function which should be called if the previous task success.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#number</em>
+<a id="STATE_FAILED" >
+<strong>STATE_FAILED</strong>
+</a>
+</dt>
+<dd>
+	
+<p>CONSTANCE For the case the task has failed</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#number</em>
+<a id="STATE_NIL" >
+<strong>STATE_NIL</strong>
+</a>
+</dt>
+<dd>
+	
+<p>CONSTANCE For the case there is no task on the stack</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#number</em>
+<a id="STATE_PENNDING" >
+<strong>STATE_PENNDING</strong>
+</a>
+</dt>
+<dd>
+	
+<p>CONSTANCE For the case the task should run</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#number</em>
+<a id="STATE_SUCCESS" >
+<strong>STATE_SUCCESS</strong>
+</a>
+</dt>
+<dd>
+	
+<p>CONSTANCE For the case the task has success</p>
+
+
+</dd>
+</dl>
+	<h2><a id="#(CTask)" >Type <code>CTask</code></a></h2>
+		<h3>Field(s)</h3>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).appendArgs" >
+<strong>CTask.appendArgs(...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Add the args to the task</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em><a href="##(vars)">#vars</a> ... </em></code>: 
+A lot of args.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).appendArgsSwitch" >
+<strong>CTask.appendArgsSwitch(args, fail_args, success_args)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Add the args to the task for a logical switch</p>
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#table args </em></code>: 
+A lot of args for the default case</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#table fail_args </em></code>: 
+A lot of args for the fail case</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#table success_args </em></code>: 
+ A lot of args for the success case</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).getFailArgs" >
+<strong>CTask.getFailArgs()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Return the fails args.</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#table:</em>
+The requested args of the fails case.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).getFailTask" >
+<strong>CTask.getFailTask()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Return and generate the task on the fail case</p>
+
+		<h3>Return value</h3>
+				
+<p><em><a href="##(CTask)">#CTask</a>:</em>
+The requested new task.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).getSuccessArgs" >
+<strong>CTask.getSuccessArgs()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Return the success args</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#table:</em>
+The requested args of the fails case.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).getSuccessTask" >
+<strong>CTask.getSuccessTask()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Return and generate the task on the success case</p>
+
+		<h3>Return value</h3>
+				
+<p><em><a href="##(CTask)">#CTask</a>:</em>
+The requested new task</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).getVar" >
+<strong>CTask.getVar(var_name)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Return a custom var for the task</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#string var_name </em></code>: 
+The name of var</p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em><a href="##(var)">#var</a>:</em>
+The request var.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).hasArgsInfo" >
+<strong>CTask.hasArgsInfo()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Return if the task has args.</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#boolean:</em>
+True if the task has args, false if not.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).hasFailInfo" >
+<strong>CTask.hasFailInfo()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Return if the task has infos about what to do in the fail case.</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#boolean:</em>
+True if at least a function is there, false if not</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).hasSuccessInfo" >
+<strong>CTask.hasSuccessInfo()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Return if the task has infos about what to do in the success case.</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#boolean:</em>
+True if at least a function is there, false if not</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).run" >
+<strong>CTask.run()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Run the function for this task</p>
+
+		<h3>Return value</h3>
+				
+<p><em><a href="##(CONSTANCE)">#CONSTANCE</a>:</em></p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).setVar" >
+<strong>CTask.setVar(var_name, var)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Set a custom var for the task</p>
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#string var_name </em></code>: 
+The name of var</p>
+
+				</li>
+				<li>
+				
+<p><code><em><a href="##(var)">#var</a> var </em></code>: 
+The var which should be saved.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTask).update" >
+<strong>CTask.update()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Update the time for the last finished run of the task</p>
+
+</dd>
+</dl>
+
+			<h2><a id="#(CONSTANCE)" >Type <code>CONSTANCE</code></a></h2>
+				
+<p>One of the global CONSTANCE in this file</p>
+
+
+			<h2><a id="#(state)" >Type <code>state</code></a></h2>
+				<h3>Field(s)</h3>
+		<dl class="function">
+<dt>
+
+		<em><a href="##(vars)">#vars</a></em>
+<a id="#(state).args" >
+<strong>state.args</strong>
+</a>
+</dt>
+<dd>
+	
+<p>List of args with which the current state will be called.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em><a href="##(vars)">#vars</a></em>
+<a id="#(state).fail_args" >
+<strong>state.fail_args</strong>
+</a>
+</dt>
+<dd>
+	
+<p>List of args with which the next state if the current fail will be called.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#function</em>
+<a id="#(state).fail_func" >
+<strong>state.fail_func</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Function which are called for the next state if the current fails.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#string</em>
+<a id="#(state).fail_name" >
+<strong>state.fail_name</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Label of the next state if the current fails.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#number</em>
+<a id="#(state).last_call" >
+<strong>state.last_call</strong>
+</a>
+</dt>
+<dd>
+	
+<p>The Time millisec from GetTime() when the last call was.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#number</em>
+<a id="#(state).last_success" >
+<strong>state.last_success</strong>
+</a>
+</dt>
+<dd>
+	
+<p>The Time millisec from GetTime() when the last successful call was.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#function</em>
+<a id="#(state).state_func" >
+<strong>state.state_func</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Function which are called for the state</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#string</em>
+<a id="#(state).state_name" >
+<strong>state.state_name</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Label of the state</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em><a href="##(vars)">#vars</a></em>
+<a id="#(state).success_args" >
+<strong>state.success_args</strong>
+</a>
+</dt>
+<dd>
+	
+<p>List of args with which the next state if the current success will be called.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#function</em>
+<a id="#(state).success_func" >
+<strong>state.success_func</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Function which are called for the next state if the current success.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em>#string</em>
+<a id="#(state).success_name" >
+<strong>state.success_name</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Label of the next state if the current successed.</p>
+
+</dd>
+</dl>
+
+			<h2><a id="#(var)" >Type <code>var</code></a></h2>
+				
+<p>Any type of var including lists</p>
+
+
+			<h2><a id="#(vars)" >Type <code>vars</code></a></h2>
+				
+<p>One or more incoming argument.</p>
+
+
+</div>
+
+</div>
+</body>
+</html>

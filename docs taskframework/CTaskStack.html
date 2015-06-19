@@ -1,0 +1,499 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<link rel="stylesheet" href="stylesheet.css" type="text/css"/>
+	</head>
+<body>
+<div id="container">
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div>
+<div id="main">
+	<div id="navigation">
+		<h2>Modules</h2>
+			<ul><li>
+				<a href="index.html">index</a>
+			</li></ul>
+		<ul>
+					<li><a href="CTask.html">CTask</a></li>
+					<li>CTaskStack</li>
+					<li><a href="CTaskTimer.html">CTaskTimer</a></li>
+					<li><a href="lib2.html">lib2</a></li>
+					<li><a href="main.html">main</a></li>
+		</ul>
+	</div>
+	<div id="content">
+   <h1>Module <code>CTaskStack</code></h1>
+   
+<p>The class for the task stack</p>
+
+<p>version 0.91 beta for the task stack</p>
+
+
+	<h2>Global(s)</h2>
+	<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#CTaskStack">CTaskStack()</a></td>
+		<td class="summary">
+<p>Constructor of the class CTaskStack</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="#taskstack">taskstack</a></td>
+		<td class="summary">
+<p>A global object of the class CTaskStack
+ This is the default object</p>
+
+</td>
+		</tr>
+	</table>
+	<h2><a id="#(CTaskStack)" >Type <code>CTaskStack</code></a></h2>
+		<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).empty">CTaskStack.empty()</a></td>
+		<td class="summary">
+<p>Get if the stack is empty?</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).getn">CTaskStack.getn()</a></td>
+		<td class="summary">
+<p>Get the size of the stack.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).list">CTaskStack.list()</a></td>
+		<td class="summary">
+<p>list values on screen</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).new">CTaskStack.new()</a></td>
+		<td class="summary">
+<p>It's a fabric method for objects of the class CTaskStack</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).peek">CTaskStack.peek()</a></td>
+		<td class="summary">
+<p>Let you peek on the top of the stack without removing anything.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).pop">CTaskStack.pop(num)</a></td>
+		<td class="summary">
+<p>Pop a object from the top of the stack of</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).push">CTaskStack.push(...)</a></td>
+		<td class="summary">
+<p>Push a object on to the stack of</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).push_args">CTaskStack.push_args(...)</a></td>
+		<td class="summary">
+<p>Put the list of args to the task on top of the stack</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).push_args_switch">CTaskStack.push_args_switch(args, fail_args, success_args)</a></td>
+		<td class="summary">
+<p>Put the lists of args to the task on top of the stack</p>
+
+<p>This version is for the distribution of the args when you creating
+logical switches when you don't want to return to the original task</p>
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).push_switch">CTaskStack.push_switch(...)</a></td>
+		<td class="summary">
+<p>Remove a value from the stack and than push a new value on the stack</p>
+
+<p>This method is for creating logical switches when you don't want to return to the original task
+when the new task is finished  through fail or success.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).push_task">CTaskStack.push_task(name, func, fail_name, fail_func, success_name, success_func)</a></td>
+		<td class="summary">
+<p>Push a new task on the top of the stack
+The new task that will  be pushed on the stack depends on the args</p>
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(CTaskStack).run">CTaskStack.run()</a></td>
+		<td class="summary">
+<p>Run the function for the task which is on top of the stack.</p>
+</td>
+		</tr>
+	</table>
+
+	<h2>Global(s)</h2>
+		<dl class="function">
+<dt>
+
+<a id="CTaskStack" >
+<strong>CTaskStack()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Constructor of the class CTaskStack</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em></em>
+<a id="taskstack" >
+<strong>taskstack</strong>
+</a>
+</dt>
+<dd>
+	
+<p>A global object of the class CTaskStack
+ This is the default object</p>
+
+
+</dd>
+</dl>
+	<h2><a id="#(CTaskStack)" >Type <code>CTaskStack</code></a></h2>
+		<h3>Field(s)</h3>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).empty" >
+<strong>CTaskStack.empty()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Get if the stack is empty?</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#boolean:</em>
+if the stack is empty or not.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).getn" >
+<strong>CTaskStack.getn()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Get the size of the stack.</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#number:</em>
+size of the stack..</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).list" >
+<strong>CTaskStack.list()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>list values on screen</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).new" >
+<strong>CTaskStack.new()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>It's a fabric method for objects of the class CTaskStack</p>
+
+		<h3>Return value</h3>
+				
+<p><em><a href="##(CTaskStack)">#CTaskStack</a>:</em>
+new instance object of CTaskStack</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).peek" >
+<strong>CTaskStack.peek()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Let you peek on the top of the stack without removing anything.</p>
+
+		<h3>Return value</h3>
+				
+<p><em><a href="CTask.html##(CTask)">CTask#CTask</a>:</em>
+Return the task from the top of the stack.</p>
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).pop" >
+<strong>CTaskStack.pop(num)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Pop a object from the top of the stack of</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#number num </em></code>: 
+optional) Number of object which should be removed from the top of the stack if nil 1</p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em><a href="CTask.html##(CTask)">CTask#CTask</a>:</em>
+ Return the task(s) from the top of the stack depend on the param num</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).push" >
+<strong>CTaskStack.push(...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Push a object on to the stack of</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em><a href="##(vars)">#vars</a> ... </em></code>: 
+A single object or a list of objects to push on the stack.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).push_args" >
+<strong>CTaskStack.push_args(...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Put the list of args to the task on top of the stack</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em><a href="##(vars)">#vars</a> ... </em></code>: 
+List of args which should append on the task</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).push_args_switch" >
+<strong>CTaskStack.push_args_switch(args, fail_args, success_args)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Put the lists of args to the task on top of the stack</p>
+
+<p>This version is for the distribution of the args when you creating
+logical switches when you don't want to return to the original task</p>
+
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#table args </em></code>: 
+List of args which should append on the task for default</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#table fail_args </em></code>: 
+List of args which should append on the task for the case that the task fails.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#table success_args </em></code>: 
+ List of args which should append on the task for the case that the task success.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).push_switch" >
+<strong>CTaskStack.push_switch(...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Remove a value from the stack and than push a new value on the stack</p>
+
+<p>This method is for creating logical switches when you don't want to return to the original task
+when the new task is finished  through fail or success.</p>
+
+	
+<p>That the code is outsouced has only symatic reasons.</p>
+
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em><a href="CTask.html##(CTask)">CTask#CTask</a> ... </em></code>: 
+A single task or a list of tasks to push on the stack.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).push_task" >
+<strong>CTaskStack.push_task(name, func, fail_name, fail_func, success_name, success_func)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Push a new task on the top of the stack
+The new task that will  be pushed on the stack depends on the args</p>
+
+
+		<h3>Parameters</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#string name </em></code>: 
+The name of the label for this task</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function func </em></code>: 
+The function which should be called in this task</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#string fail_name </em></code>: 
+(optional) Name for the label of the task which should be called if the previous task fails.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function fail_func </em></code>: 
+(optional)The function which should be called if the previous task fails.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#string success_name </em></code>: 
+(optional) Name for the label of the task which should be called if the previous task success.</p>
+
+				</li>
+				<li>
+				
+<p><code><em>#function success_func </em></code>: 
+(optional)The function which should be called if the previous task success.</p>
+
+				</li>
+		</ul>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(CTaskStack).run" >
+<strong>CTaskStack.run()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Run the function for the task which is on top of the stack.</p>
+
+		<h3>Return values</h3>
+			<ol>
+				<li>
+				
+<p><em>#boolean:</em>
+if call was success full, </p>
+
+				</li>
+				<li>
+				
+<p><em><a href="CTask.html##(CONSTANCE)">CTask#CONSTANCE</a>:</em>
+What happend STATE<em>PENNDING, STATE</em>FAILED ,STATE<em>SUCCESS, STATE</em>NIL.</p>
+
+				</li>
+				<li>
+				
+<p><em><a href="##(vars)">#vars</a>:</em>
+Unknown amount of args from the called function.</p>
+
+				</li>
+			</ol>
+</dd>
+</dl>
+
+			<h2><a id="#(var)" >Type <code>var</code></a></h2>
+				
+<p>Any type of var including lists</p>
+
+
+			<h2><a id="#(vars)" >Type <code>vars</code></a></h2>
+				
+<p>One or more incoming argument.</p>
+
+
+</div>
+
+</div>
+</body>
+</html>
