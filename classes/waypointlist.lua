@@ -7,8 +7,11 @@ CWaypointList = class(
 		self.CurrentWaypoint = 1;
 		self.LastWaypoint = 1;
 		self.Direction = WPT_FORWARD;
-		self.OrigX = player.X;
-		self.OrigZ = player.Z;
+		-- just to make it work in tests
+		if( player )then
+			self.OrigX = player.X;
+			self.OrigZ = player.Z;
+		end
 		self.Radius = 500;
 		self.FileName = nil;
 		self.Mode = "waypoints";
@@ -436,7 +439,7 @@ function CWaypointList:getNearestWaypoint(_x, _z, _y, _start, _end, _plain)
 		end
 	end
 	if(do_we_found == false and  _plain)then
-		return self:getNearestWaypoint(_x, _z, _y, _start,_end false)
+		return self:getNearestWaypoint(_x, _z, _y, _start,_end, false)
 	end
 
 	return closest;
