@@ -1,11 +1,16 @@
-local xmlDLL = require("LuaXml");
-include("Node.lua");
 
+xml = require("LuaXml");
+include("Node.lua");
+--local result = xml.load("ks-last-ks.xml");
 ---local stack = {};
+function loadXML(file)
+	return xml.load(file)
+end
 
 CXML = class(
 function (self)
 	-- <mylabel,</mylabel
+	self.xml = require("LuaXml");
 	self.stack = {};
 	self.lastXML = {};
 end
@@ -24,7 +29,7 @@ end
 function CXML:load(file)
 	print(" load:"..file.."");
 	self:validXML(file)
-	self.lastXML = xmlDLL.load(file);
+	self.lastXML = loadXML(file);
 	
 	return self.lastXML;
 end
@@ -32,13 +37,17 @@ function CXML:open(file)
 	print(" open:"..file.."");
 	--TODO: add file checks
 	local xml_load = self:load(file)
-	local node = parse(xml_load)
+	
+	local node = parse_deep(xml_load)
 	return node;
 end
 function CXML:save(file)
 	return xmlDLL.save(file);
 end
 
+function CXML.new()
+	return CXML();
+end
 function CXML:getCore()
 	return xmlDLL;
 end
@@ -287,3 +296,4 @@ function CXML:implicitCast(data)
 
 	return retstr;
 end
+parser = CXML().new();

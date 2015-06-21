@@ -8,18 +8,19 @@ function getPath()
 	local sestring = string.sub(current_dir,1,num-2);
 	return sestring;
 end
+
 --require for compatibility
 require"classes";
 cli = require"cli";
 -- loading the main framework
 include("taskframework//TaskTimer.class.lua");
 include("taskframework//TaskStack.class.lua");
-include("taskframework//tableprint.lua");
+include("tableprint.lua");
 include("table_dump.lua");
 -- import the LuaXML module as xml
 --xml = require("LuaXml");
-include("XML/Xml.lua");
-xml = CXML()
+--include("XML/Xml.lua");
+
 --include("XmlValid.lua");
 -- Any type of var including lists
 -- @type var 

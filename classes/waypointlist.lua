@@ -7,13 +7,14 @@ CWaypointList = class(
 		self.CurrentWaypoint = 1;
 		self.LastWaypoint = 1;
 		self.Direction = WPT_FORWARD;
-		--self.OrigX = player.X;
-		--self.OrigZ = player.Z;
+		self.OrigX = player.X;
+		self.OrigZ = player.Z;
 		self.Radius = 500;
 		self.FileName = nil;
 		self.Mode = "waypoints";
 		self.KillZone = {};
 		self.ExcludeZones = {}
+		self.ResumePoint = nil
 
 		self.Type = 0; -- UNSET
 		self.ForcedType = 0; 	-- Wp type to overwrite current type, can be used by users in WP coding
@@ -21,14 +22,21 @@ CWaypointList = class(
 );
 
 function CWaypointList:load(filename)
-    print(" waypointList:"..filename.."");
-	local root = xml:open(filename);
+   
+	local root = parser:open(filename);
+	local file_ok = true;
+	
 	if( not root ) then
 		error(sprintf("Failed to load waypoints from \'%s\'", filename), 0);
 	end
+	if( not language)then
+		sprintf("Warning: No language files included");
+	end
+	
 	local elements = root:getElements();
+	
 	local type = root:getAttribute("type");
-
+	
 	if( type ) then
 		if( type == "TRAVEL" ) then
 			self.Type = WPT_TRAVEL;
@@ -48,17 +56,24 @@ function CWaypointList:load(filename)
 	self.ForcedType = 0;	-- delete forced waypoint type
 
 	local onLoadEvent = nil;
-
+	local index = 1;
+	
 	for i,v in pairs(elements) do
+		--print_r(v);
 		local x,z,y = v:getAttribute("x"), v:getAttribute("z"), v:getAttribute("y");
 		local type = v:getAttribute("type");
 		local action = v:getValue();
 		local name = v:getName() or "";
 		local tag = v:getAttribute("tag") or "";
+		local map = v:getAttribute("map");
+		local id = v:getAttribute("id");
+		local randomfollow = v:getAttribute("randomfollow");
+		local randombefore = v:getAttribute("randombefore");
 		local wpstop = v:getAttribute("WP_NO_STOP");
-		local wpzone =  v:getAttribute("WP_ZONE");
+		local wpzone = v:getAttribute("WP_ZONE");
 		local wpco  = v:getAttribute("WP_NO_COROUTINE");
-		if( string.lower(name) == "waypoint" ) then
+		
+		if( string.lower(name) == "waypoint" ) and x and z then
 			local tmp = CWaypoint(x, z, y);
 			if( action ) then tmp.Action = action; end;
 			if( type ) then
@@ -78,28 +93,69 @@ function CWaypointList:load(filename)
 			end
 				
 			if( tag ) then tmp.Tag = string.lower(tag); end;
-			if ( wpstop~=nil ) then tmp.WP_NO_STOP = wpstop; end;
-			if ( wpzone~=nil ) then tmp.WP_ZONE =   wpzone; end;
-			if ( wpco~=nil ) then tmp.WP_NO_COROUTINE = wpco; end;
+			if( map ) then tmp.Map = map; end;
+			if ( id ) then 
+				tmp.Id = id; 
+				if(id ~= index)then
+					file_ok = fals
+				end
+			else file_ok = false end;
+			if( randomfollow ) then 
+				local t = {}
+				local i = 1;
+				
+				for token in string.gmatch(randomfollow, "[^,]+") do
+				
+					t[i] = token;
+					i= i + 1;
+				end
 			
+				tmp.RandomFollow = t;
+			end
+			if( randombefore ) then 
+				local t = {}
+				local i = 1;
+				
+				for token in string.gmatch(randombefore, "[^,]+") do
+				
+					t[i] = token;
+					i= i + 1;
+				end
+			
+				tmp.RandomBefore = t;
+			end
+			if ( wpstop ) then tmp.WP_NO_STOP = wpstop; end;
+			if ( wpzone ) then tmp.WP_ZONE =   wpzone; end;
+			if ( wpco) then tmp.WP_NO_COROUTINE = wpco; end;
+		
 			table.insert(self.Waypoints, tmp);
 		elseif( string.lower(name) == "onload" ) then
 			if( string.len(action) > 0 and string.find(action, "%w") ) then
 				self.onLoadEvent = loadstring(action);
-				assert(self.onLoadEvent, sprintf(language[152]));
+				
+				
+				if( language )then assert(self.onLoadEvent, sprintf(language[152])) else assert(self.onLoadEvent,sprintf("Failed to compile and run Lua code for waypointlist onLoad event.")) end;
 
 				if( _G.type(self.onLoadEvent) ~= "function" ) then
 					self.onLoadEvent = nil;
 				end;
 			end
 		end
+		index = index + 1;
 	end
-
+	if(file_ok == false)then
+	--rewrite file
+	end
 	self.Mode = "waypoints"
-	if #self.Waypoints > 0 then
-		self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z, player.Y));
-		self.LastWaypoint = self.CurrentWaypoint -1
-		if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
+	if( not player)then
+			sprintf("Warning: No player.lua included falling back to first start point from waypoint file");
+	end
+	if( player )then
+		if #self.Waypoints > 0 then
+			self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z, player.Y));
+			self.LastWaypoint = self.CurrentWaypoint -1
+			if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
+		end
 	end
 
 	if( self.onLoadEvent ) then
@@ -183,12 +239,81 @@ end
 
 function CWaypointList:getNextWaypoint(_num)
 	if( not _num ) then _num = 0; end;
-
+	local tmp;
+	
 	local hf_wpnum;
-	if( self.Direction == WPT_FORWARD ) then
-		hf_wpnum = self.CurrentWaypoint + _num;
-	else
-		hf_wpnum = self.CurrentWaypoint - _num;
+	-- we jump over the waypoint if it is bigger than 1
+	if ( self.CurrentWaypoint.RandomFollow and _num == 1 and self.Direction == WPT_FORWARD)then
+	
+		math.randomseed(os.time())
+		
+		local answer = math.random(1,#self.CurrentWaypoint.RandomFollow);
+		local waypoint_id_or_tag = self.CurrentWaypoint.RandomFollow[answer];
+		local n;
+		
+		
+		if(type(waypoint_id_or_tag) == "string")then
+		
+			for i,v in pairs(self.Waypoints) do
+				if( v.Tag ==  string.lower(waypoint_id_or_tag) ) then
+					n = i;
+				end
+			end
+		
+		else
+		
+			for i,v in pairs(self.Waypoints) do
+				if( v.Id ==  waypoint_id_or_tag) then
+					n = i;
+				end
+			end
+			
+		end
+		-- we found the random point
+		if n then
+			hf_wpnum = n;
+		end
+	end
+	-- symmetry a must ... 
+	if ( self.CurrentWaypoint.RandomBefore and _num == 1 and not self.Direction == WPT_FORWARD)then
+	
+		math.randomseed(os.time())
+		
+		local answer = math.random(1,#self.CurrentWaypoint.RandomBefore);
+		local waypoint_id_or_tag = self.CurrentWaypoint.RandomBefore[answer];
+		local n;
+		
+		
+		if(type(waypoint_id_or_tag) == "string")then
+		
+			for i,v in pairs(self.Waypoints) do
+				if( v.Tag ==  string.lower(waypoint_id_or_tag) ) then
+					n = i;
+				end
+			end
+		
+		else
+		
+			for i,v in pairs(self.Waypoints) do
+				if( v.Id ==  waypoint_id_or_tag) then
+					n = i;
+				end
+			end
+			
+		end
+		-- we found the random point
+		if n then
+			hf_wpnum = n;
+		end
+	end
+	
+	-- we don't adjust when go random only in case we found nothing we go further
+	if not (self.CurrentWaypoint.RandomFollow  or self.CurrentWaypoint.RandomBefore) and _num == 1 or not hf_wpnum then
+		if( self.Direction == WPT_FORWARD ) then
+			hf_wpnum = self.CurrentWaypoint + _num;
+		else
+			hf_wpnum = self.CurrentWaypoint - _num;
+		end
 	end
 
 	if( hf_wpnum > #self.Waypoints ) then
@@ -220,34 +345,34 @@ end
 
 -- Sets the "direction" (forward/backward) to travel
 function CWaypointList:setDirection(wpt)
-   -- Ignore invalid types
-   if( wpt ~= WPT_FORWARD and wpt ~= WPT_BACKWARD ) then
-      return;
-   end;
+	-- Ignore invalid types
+	if( wpt ~= WPT_FORWARD and wpt ~= WPT_BACKWARD ) then
+		return;
+	end;
 
-   if( wpt ~= self.Direction ) then
-      self.Direction = wpt
-      if( wpt == WPT_BACKWARD ) then
-         self.CurrentWaypoint = self.CurrentWaypoint - 2;
-         if( self.CurrentWaypoint < 1 ) then
-            self.CurrentWaypoint = #self.Waypoints + self.CurrentWaypoint;
-         end
-      else
-         self.CurrentWaypoint = self.CurrentWaypoint + 2;
-         if( self.CurrentWaypoint > #self.Waypoints ) then
-            self.CurrentWaypoint = self.CurrentWaypoint - #self.Waypoints;
-         end
-      end;
-   end
+	if( wpt ~= self.Direction ) then
+		self.Direction = wpt
+		if( wpt == WPT_BACKWARD ) then
+			self.CurrentWaypoint = self.CurrentWaypoint - 2;
+			if( self.CurrentWaypoint < 1 ) then
+				self.CurrentWaypoint = #self.Waypoints + self.CurrentWaypoint;
+			end
+		else
+			self.CurrentWaypoint = self.CurrentWaypoint + 2;
+			if( self.CurrentWaypoint > #self.Waypoints ) then
+				self.CurrentWaypoint = self.CurrentWaypoint - #self.Waypoints;
+			end
+		end;
+	end
 end
 
 -- Reverse your current direction
 function CWaypointList:reverse()
-   if( self.Direction == WPT_FORWARD ) then
-      self:setDirection(WPT_BACKWARD);
-   else
-      self:setDirection(WPT_FORWARD);
-   end;
+	if( self.Direction == WPT_FORWARD ) then
+		self:setDirection(WPT_BACKWARD);
+	else
+		self:setDirection(WPT_FORWARD);
+	end;
 end
 
 -- Sets the next waypoint to move to to whatever
@@ -263,14 +388,55 @@ function CWaypointList:setWaypointIndex(index)
 end
 
 -- Returns an index to the waypoint closest to the given point.
-function CWaypointList:getNearestWaypoint(_x, _z, _y)
-	local closest = 1;
-
-	for i,v in pairs(self.Waypoints) do
+function CWaypointList:getNearestWaypoint(_x, _z, _y, _start, _end, _plain)
+	
+	local do_we_found = false;
+	
+	if(not settings.profile.options.DROPHEIGHT)then
+		settings.profile.options.DROPHEIGHT = 35;
+	end
+	
+	if type(_start) == "string" then
+		_start = self:findWaypointTag(_start)
+	end
+	if type(_end) == "string" then
+		_end = self:findWaypointTag(_end)
+	end
+	---make it adaptable 
+	if type(_start) == "boolean" then
+		_plain = _start;
+		_start = nil;
+		_end = nil;
+	end
+	
+	if type(_end) == "boolean" then
+		_plain = _end;
+		_end = nil;
+	end
+	
+	if _start and _start < 1 then _start = 1 end
+	if _end and _end > #self.Waypoints then _end = #self.Waypoints end
+	
+	local closest = _start or 1;
+	
+	for i = (_start or 1), (_end or #self.Waypoints) do
+		local v = self.Waypoints[i];
 		local oldClosestWp = self.Waypoints[closest];
-		if( distance(_x, _z, _y, v.X, v.Z, v.Y) < distance(_x, _z, _y, oldClosestWp.X, oldClosestWp.Z, oldClosestWp.Y) ) then
-			closest = i;
+		
+		if( _plain  and v.Y and _y)then
+			if( distance(_x, _z, _y, v.X, v.Z, v.Y) < distance(_x, _z, _y, oldClosestWp.X, oldClosestWp.Z, oldClosestWp.Y) and math.abs(_y - v.Y) < settings.profile.options.DROPHEIGHT + 5 ) then
+				do_we_found = true;
+				closest = i;
+			end
+		else
+			if( distance(_x, _z, _y, v.X, v.Z, v.Y) < distance(_x, _z, _y, oldClosestWp.X, oldClosestWp.Z, oldClosestWp.Y) ) then
+				do_we_found = true;
+				closest = i;
+			end
 		end
+	end
+	if(do_we_found == false and  _plain)then
+		return self:getNearestWaypoint(_x, _z, _y, _start,_end false)
 	end
 
 	return closest;
@@ -436,3 +602,14 @@ function CWaypointList:findPulledBeforeWaypoint()
 
 	return bestwaypointindex
 end
+
+function CWaypointList:updateResume()
+	if self.Mode ~= "wander" then
+		local file=io.open(getExecutionPath() .. "/logs/resumes/"..player.Name..".txt","w")
+		if file then
+			file:write("return \""..self.FileName.."\", "..self.CurrentWaypoint)
+			file:close()
+		end
+	end
+end
+

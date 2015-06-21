@@ -1,5 +1,7 @@
 local nilSelfErrorMessage = "XML object 'self' is nil. Did you use '.' instead of ':'?";
 
+Node = { };
+Node.__index = Node;
 
 local function explicitCast(_value, _type)
 	-- If no type is given, don't cast.
@@ -22,12 +24,14 @@ Node = class(
 function (self, name, subtable)
 	--- @list <CTask#task>
 	self.name =	name;
-	self.attributes = nil;	
+	self.attributes ={};	
 	self.nodes = {};
 	self.value = nil;
 	self.subtable = subtable;
 end
 );
+
+
 function Node.new(name,attributes,subtable)
 	return Node(name,attributes); 
 end
@@ -37,7 +41,7 @@ function Node:getElement(index, forcetype)
 	if( type(self) ~= "table" ) then error(nilSelfErrorMessage, 2) end;
 
 	if( type(index) == "string" ) then
-		for i,v in pairs(self.attributes) do
+		for i,v in pairs(self.nodes) do
 			if( v.name == index and i ~= "attributes" ) then
 				return explicitCast(v, forcetype);
 			end
@@ -50,7 +54,7 @@ function Node:getElement(index, forcetype)
 		if( index > #self ) then return nil; end; -- invalid index (not 100% accurate, but quick)
 
 		local count = 0;
-		for i,v in pairs(self.attributes) do
+		for i,v in pairs(self.nodes) do
 			if( type(v) == "table" and i ~= "attributes" ) then
 				count = count + 1;
 				if( count == index ) then
@@ -69,7 +73,7 @@ function Node:getElements()
 	if( type(self) ~= "table" ) then error(nilSelfErrorMessage, 2) end;
 
 	local tmp = {};
-	for i,v in pairs(self.attributes) do
+	for i,v in pairs(self.nodes) do
 		if( type(v) == "table" and i ~= "attributes" ) then
 			table.insert(tmp, v);
 		end
@@ -125,7 +129,7 @@ end
 function Node:getValue(forceType)
 	if( type(self) ~= "table" ) then error(nilSelfErrorMessage, 2) end;
 
-	return explicitCast(self.value, forcetype);
+	return explicitCast(self.value, forcetype) or "";
 end
 
 -- print a debug string of the current node
@@ -205,11 +209,13 @@ function Node:prase()
 	for key,value in pairs(xml_table) do
 		if( type(key)~= "number")then
 			tmp_attributes[key] = implicitCast(value);
+			--print("value N: "..value);
 		end
 	end
-	
-	if(	xml_table[1] ~= nil and type(xml_table[1]) ~= " table" and implicitCast(xml_table[1]) ~= nil and type(implicitCast(xml_table[1])) == "string")then
+	--Name? 
+	if(	xml_table[1] ~= nil and type(xml_table[1]) ~= "table" and type(implicitCast(xml_table[1])) == "string")then
 		tmp_value = implicitCast(xml_table[1]);
+		--print("value unknown: "..xml_table[1]);
 	end
 	
 	for i = 1, #xml_table do
@@ -217,42 +223,52 @@ function Node:prase()
 			if(xml_table[i][0] ~= nil)then
 			local node = Node(implicitCast(xml_table[i][0]),xml_table[i] );
 			node:prase(); -- we going recursive;
+			--local tablex = node:getAttributes()
+			--print("Deep")
+			--print_r(tablex);
 			table.insert(tmp_nodes,node);
 			end
 		end
 	end
 	
-	---local node_main = Node(implicitCast(xml_table[0],xml_table)
+	--local node_main = Node(implicitCast(xml_table[0],xml_table))
 	
 	self:setAttributes(tmp_attributes);
 	self:setNodes(tmp_nodes);
-	self:setValue(temp_value);
-	return node_main;
+	self:setValue(tmp_value);
+	return self;
 end
 
-function parse(xml_table)
+function parse_deep(xml_table)
 	local tmp_nodes = {};
 	local tmp_attributes = {};
 	local tmp_value = nil;
 	
 	
-	
+	print_r(xml_table);
 	if(xml_table[0] == nil)then
 		return nil;
 	end
 	for key,value in pairs(xml_table) do
 		if( type(key)~= "number")then
 			tmp_attributes[key] = implicitCast(value);
+			--print("attribute: "..value);
 		end
 	end
 	if(	xml_table[1] ~= nil and type(xml_table[1]) == "string")then
 		tmp_value = implicitCast(xml_table[1]);
+		--print("value"..xml_table[1]);
 	end
 	for i = 1, #xml_table do
 		if(xml_table[i]~= nil and type(xml_table[i]) == "table")then
 			if(xml_table[i][0] ~= nil)then
 			local node = Node(implicitCast(xml_table[i][0]),xml_table[i] );
 			node:prase(); -- we going recursive;
+			--local tablex = node:getAttributes()
+			---print("not deep")
+			--print_r(tablex);
+			--local val = node:getValue();
+			--print_r(val);
 			table.insert(tmp_nodes,node);
 			end
 		end
@@ -260,7 +276,7 @@ function parse(xml_table)
 	local node_main = Node(implicitCast(xml_table[0]),xml_table);
 	node_main:setAttributes(tmp_attributes);
 	node_main:setNodes(tmp_nodes);
-	node_main:setValue(temp_value);
+	node_main:setValue(tmp_value);
 	return node_main;
 end
 
