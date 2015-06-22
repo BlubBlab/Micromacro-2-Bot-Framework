@@ -1,3 +1,11 @@
+include("waypoint.lua");
+include("waypointlist.settings.lua");
+
+-- check if we in test mode
+if( not player and not waypointlist.settings.test)
+	error("No player object found in waypointlist");
+end
+
 WPT_FORWARD = 1;
 WPT_BACKWARD = 2;
 
@@ -72,9 +80,9 @@ function CWaypointList:load(filename)
 		local id = v:getAttribute("id");
 		local randomfollow = v:getAttribute("randomfollow");
 		local randombefore = v:getAttribute("randombefore");
-		local wpstop = v:getAttribute("WP_NO_STOP");
-		local wpzone = v:getAttribute("WP_ZONE");
-		local wpco  = v:getAttribute("WP_NO_COROUTINE");
+		local wpstop = v:getAttribute("nostop");
+		local wpzone = v:getAttribute("zone");
+		local wpco  = v:getAttribute("nothread");
 		
 		if( string.lower(name) == "waypoint" ) and x and z then
 			local tmp = CWaypoint(x, z, y);
@@ -146,7 +154,7 @@ function CWaypointList:load(filename)
 		end
 		index = index + 1;
 	end
-	if(file_ok == false)then
+	if(file_ok == false and waypointlist.settings.rewrite_waypoint)then
 		self:save(filename,root);
 	end
 	self.Mode = "waypoints"
@@ -278,7 +286,7 @@ function CWaypointList:getNextWaypoint(_num)
 		end
 	end
 	-- symmetry a must ... 
-	if ( self.CurrentWaypoint.RandomBefore and _num == 1 and not self.Direction == WPT_FORWARD)then
+	if ( self.CurrentWaypoint.RandomBefore and _num >= 1 and not self.Direction == WPT_FORWARD)then
 	
 		math.randomseed(os.time())
 		
@@ -311,11 +319,18 @@ function CWaypointList:getNextWaypoint(_num)
 	end
 	
 	-- we don't adjust when go random only in case we found nothing we go further
-	if not (self.CurrentWaypoint.RandomFollow  or self.CurrentWaypoint.RandomBefore) and _num == 1 or not hf_wpnum then
+	if not (self.CurrentWaypoint.RandomFollow  or self.CurrentWaypoint.RandomBefore) and not hf_wpnum then
 		if( self.Direction == WPT_FORWARD ) then
 			hf_wpnum = self.CurrentWaypoint + _num;
 		else
 			hf_wpnum = self.CurrentWaypoint - _num;
+		end
+	end
+	if  (self.CurrentWaypoint.RandomFollow  or self.CurrentWaypoint.RandomBefore) and hf_wpnum then
+		if( self.Direction == WPT_FORWARD ) then
+			hf_wpnum = hf_wpnum + _num;
+		else
+			hf_wpnum = hf_wpnum - _num;
 		end
 	end
 
@@ -619,13 +634,18 @@ function CWaypointList:save(filename, root)
 	
 	--xml.save(list,"test.xml");
 
+	--basic strings
 	local openformat = "\t<!-- #%3d --><waypoint id=\"%d\" x=\"%d\" z=\"%d\" y=\"%d\"%s>%s";
 	local closeformat = "</waypoint>\n";
+	
+	--- get info about the waypoints in general
 	local type = root:getAttribute("type");
 	local elements = root:getElements();
 	
 	file:write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+	
 	local str;
+	
 	if (type)then
 		str = sprintf("<waypoints%s>\n","type=\""..type.."\"");	-- create first tag
 	else
@@ -635,6 +655,7 @@ function CWaypointList:save(filename, root)
 	local onload_s;
 	
 	for i,v in pairs(elements) do
+	
 		local action = v:getValue();
 		local name = v:getName() or "";
 		
@@ -651,10 +672,8 @@ function CWaypointList:save(filename, root)
 	local help_line;
 	
 	for i,v in pairs(elements) do
-			
-			
-				hf_line = hf_line .. sprintf(openformat, i,i, v.X, v.Z, v.Y,
-				"\n\t\t" .. sprintf(p_merchant_command, v.npc_name) ) .. "\n";
+			hf_line = hf_line .. sprintf(openformat, i,i, v.X, v.Z, v.Y,commands)
+				--"\n\t\t" .. sprintf(p_merchant_command, v.npc_name) ) .. "\n";
 				tag_open = true;
 		
 	end
