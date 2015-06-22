@@ -254,7 +254,7 @@ function CWaypointList:getNextWaypoint(_num)
 	
 	local hf_wpnum;
 	-- we jump over the waypoint if it is bigger than 1
-	if ( self.CurrentWaypoint.RandomFollow and _num == 1 and self.Direction == WPT_FORWARD)then
+	if ( self.CurrentWaypoint.RandomFollow and self.Direction == WPT_FORWARD)then
 	
 		math.randomseed(os.time())
 		
@@ -286,7 +286,7 @@ function CWaypointList:getNextWaypoint(_num)
 		end
 	end
 	-- symmetry a must ... 
-	if ( self.CurrentWaypoint.RandomBefore and _num >= 1 and not self.Direction == WPT_FORWARD)then
+	if ( self.CurrentWaypoint.RandomBefore  and not self.Direction ~= WPT_FORWARD)then
 	
 		math.randomseed(os.time())
 		
@@ -326,7 +326,7 @@ function CWaypointList:getNextWaypoint(_num)
 			hf_wpnum = self.CurrentWaypoint - _num;
 		end
 	end
-	if  (self.CurrentWaypoint.RandomFollow  or self.CurrentWaypoint.RandomBefore) and hf_wpnum then
+	if  (self.CurrentWaypoint.RandomFollow  or self.CurrentWaypoint.RandomBefore) and _num ~= 1 and hf_wpnum then
 		if( self.Direction == WPT_FORWARD ) then
 			hf_wpnum = hf_wpnum + _num;
 		else
