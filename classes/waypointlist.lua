@@ -2,7 +2,7 @@ include("waypoint.lua");
 include("waypointlist.settings.lua");
 
 -- check if we in test mode
-if( not player and not waypointlist.settings.test)
+if( not player and not waypointlist.settings.test)then
 	error("No player object found in waypointlist");
 end
 
@@ -75,7 +75,7 @@ function CWaypointList:load(filename)
 		local type = v:getAttribute("type");
 		local action = v:getValue();
 		local name = v:getName() or "";
-		local tag = v:getAttribute("tag") or "";
+		local tag = v:getAttribute("tag");
 		local map = v:getAttribute("map");
 		local id = v:getAttribute("id");
 		local randomfollow = v:getAttribute("randomfollow");
@@ -135,13 +135,14 @@ function CWaypointList:load(filename)
 			
 				tmp.RandomBefore = t;
 			end
-			if ( wpstop ) then tmp.WP_NO_STOP = wpstop; end;
-			if ( wpzone ) then tmp.WP_ZONE =   wpzone; end;
-			if ( wpco) then tmp.WP_NO_COROUTINE = wpco; end;
+			if ( wpstop ) then tmp.NoStop = wpstop; end;
+			if ( wpzone ) then tmp.Zone =   wpzone; end;
+			if ( wpco) then tmp.NoThread = wpco; end;
 		
 			table.insert(self.Waypoints, tmp);
 		elseif( string.lower(name) == "onload" ) then
 			if( string.len(action) > 0 and string.find(action, "%w") ) then
+				self.onLoadString = action;
 				self.onLoadEvent = loadstring(action);
 				
 				
@@ -155,7 +156,7 @@ function CWaypointList:load(filename)
 		index = index + 1;
 	end
 	if(file_ok == false and waypointlist.settings.rewrite_waypoint)then
-		self:save(filename,root);
+		self:save(filename,self);
 	end
 	self.Mode = "waypoints"
 	if( not player)then
@@ -633,48 +634,148 @@ end
 function CWaypointList:save(filename, root)
 	
 	--xml.save(list,"test.xml");
-
+	local file, err = io.open(filename, "w");
 	--basic strings
-	local openformat = "\t<!-- #%3d --><waypoint id=\"%d\" x=\"%d\" z=\"%d\" y=\"%d\"%s>%s";
+	local openformat1 = "\t<!-- #%3d --><waypoint id=\"%d\" x=\"%d\" z=\"%d\" y=\"%d\"%s>%s";
+	-- we have no y
+	local openformat2 = "\t<!-- #%3d --><waypoint id=\"%d\" x=\"%d\" z=\"%d\" %s>%s";
 	local closeformat = "</waypoint>\n";
 	
 	--- get info about the waypoints in general
-	local type = root:getAttribute("type");
-	local elements = root:getElements();
+	--local type = root:getAttribute("type");
+	--local elements = root:getElements();
 	
+	local type ;
+	if(self.Type == WPT_NORMAL)then
+		type = "NORMAL";
+	end
+	if(self.Type == WPT_TRAVEL)then
+		type = "TRAVEL";
+	end
+	if(self.Type == WPT_RUN)then
+		type = "RUN";
+	end
+
 	file:write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 	
 	local str;
 	
 	if (type)then
-		str = sprintf("<waypoints%s>\n","type=\""..type.."\"");	-- create first tag
+		str = sprintf("<waypoints>\n"," type=\""..type.."\"");	-- create first tag
 	else
 		str = sprintf("<waypoints>\n");
 	end
 	
-	local onload_s;
+	local onload_s = self.onLoadString;
 	
-	for i,v in pairs(elements) do
-	
-		local action = v:getValue();
-		local name = v:getName() or "";
-		
-		if( string.lower(name) == "onload" ) then
-			onload_s = action;
-		end
-	end
+	 
 	if(  onload_s )then
-		str ="\n\<onLoad>"..str.."\n </onLoad> \n";
+		str =str.. "\n <onLoad> \n "..onload_s.."\n </onLoad> \n";
 	end
 	file:write(str);					-- write first tag
 
 	local hf_line, tag_open = "", false;
-	local help_line;
-	
-	for i,v in pairs(elements) do
-			hf_line = hf_line .. sprintf(openformat, i,i, v.X, v.Z, v.Y,commands)
+	local help_line= "";
+	local line_num = 1;
+	for i,v in pairs(self.Waypoints) do
+			if(v.Map ~= nil )then
+				help_line = help_line.." map=\""..v.Map.."\" ";
+			end
+			if(v.Tag ~= nil and v.Tag ~= "")then
+				help_line = help_line.." tag=\""..v.Tag.."\" ";
+			end
+			if(v.Zone ~= nil)then
+				help_line = help_line.." zone=\""..v.Zone.."\" ";
+			end
+			if(v.NoThread ~= nil)then
+				if(v.NoThread)then
+					help_line = help_line.." nothread=\"true\" ";
+				else
+					help_line = help_line.." nothread=\"false\" ";
+				end
+			end
+			if(v.NoStop ~=nil)then
+				if(v.NoStop)then
+					help_line = help_line.." nostop=\"true\" ";
+				else
+					help_line = help_line.." nostop=\"false\" ";
+				end
+			
+			end
+			if(v.RandomFollow ~= nil)then
+				help_line = help_line.." randomfollow=\"";
+				for index,value in pairs(v.RandomFollow) do
+					help_line = help_line..","..value;
+				end
+				help_line = help_line.."\" ";
+			end
+			if(v.RandomBefore ~= nil)then
+				help_line = help_line.." randombefore=\"";
+				for index,value in pairs(v-RandomBefore) do
+					help_line = help_line..","..value;
+				end
+				help_line = help_line.."\" ";
+			end
+			
+		
+			if( tag_open ) then
+				if ( hf_data ) then
+					hf_line = hf_line .. "\n" .. closeformat
+				else
+					hf_line = hf_line .. closeformat
+				end
+			end
+			if(not v.Y)then
+				v.Y = 0;
+			end
+				local type ;
+				if(v.Type == WPT_NORMAL)then
+					type = nil;
+				end
+				if(v.Type == WPT_TRAVEL)then
+					type = "TRAVEL";
+				end
+				if(v.Type == WPT_RUN)then
+					type = "RUN";
+				end
+			if(v.Type and type)then
+				
+				if(v.Action)then
+					if( v.Y )then
+						hf_line = hf_line .. sprintf(openformat1, line_num, line_num, v.X, v.Z, v.Y, help_line.." type=\""..type.."\"", ""..v.Action.."");
+					else
+						hf_line = hf_line .. sprintf(openformat2, line_num, line_num, v.X, v.Z, help_line.." type=\""..type.."\"", ""..v.Action.."");
+					end
+				else
+					if( v.Y )then
+						hf_line = hf_line .. sprintf(openformat1, line_num,line_num, v.X, v.Z, v.Y, help_line.." type=\""..type.."\"", "")
+					else
+						hf_line = hf_line .. sprintf(openformat2, line_num,line_num, v.X, v.Z, help_line.." type=\""..type.."\"", "")
+					end
+				end
+			else
+				if(v.Action)then
+					if( v.Y )then
+						hf_line = hf_line .. sprintf(openformat1, line_num,line_num, v.X, v.Z, v.Y, help_line, ""..v.Action.."")
+					else
+						hf_line = hf_line .. sprintf(openformat2, line_num,line_num, v.X, v.Z, help_line, ""..v.Action.."")
+					end
+				else
+					if( v.Y )then
+						hf_line = hf_line .. sprintf(openformat1, line_num, line_num, v.X, v.Z, v.Y, help_line,"")
+					else
+						hf_line = hf_line .. sprintf(openformat2, line_num, line_num, v.X, v.Z, help_line,"")
+					end
+				end
+			end
+			
+			line_num = line_num + 1
+			tag_open = true;
+			hf_data = false;
+			help_line ="";
+			--hf_line = hf_line .. sprintf(openformat, i,i, v.X, v.Z, v.Y,commands)
 				--"\n\t\t" .. sprintf(p_merchant_command, v.npc_name) ) .. "\n";
-				tag_open = true;
+			--	tag_open = true;
 		
 	end
 
@@ -683,13 +784,13 @@ function CWaypointList:save(filename, root)
 		hf_line = hf_line .. "\t" .. closeformat;
 	end
 
-	if( bot.ClientLanguage == "RU" ) then
+	if(bot and  bot.ClientLanguage == "RU" ) then
 		hf_line = oem2utf8_russian(hf_line);		-- language conversations for Russian Client
 	end
 
 	file:write(hf_line);
 	file:write("</waypoints>");
-	]]--
+	
 
 end
 
