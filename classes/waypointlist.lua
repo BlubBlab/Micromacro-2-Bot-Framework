@@ -147,7 +147,7 @@ function CWaypointList:load(filename)
 		index = index + 1;
 	end
 	if(file_ok == false)then
-	--rewrite file
+		self:save(filename,root);
 	end
 	self.Mode = "waypoints"
 	if( not player)then
@@ -614,5 +614,63 @@ function CWaypointList:updateResume()
 			file:close()
 		end
 	end
+end
+function CWaypointList:save(filename, root)
+	
+	--xml.save(list,"test.xml");
+
+	local openformat = "\t<!-- #%3d --><waypoint id=\"%d\" x=\"%d\" z=\"%d\" y=\"%d\"%s>%s";
+	local closeformat = "</waypoint>\n";
+	local type = root:getAttribute("type");
+	local elements = root:getElements();
+	
+	file:write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+	local str;
+	if (type)then
+		str = sprintf("<waypoints%s>\n","type=\""..type.."\"");	-- create first tag
+	else
+		str = sprintf("<waypoints>\n");
+	end
+	
+	local onload_s;
+	
+	for i,v in pairs(elements) do
+		local action = v:getValue();
+		local name = v:getName() or "";
+		
+		if( string.lower(name) == "onload" ) then
+			onload_s = action;
+		end
+	end
+	if(  onload_s )then
+		str ="\n\<onLoad>"..str.."\n </onLoad> \n";
+	end
+	file:write(str);					-- write first tag
+
+	local hf_line, tag_open = "", false;
+	local help_line;
+	
+	for i,v in pairs(elements) do
+			
+			
+				hf_line = hf_line .. sprintf(openformat, i,i, v.X, v.Z, v.Y,
+				"\n\t\t" .. sprintf(p_merchant_command, v.npc_name) ) .. "\n";
+				tag_open = true;
+		
+	end
+
+	-- If we left a tag open, close it.
+	if( tag_open ) then
+		hf_line = hf_line .. "\t" .. closeformat;
+	end
+
+	if( bot.ClientLanguage == "RU" ) then
+		hf_line = oem2utf8_russian(hf_line);		-- language conversations for Russian Client
+	end
+
+	file:write(hf_line);
+	file:write("</waypoints>");
+	]]--
+
 end
 
