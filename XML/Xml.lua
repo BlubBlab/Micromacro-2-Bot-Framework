@@ -87,12 +87,12 @@ function CXML:validXML( file)
 			end
 			-- find a tag between < and > or <? and ?>
 			if(not jump and (last3 ~= 0 or last1 ~= 0 ) and string.find(sub1,"[%d-%a]+"))then
-				local start, ende =  string.find(line,"([%d-%a]+)=\"([%d-%a-%p]+)\"",i);
+				local start, ende =  string.find(line,"[%d-%a]+=\"[^\"]+\"",i);
 				if(start == nil)then
 					error("Miss match string in: line: "..linecount.." row: "..i.."");
 				end
 				
-				last4 = last4 + 1;
+				--last4 = last4 + 1;
 				-- two matching "
 				if(last4%2 == 0)then
 					last4 = 0;
