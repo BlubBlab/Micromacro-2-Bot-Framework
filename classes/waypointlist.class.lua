@@ -75,6 +75,7 @@ function CWaypointList:load(filename)
 		local tag = v:getAttribute("tag");
 		local map = v:getAttribute("map");
 		local id = v:getAttribute("id");
+		local deviation = v:getAttribute("deviation");
 		local inair = v:getAttribute("inair");
 		local mounted = v:getAttribute("mounted");
 		local comments = v:getAttribute("comments");
@@ -107,6 +108,7 @@ function CWaypointList:load(filename)
 			if( map ) then tmp.Map = map; end;
 			if( comments ) then tmp.Comments = comments; end;
 			if( inair ) then tmp.InAir = inair; end;
+			if( deviation )then tmp.Deviation = deviation; end;
 			if( mounted ) then tmp.Mounted = mounted; end;
 			if ( id ) then 
 				tmp.Id = id; 
@@ -356,12 +358,13 @@ function CWaypointList:getNextWaypoint(_num)
 		tmp.Type = self.ForcedType;
 	end
 
-	if( settings.profile.options.WAYPOINT_DEVIATION < 2 ) then
+	if( settings.profile.options.WAYPOINT_DEVIATION < 2 and (tmp.Deviation == nil or tmp.Deviation < 2) ) then
 		return tmp;
 	end
-
-	local halfdev = settings.profile.options.WAYPOINT_DEVIATION/2;
-
+	
+	local halfdev = tmp.Deviation or settings.profile.options.WAYPOINT_DEVIATION;
+	local halfdev  = halfdev/2;
+	
 	tmp.X = tmp.X + math.random(halfdev) - halfdev;
 	tmp.Z = tmp.Z + math.random(halfdev) - halfdev;
 
