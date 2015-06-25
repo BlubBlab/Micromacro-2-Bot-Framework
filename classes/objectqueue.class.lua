@@ -6,6 +6,7 @@ CObjectQueue = class(
 		self.Queue = {};
 		self.first = 0;
 		self.last = -1;
+		self.size
 	end
 );
 
@@ -16,7 +17,7 @@ function CObjectQueue:update()
 	self.last = -1;
 	
 	local evalAddresse = objectslists.funcs["objectlists_eval_addresse"];
-	local size = memoryReadInt(getProc(), addresses.staticTableSize);
+	self.size = memoryReadInt(getProc(), addresses.staticTableSize);
 
 	for i = 0,size do
 		local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, i*4);
@@ -35,6 +36,25 @@ function CObjectQueue:peek( type )
 	local first = self.first:
 	
 	if first > self.last then 
+		--last try
+		local size = memoryReadInt(getProc(), addresses.staticTableSize);
+		
+		if(size > self.size)then
+			local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, (self.size + 1)*4);
+			if( evalAddresse( addr )) then
+				object = CObject(addr);
+				if(object ~= nil)then
+					self:add(object);
+					self.size = self.size + 1;
+					return self:peek(type);
+				else
+					return nil;
+				end
+			else
+				return nil;
+			end
+		end
+		
 		return nil;
 	end	
 	
@@ -71,6 +91,24 @@ function CObjectQueue:poll( type )
 	local first = self.first:
 	
 	if first > self.last then 
+		--last try
+		local size = memoryReadInt(getProc(), addresses.staticTableSize);
+		
+		if(size > self.size)then
+			local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, (self.size + 1)*4);
+			if( evalAddresse( addr )) then
+				object = CObject(addr);
+				if(object ~= nil)then
+					self:add(object);
+					self.size = self.size + 1;
+					return self:poll(type);
+				else
+					return nil;
+				end
+			else
+				return nil;
+			end
+		end
 		return nil;
 	end	
 	
@@ -111,4 +149,7 @@ end
 
 function CObjectQueue:size()
 	return #self.Queue;
+end
+function CObjectQueue:empty()
+	return self.first > self.last;
 end

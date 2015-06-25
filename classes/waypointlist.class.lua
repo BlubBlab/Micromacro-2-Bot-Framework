@@ -6,9 +6,6 @@ if( not player and not waypointlists.settings.test)then
 	error("No player object found in waypointlist");
 end
 
-WPT_FORWARD = waypointlists.settings["WPT_FORWARD"] or 1;
-WPT_BACKWARD = waypointlists.settings["WPT_BACKWARD"] or 2;
-
 CWaypointList = class(
 	function(self)
 		self.Waypoints = {};

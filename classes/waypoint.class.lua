@@ -1,9 +1,5 @@
 include("waypoints.settings.lua");
 
-WPT_NORMAL = waypoints.settings["WPT_NORMAL"] or 3;
-WPT_TRAVEL = waypoints.settings["WPT_TRAVEL"] or 4;		-- don't target, don't fight back
-WPT_RUN = waypoints.settings["WPT_RUN"] or 5;		-- don't target
-
 CWaypoint = class(
 	function (self, _X, _Z, _Y)
 		-- If we're copying from a waypoint

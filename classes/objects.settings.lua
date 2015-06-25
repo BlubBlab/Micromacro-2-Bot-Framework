@@ -1,6 +1,6 @@
 objects = {};
 objects.settings = {};
--- values for object types
+-- remove later
 objects.settings["PT_NONE"] = -1;
 objects.settings["PT_PLAYER"] = 1;
 objects.settings["PT_MONSTER"] = 2;
@@ -37,3 +37,9 @@ objects.funcs["objecte_eval_name"] = function( name )
 		return false;
 	end
 end
+
+PT_NONE = objects.settings["PT_NONE"] or -1;
+PT_PLAYER = objects.settings["PT_PLAYER"] or 1;
+PT_MONSTER = objects.settings["PT_MONSTER"] or 2;
+PT_NPC = objects.settings["PT_NPC"] or 4;
+PT_NODE = objects.settings["PT_NODE"] or 4;

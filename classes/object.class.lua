@@ -1,11 +1,5 @@
 include(objects.settings.lua);
 
-PT_NONE = objects.settings["PT_NONE"] or -1;
-PT_PLAYER = objects.settings["PT_PLAYER"] or 1;
-PT_MONSTER = objects.settings["PT_MONSTER"] or 2;
-PT_NPC = objects.settings["PT_NPC"] or 4;
-PT_NODE = objects.settings["PT_NODE"] or 4;
-
 CObject = class(
 	function (self, ptr)
 		self.Address = ptr;
