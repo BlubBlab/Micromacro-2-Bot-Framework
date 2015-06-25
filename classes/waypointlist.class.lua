@@ -696,6 +696,9 @@ function CWaypointList:save(filename)
 			if(v.Zone ~= nil)then
 				help_line = help_line.." zone=\""..v.Zone.."\" ";
 			end
+			if(v.Deviation ~= nil)then
+				help_line = help_line.." deviation=\""..v.Deviation.."\" ";
+			end
 			if(v.Comments ~= nil)then
 				help_line = help_line.." zone=\""..v.Comments.."\" ";
 			end
@@ -720,6 +723,7 @@ function CWaypointList:save(filename)
 					help_line = help_line.." nothread=\"false\" ";
 				end
 			end
+			
 			if(v.NoStop ~=nil)then
 				if(v.NoStop)then
 					help_line = help_line.." nostop=\"true\" ";
