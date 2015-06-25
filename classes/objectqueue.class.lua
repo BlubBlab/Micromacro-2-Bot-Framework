@@ -11,6 +11,10 @@ CObjectQueue = class(
 
 function CObjectQueue:update()
 	self.Queue = {}; -- Flush all objects.
+	-- rest the counters
+	self.first = 0;
+	self.last = -1;
+	
 	local evalAddresse = objectslists.funcs["objectlists_eval_addresse"];
 	local size = memoryReadInt(getProc(), addresses.staticTableSize);
 
@@ -84,7 +88,6 @@ function CObjectQueue:poll( type )
 				self.Queue[first] = nil        -- to allow garbage collection
 				self.first = first + 1
 				return self:poll();	
-			
 			end
 		else
 			self.Queue[first] = nil        -- to allow garbage collection
