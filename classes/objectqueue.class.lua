@@ -27,7 +27,7 @@ function CObjectQueue:update()
 	--self.Pointer = #self.Queue;
 end
 
-function CObjectQueue:peek()
+function CObjectQueue:peek( type )
 	local first = self.first:
 	
 	if first > self.last then 
@@ -39,11 +39,17 @@ function CObjectQueue:peek()
 		self.Queue[first]:update();
 		
 		if(self.Queue[first] ~= nil)then
-			local value = self.Queue[first]
-			-- we peek only
-			--self.Queue[first] = nil        -- to allow garbage collection
-			--self.first = first + 1
-			return value;
+			if(not type or self.Queue[first].Type == type)then
+				local value = self.Queue[first]
+				-- we peek only
+				--self.Queue[first] = nil        -- to allow garbage collection
+				--self.first = first + 1
+				return value;
+			else
+				self.Queue[first] = nil        -- to allow garbage collection
+				self.first = first + 1
+				return self:peek();	
+			end
 		else
 			self.Queue[first] = nil        -- to allow garbage collection
 			self.first = first + 1
@@ -57,7 +63,7 @@ function CObjectQueue:peek()
 
 end
 
-function CObjectQueue:poll()
+function CObjectQueue:poll( type )
 	local first = self.first:
 	
 	if first > self.last then 
@@ -69,10 +75,17 @@ function CObjectQueue:poll()
 		self.Queue[first]:update();
 		
 		if(self.Queue[first] ~= nil)then
-			local value = self.Queue[first]
-			self.Queue[first] = nil        -- to allow garbage collection
-			self.first = first + 1
-			return value;
+			if(not type or self.Queue[first].Type == type)then
+				local value = self.Queue[first]
+				self.Queue[first] = nil        -- to allow garbage collection
+				self.first = first + 1
+				return value;
+			else
+				self.Queue[first] = nil        -- to allow garbage collection
+				self.first = first + 1
+				return self:poll();	
+			
+			end
 		else
 			self.Queue[first] = nil        -- to allow garbage collection
 			self.first = first + 1
