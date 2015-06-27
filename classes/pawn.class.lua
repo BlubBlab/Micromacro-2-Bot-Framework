@@ -30,7 +30,7 @@ CPawn = class(
 		self.LastHP = 0;
 		self.MaxHP = 1000;
 		-- I need to change it to list
-		self.ActivPowers =  pawns.funcs["init_all_activ_powers"]()
+		self.ActivEnergys = pawns.funcs["init_all_activ_energys"]()
 		--self.MP = 1000;
 		--self.MaxMP = 1000;
 		--self.MP2 = 1000;
@@ -38,7 +38,7 @@ CPawn = class(
 		--end
 		
 		-- I need to change it to list
-		self.Powers = pawns.funcs["init_all_powers"]()
+		self.Energys = pawns.funcs["init_all_energys"]()
 		--self.Mana = 0;
 		--self.MaxMana = 0;
 		--self.Rage = 0;
@@ -142,6 +142,7 @@ function CPawn:updateId()
 	local eval_id = pawns.funcs["pawn_eval_id"];
 	-- Get Id
 	local tmp = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnId_offset) or 0;
+	--- here 
 	eval_id(tmp,self);
 	
 end
@@ -263,76 +264,118 @@ end
 
 function CPawn:updateClass()
 	if not self:hasAddress() then
-		self.Class1 = CLASS_NONE;
-		self.Class2 = CLASS_NONE;
+		self.Classes = pawns.funcs["pawn_init_all_classes"]();
 		return
 	end
 
-	self.Class1 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnClass1_offset) or self.Class1;
-	self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnClass2_offset) or self.Class2;
+	--self.Class1 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnClass1_offset) or self.Class1;
+	--self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnClass2_offset) or self.Class2;
+	
+	for i = 1, pawns.settings["max_number_classes_activ"] do
+		self.Classes[i] = addresses.func["class_"..i..""](self.Address);
+	end
 end
 
 function CPawn:updateMP()
 	if not self:hasAddress() then
-		self.MP = 0;
-		self.MP2 = 0;
+		self.ActivEnergys = pawns.funcs["init_zero_activ_energy"](self.ActivEnergys);
 		return
 	end
-
-	self.MP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMP_offset) or self.MP;
-	self.MaxMP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMaxMP_offset) or self.MaxMP;
-	self.MP2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMP2_offset) or self.MP2;
-	self.MaxMP2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMaxMP2_offset) or self.MaxMP2;
-	if( self.MaxMP == 0 ) then
-		-- Prevent division by zero for entities that have no mana
-		self.MP = 1;
-		self.MaxMP = 1;
+	local max_energys_peer_char = pawns.settings["max_number_energys_activ"];
+	
+	
+	for i = 1,  max_energys_peer_char *2 , 2 do 
+		self.ActivEnergys[i] = addresses.func["energys_"..i..""](self.Address);
+		self.ActivEnergys[i+1] = addresses.func["energysMax_"..i..""](self.Address);
 	end
+	
+	--self.MP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMP_offset) or self.MP;
+	--self.MaxMP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMaxMP_offset) or self.MaxMP;
+	--self.MP2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMP2_offset) or self.MP2;
+	--self.MaxMP2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMaxMP2_offset) or self.MaxMP2;
+	-- if( self.MaxMP == 0 ) then
+		-- -- Prevent division by zero for entities that have no mana
+		-- self.MP = 1;
+		-- self.MaxMP = 1;
+	-- end
 
-	if( self.MaxMP2 == 0 ) then
-		-- Prevent division by zero for entities that have no secondary mana
-		self.MP2 = 1;
-		self.MaxMP2 = 1;
+	-- if( self.MaxMP2 == 0 ) then
+		-- -- Prevent division by zero for entities that have no secondary mana
+		-- self.MP2 = 1;
+		-- self.MaxMP2 = 1;
+	-- end
+	
+	- -- Prevent division by zero for entities that have no mana
+	for i = 1,  max_energys_peer_char *2 do 
+		if self.ActivEnergys[i] == 0 then
+			self.ActivEnergys[i] = 1;
+		end
 	end
-
-	if self.Class1 == CLASS_NONE then
+	if self.Classes[1] == pawns.settings["class_types"]["CLASS_NONE"] then
 		self:updateClass()
 	end
 
 	-- Set the correct mana/rage/whatever
-	local energyStorage1 = classEnergyMap[self.Class1];
-	local energyStorage2 = classEnergyMap[self.Class2];
-	if( energyStorage1 == energyStorage2 ) then
-		energyStorage2 = "none";
-	end;
-
-	if( energyStorage1 == "mana" ) then
-		self.Mana = self.MP;
-		self.MaxMana = self.MaxMP;
-	elseif( energyStorage1 == "rage" ) then
-		self.Rage = self.MP;
-		self.MaxRage = self.MaxMP;
-	elseif( energyStorage1 == "energy" ) then
-		self.Energy = self.MP;
-		self.MaxEnergy = self.MaxMP;
-	elseif( energyStorage1 == "focus" ) then
-		self.Focus = self.MP;
-		self.MaxFocus = self.MaxMP;
+	-- local energyStorage1 = classEnergyMap[self.Class1];
+	-- local energyStorage2 = classEnergyMap[self.Class2];
+	local energyStorage = {};
+	
+	for i = 1,  max_energys_peer_char do 
+		energyStorage[i] = classEnergyMap[self.Classes[i]];
 	end
-
-	if( energyStorage2 == "mana" ) then
-		self.Mana = self.MP2;
-		self.MaxMana = self.MaxMP2;
-		elseif( energyStorage2 == "rage" ) then
-		self.Rage = self.MP2;
-		self.MaxRage = self.MaxMP2;
-	elseif( energyStorage2 == "energy" ) then
-		self.Energy = self.MP2;
-		self.MaxEnergy = self.MaxMP2;
-		elseif( energyStorage2 == "focus" ) then
-		self.Focus = self.MP2;
-		self.MaxFocus = self.MaxMP2;
+	
+	-- if( energyStorage1 == energyStorage2 ) then
+		-- energyStorage2 = "none";
+	-- end;
+	
+	-- this a bit of geometric maths I hope it works
+	--make the lower half
+	for i = 1,  max_energys_peer_char/2 do 
+		-- make the upper half
+		for j = max_energys_peer_char/2,  max_energys_peer_char do 
+			if i ~= j then
+				if(energyStorage[i] == energyStorage[j]then
+					energyStorage[j] = "none";
+				end
+			end
+		end
 	end
+	-- this will result in mana, Maxmana,rage, Maxrage
+	for i = 1,  max_energys_peer_char * 2 do 
+		if(i%2 == 0)then
+			self.Energys["Max"..energyStorage[i-1]] = self.ActivEnergys[i];
+		else
+			self.Energys[energyStorage[i]] = self.ActivEnergys[i];
+		end
+	end
+	
+	-- if( energyStorage1 == "mana" ) then
+		-- self.Mana = self.MP;
+		-- self.MaxMana = self.MaxMP;
+	-- elseif( energyStorage1 == "rage" ) then
+		-- self.Rage = self.MP;
+		-- self.MaxRage = self.MaxMP;
+	-- elseif( energyStorage1 == "energy" ) then
+		-- self.Energy = self.MP;
+		-- self.MaxEnergy = self.MaxMP;
+	-- elseif( energyStorage1 == "focus" ) then
+		-- self.Focus = self.MP;
+		-- self.MaxFocus = self.MaxMP;
+	-- end
+
+	-- if( energyStorage2 == "mana" ) then
+		-- self.Mana = self.MP2;
+		-- self.MaxMana = self.MaxMP2;
+		-- elseif( energyStorage2 == "rage" ) then
+		-- self.Rage = self.MP2;
+		-- self.MaxRage = self.MaxMP2;
+	-- elseif( energyStorage2 == "energy" ) then
+		-- self.Energy = self.MP2;
+		-- self.MaxEnergy = self.MaxMP2;
+		-- elseif( energyStorage2 == "focus" ) then
+		-- self.Focus = self.MP2;
+		-- self.MaxFocus = self.MaxMP2;
+	-- end
 end
 
 function CPawn:updateBuffs()
@@ -348,17 +391,17 @@ function CPawn:updateBuffs()
 
 	self.Buffs = {} -- clear old values
 	if buffStart == nil or buffEnd == nil or buffStart == 0 or buffEnd == 0 then return end
-	if (buffEnd - buffStart)/ BuffSize > 50 then -- Something wrong, too many buffs
+	if (buffEnd - buffStart)/ BuffSize > pawns.settings["max_number_buff"] then -- Something wrong, too many buffs
 		return
 	end
 
-	for i = buffStart, buffEnd - 4, BuffSize do
+	for i = buffStart, buffEnd - pawns.settings["shorten_number_of_buffs"], BuffSize do
 		local tmp = {}
 		--yrest(1)
 		tmp.Id = memoryReadRepeat("int", proc, i + addresses.pawnBuffId_offset);
-		local name = GetIdName(tmp.Id)
+		local name = pawns.funcs["pawn_buff_resolution"](tmp.Id);
 
-		if name ~= nil and name ~= "" then
+		if name ~= nil then
 			tmp.Name, tmp.Count = parseBuffName(name)
 			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.pawnBuffTimeLeft_offset);
 			tmp.Level = memoryReadRepeat("int", proc, i + addresses.pawnBuffLevel_offset);
@@ -376,7 +419,7 @@ function CPawn:updateLootable()
 
 	local tmp = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnLootable_offset);
 	if( tmp ) then
-		self.Lootable = bitAnd(tmp, 0x4);
+		self.Lootable = pawns.funcs["pawn_eval_lootable"](tmp);
 	else
 		self.Lootable = false;
 	end
@@ -476,7 +519,7 @@ function CPawn:updateMounted()
 
 	local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset)
 	if attackableFlag then
-		self.Mounted = bitAnd(attackableFlag, 0x10000000)
+		self.Mounted = pawns.funcs["pawn_eval_mounted"](attackableFlag);
 	end
 end
 
@@ -488,7 +531,7 @@ function CPawn:updateInParty()
 
 	local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset)
 	--=== InParty indicator ===--
-	if attackableFlag and bitAnd(attackableFlag,0x80000000) then
+	if attackableFlag and pawns.funcs["pawn_eval_inparty"](attackableFlag) then
 		self.InParty = true
 	else
 		self.InParty = false
@@ -501,20 +544,10 @@ function CPawn:updateAttackable()
 	end
 
 	self:updateType()
-	if( self.Type == PT_MONSTER ) then
+	if( self.Type == PT_MONSTER or pawns.settings["attack_anything"]) then
 		local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset)
 		if attackableFlag then
-			if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) and bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE) ) then
-				self.Attackable = true;
-			else
-				self.Attackable = false;
-			end
-
-			if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
-				self.Aggressive = true;
-			else
-				self.Aggressive = false;
-			end
+			pawns.funcs["pawn_eval_aggressive_and_attackable"](attackableFlag, self);
 		end
 	else
 		self.Attackable = false;
@@ -527,7 +560,7 @@ function CPawn:updateSwimming()
 	end
 
 	local tmp = memoryReadRepeat("byteptr",getProc(), self.Address + addresses.pawnSwim_offset1, addresses.pawnSwim_offset2)
-	self.Swimming = (tmp == 3 or tmp == 4)
+	self.Swimming = pawns.funcs["pawn_eval_swim"](tmp);
 end
 
 function CPawn:updateIsPet()
@@ -628,7 +661,17 @@ end
 function CPawn:getBuff(buffnamesorids, count)
 	self:updateBuffs()
 
-	-- for each buff the pawn has
+	--it's a number so we do it simple
+	if( type(tonumber(buffnamesorids))  == "number")then
+		-- for each buff the pawn has
+		for i, buff in pairs(self.Buffs) do
+			-- compare against each 'buffname'
+			if( tonumber(buffnamesorids) == buff.Id )then
+				--print("we do it")
+				return buff
+			end
+		end
+	end
 	for i, buff in pairs(self.Buffs) do
 		-- compare against each 'buffname'
 		for buffname in string.gmatch(buffnamesorids,"[^,]+") do
@@ -694,8 +737,8 @@ end
 function CPawn:GetPartyIcon()
 	self:updateGUID()
 	local listStart = memoryReadRepeat("uintptr", getProc(), addresses.partyIconList_base, addresses.partyIconList_offset)
-	for i = 0, 7 do
-		local guid = memoryReadInt(getProc(), listStart + i * 12)
+	for i = 0, pawns.settings["max_party_icons"] do
+		local guid = memoryReadInt(getProc(), listStart + i * pawns.settings["party_icons_size"])
 		if guid == self.GUID then
 			return i + 1
 		end

@@ -1,6 +1,17 @@
 pawns = {};
 pawns.settings = {};
 
+pawns.settings["attack_anything"] = false;
+
+pawns.settings["max_party_icons"] = 7;
+pawns.settings["party_icons_size"] = 12;
+pawns.settings["max_number_buff"] = 50;
+pawns.settings["shorten_number_of_buffs"] = 4;
+
+
+pawns.funcs["pawn_buff_resolution"] = function( ID )
+	return GetIdName(tmp.Id)
+end
 
 -- meta index races I properly don't need to do this but we will see
 pawns.settings["races_list"] = {"RACE_HUMAN","RACE_ELF","RACE_DWARF"};
@@ -35,8 +46,9 @@ pawns.settings["nodes_type"] = {NTYPE_WOOD = 1,NTYPE_ORE = 2,NTYPE_HERB = 3};
 
 
 -- can be others in games like DP we have 3 the total number will be the length of the table "energy_list"
+
 pawns.settings["max_number_energys_activ"] = 2;
-pawns.settings["energy_list"] = {"mana","rage","enery","focus"}
+pawns.settings["energy_list"] = {"mana","rage","energy","focus"}
 
 
 
@@ -83,7 +95,7 @@ ATTACKABLE_MASK_CLICKABLE = 0x1000;
 
 AGGRESSIVE_MASK_MONSTER = 0x100000;
 
-pawns.funcs["init_all_classes"] = function()
+pawns.funcs["pawn_init_all_classes"] = function()
 
 	local activ_classes = pawns.settings["max_number_classes_activ"];
 	local default_class = pawns.settings["class_types"]["CLASS_NONE"];
@@ -108,33 +120,108 @@ pawns.funcs["init_all_levels"] = function()
 
 end
 
-pawns.funcs["init_all_activ_powers"] = function()
+pawns.funcs["init_all_activ_energys"] = function()
 	
 	local number_of_levels = pawns.settings["max_number_classes_activ"];
 	local power_table = {};
 	
-	for i = 1, number_of_levels  do
-		power_table =  1000;
+	for i = 1, number_of_levels * 2  do
+		
+		power_table[i] =  1000;
 	end
-
-
+	return power_table;
+end
+pawns.funcs["init_zero_activ_energy"] = function (ActivEnergys)
+	
+	for key, value in pairs(ActivEnergys) do
+      ActivEnergys[key] = 0;
+    end
+	
+	return ActivEnergys;
 end
 
-pawns.funcs["init_all_powers"] = function()
+pawns.funcs["init_all_energys"] = function()
 	local enys = pawns.settings["energy_list"];
 	local powers = {};
 	local size = #enys;
 	
-	for i = 1, size do
-		powers[enys[i]] = 0;
-		powers["Max"..enys[i]] = 0;
+	for i = 1,  size * 2 do 
+		if(i%2 == 0)then
+			powers["Max"..enys[i]] = 0;
+		else
+			powers[enys[i]] = 0
+		end
 	end
-	
+	return powers;
 end
-pawns.funcs["eval_updates"]= function(self)
+pawns.funcs["pawn_eval_updates"]= function(self)
 	--if( self.Alive ==nil or self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
 	--	self.MP2 == nil or self.MaxMP2 == nil or self.Name == nil or
 --		self.Level == nil or self.Level2 == nil or self.TargetPtr == nil or
 	--	self.X == nil or self.Y == nil or self.Z == nil or self.Attackable == nil ) then
 	return false;
+end
+
+pawns.funcs["pawn_eval_id"] = function(tmp,self)
+	if self.Id == -1 then -- First time. Get it.
+		self.Id = tmp
+		if self.Id > 999999 then self.Id = 0 end
+	elseif self.Id >= PLAYERID_MIN and self.Id <= PLAYERID_MAX then -- player ids can change
+		if tmp >= PLAYERID_MIN and tmp <= PLAYERID_MAX then
+			self.Id = tmp
+		end
+	else -- see if it changed
+		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
+			self.Id = 0
+			self.Type = 0
+			self.Name = "<UNKNOWN>"
+		end
+	end
+end
+pawns.funcs["pawn_eval_target_icon"] = function(attackableFlag)
+
+	if bitAnd(attackableFlag,0x10) then
+		return true;
+	else
+		return false;
+	end
+end
+
+pawns.funcs["pawn_eval_alive"] = function(alive)
+	return  not bitAnd(alive, 8);
+end
+
+pawns.funcs["pawn_eval_lootable"] = function( tmp )
+	return bitAnd(tmp, 0x4);
+end
+
+pawns.funcs["pawn_eval_mounted"] = function( attackableFlag )
+	return bitAnd(attackableFlag, 0x10000000);
+end
+
+pawns.funcs["pawn_eval_inparty"] = function( attackableFlag )
+	return  bitAnd(attackableFlag,0x80000000);
+end
+pawns.funcs["pawn_eval_aggressive_and_attackable"] = function( attackableFlag, self )
+	
+	if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) and bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE) ) then
+		self.Attackable = true;
+	else
+		self.Attackable = false;
+	end
+
+	if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
+		self.Aggressive = true;
+	else
+		self.Aggressive = false;
+	end
+	
+end
+
+pawns.funcs["pawn_eval_swim"]  = function( tmp )
+	if (tmp == 3 or tmp == 4)then
+		return true
+	else
+		return false;
+	end
 end
