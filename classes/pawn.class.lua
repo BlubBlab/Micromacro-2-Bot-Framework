@@ -1,6 +1,6 @@
 
 include("pawns.settings.lua");
----
+include("objectqueue.class.lua");
 
 -- used in function.lua for openGiftbag()
 armorMap = pawns.settings["armor_map"];
@@ -98,32 +98,32 @@ function CPawn:update()
 	if not self:exists() then -- Updates and checks pawn.Id
 		return
 	end
+	local updatelist = pawns.settings["update_flags"];
 	-- update list
-	self:updateName()
-	self:updateAlive();
-	self:updateHP() -- Also updates MaxHP
-	self:updateClass()
-	self:updateMP() -- Also updates MP2, MaxMP, MaxMP2, Rage, Focus, Energy
-	self:updateLastHP()
-	self:updateRace();
-	self:updateLevel();
-	self:updateGUID()
-	self:updateType()
-	self:updateHarvesting()
-	self:updateCasting()
-	self:updateBuffs()
-	self:updateLootable()
-	self:updateTargetPtr()
-	self:updateXYZ()
-	self:updateDirection() -- Also updates DirectionY
-	self:updateAttackable()
-	self:updateMounted()
-	self:updateTargetIcon()
-	self:updateInParty();
-	self:updateAttackable()
-	self:updateSpeed()
-	self:updateSwimming()
-	self:updateIsPet()
+	if pawns.settings["update_flags"]["updateName"]then self:updateName() end;
+	if pawns.settings["update_flags"]["updateAlive"]then self:updateAlive(); end;
+	if pawns.settings["update_flags"]["updateHP"] then self:updateHP() end; -- Also updates MaxHP
+	if pawns.settings["update_flags"]["updateClass"] then self:updateClass() end;
+	if pawns.settings["update_flags"]["updateMP"] then self:updateMP() end; -- Also updates MP2, MaxMP, MaxMP2, Rage, Focus, Energy
+	if pawns.settings["update_flags"]["updateLastHP"]then self:updateLastHP() end;
+	if pawns.settings["update_flags"]["updateRace"] then self:updateRace(); end;
+	if pawns.settings["update_flags"]["updateLevel"] then self:updateLevel(); end;
+	if pawns.settings["update_flags"]["updateGUID"] then self:updateGUID() end;
+	if pawns.settings["update_flags"]["updateType"] then self:updateType() end;
+	if pawns.settings["update_flags"]["updateHarvesting"] then self:updateHarvesting() end;
+	if pawns.settings["update_flags"]["updateCasting"] then self:updateCasting()end;
+	if pawns.settings["update_flags"]["updateBuffs"] then self:updateBuffs() end;
+	if pawns.settings["update_flags"]["updateLootable"] then self:updateLootable() end;
+	if pawns.settings["update_flags"]["updateTargetPtr"] then self:updateTargetPtr() end;
+	if pawns.settings["update_flags"]["updateXYZ"] then self:updateXYZ() end;
+	if pawns.settings["update_flags"]["updateDirection"] then self:updateDirection() end;-- Also updates DirectionY
+	if pawns.settings["update_flags"]["updateAttackable"] then self:updateAttackable() end;
+	if pawns.settings["update_flags"]["updateMounted"] then self:updateMounted() end;
+	if pawns.settings["update_flags"]["updateTargetIcon"] then self:updateTargetIcon() end;
+	if pawns.settings["update_flags"]["updateInParty"] then self:updateInParty(); end;
+	if pawns.settings["update_flags"]["updateSpeed"] then self:updateSpeed() end;
+	if pawns.settings["update_flags"]["updateSwimming"] then self:updateSwimming() end;
+	if pawns.settings["update_flags"]["updateIsPet"] then self:updateIsPet() end;
 
 	if( pawns.funcs["pawn_eval_updates"](self)) then
 
@@ -160,11 +160,13 @@ function CPawn:updateTargetIcon()
 	local attackableFlag = memoryReadRepeat("uint", proc, self.Address + addresses.pawnAttackable_offset)
 	local eval_target_icon = pawns.funcs["pawn_eval_target_icon"];
 	if attackableFlag then
-		if eval_target_icon(attackableFlag) then
+	
+		if eval_target_icon(attackableFlag)then
 			self.TargetIcon = true
 		else
 			self.TargetIcon = false
 		end
+		
 	end
 end
 function CPawn:updateName()
@@ -749,12 +751,11 @@ function CPawn:countMobs(inrange, onlyaggro, idorname)
 	self:updateXYZ()
 	local count = 0
 
-	local objectList = CObjectList();
-	objectList:update();
-	for i = 0,objectList:size() do
-		local obj = objectList:getObject(i);
-		if obj ~= nil and obj.Type == PT_MONSTER and
-		  (inrange == nil or inrange >= distance(self.X,self.Z,self.Y,obj.X,obj.Z,obj.Y) ) and
+	local objectQueue = CObjectQueue();
+	objectQueue:update();
+	while(objectQueue:peek()) do
+		local obj =  objectQueue:poll(PT_MONSTER);
+		if(inrange == nil or inrange >= distance(self.X,self.Z,self.Y,obj.X,obj.Z,obj.Y) ) and
 		  (idorname == nil or idorname == obj.Name or idorname == obj.Id) then
 			local pawn = CPawn.new(obj.Address)
 			pawn:updateAlive()
@@ -821,11 +822,11 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro)
 	end
 
 	-- First get list of mobs within (2 x aoerange) of this pawn and (skillrange + aoerange) from player.
-	local objectList = CObjectList();
-	objectList:update();
-	for i = 0,objectList:size() do
-		local obj = objectList:getObject(i);
-		if obj ~= nil and obj.Type == PT_MONSTER and (settings.profile.options.FORCE_BETTER_AOE_TARGETING == true or 0.5 > math.abs(obj.Y - self.Y)) and -- only count mobs on flat floor, results would be unpredictable on hilly surfaces when clicking.
+	local objectQueue = CObjectQueue();
+	objectQueue:update();
+	while(objectQueue:peek()) do
+		local obj =  objectQueue:poll(PT_MONSTER);
+		if (settings.profile.options.FORCE_BETTER_AOE_TARGETING == true or 0.5 > math.abs(obj.Y - self.Y)) and -- only count mobs on flat floor, results would be unpredictable on hilly surfaces when clicking.
 		  aoerange*2 >= distance(self.X,self.Z,self.Y,obj.X,obj.Z,obj.Y) and (skillrange + aoerange >= distance(player.X, player.Z, obj.X, obj.Z)) then
 			local pawn = CPawn.new(obj.Address);
 			pawn:updateAlive()

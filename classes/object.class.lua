@@ -1,4 +1,4 @@
-include(objects.settings.lua);
+include("objects.settings.lua");
 
 CObject = class(
 	function (self, ptr)
@@ -37,7 +37,7 @@ function CObject:update()
 	showWarnings(false);
 	local namePtr = memoryReadRepeat("uint", proc, self.Address + addresses.pawnName_offset);
 --	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
-	if( evalNamePtr(  namePtr ) then
+	if( evalNamePtr(  namePtr )) then
 		tmp = nil;
 	else
 		tmp = memoryReadString(proc, namePtr);
@@ -48,7 +48,7 @@ function CObject:update()
 	-- UTF8 -> ASCII translation not for player names
 	-- because that would need the whole table and there we normaly
 	-- don't need it, we don't print player names in the MM window or so
-	if( evalName(tmp ) then
+	if( evalName(tmp )) then
 		self.Name = "<UNKNOWN>";
 --	elseif(self.Type == PT_PLAYER ) then
 --		self.Name = tmp;

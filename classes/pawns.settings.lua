@@ -1,5 +1,6 @@
 pawns = {};
 pawns.settings = {};
+pawns.settings["update_flags"]= {};
 
 pawns.settings["attack_anything"] = false;
 
@@ -8,9 +9,21 @@ pawns.settings["party_icons_size"] = 12;
 pawns.settings["max_number_buff"] = 50;
 pawns.settings["shorten_number_of_buffs"] = 4;
 
+pawns.settings["update_flags"]["updateName"] = true;
+pawns.settings["update_flags"]["updateAlive"] = true;
+pawns.settings["update_flags"]["updateHP"] = true;
+pawns.settings["update_flags"]["updateClass"] = true;
+pawns.settings["update_flags"]["updateMP"] = true;
+pawns.settings["update_flags"]["updateLastHP"] = true;
+pawns.settings["update_flags"]["updateRace"] = true;
+pawns.settings["update_flags"]["updateLevel"] = true;
+ 
+
+
+
 
 pawns.funcs["pawn_buff_resolution"] = function( ID )
-	return GetIdName(tmp.Id)
+	return GetIdName( ID )
 end
 
 -- meta index races I properly don't need to do this but we will see

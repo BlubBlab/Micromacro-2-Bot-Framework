@@ -81,9 +81,9 @@ function CWaypointList:load(filename)
 		local comments = v:getAttribute("comments");
 		local randomfollow = v:getAttribute("randomfollow");
 		local randombefore = v:getAttribute("randombefore");
-		local wpstop = v:getAttribute("nostop");
-		local wpzone = v:getAttribute("zone");
-		local wpco  = v:getAttribute("nothread");
+		local wpstop = v:getAttribute("nostop") or v:getAttribute("WP_NO_STOP");
+		local wpzone = v:getAttribute("zone") or  v:getAttribute("WP_ZONE");
+		local wpco  = v:getAttribute("nothread") or v:getAttribute("WP_NO_COROUTINE");
 		
 		if( string.lower(name) == "waypoint" ) and x and z then
 			local tmp = CWaypoint(x, z, y);
@@ -263,12 +263,12 @@ function CWaypointList:getNextWaypoint(_num)
 	
 	local hf_wpnum;
 	-- we jump over the waypoint if it is bigger than 1
-	if ( self.CurrentWaypoint.RandomFollow and self.Direction == WPT_FORWARD)then
+	if ( self.Waypoints[self.CurrentWaypoint].RandomFollow and self.Direction == WPT_FORWARD)then
 	
 		math.randomseed(os.time())
 		
-		local answer = math.random(1,#self.CurrentWaypoint.RandomFollow);
-		local waypoint_id_or_tag = self.CurrentWaypoint.RandomFollow[answer];
+		local answer = math.random(1,#self.Waypoints[self.CurrentWaypoint].RandomFollow);
+		local waypoint_id_or_tag = self.Waypoints[self.CurrentWaypoint].RandomFollow[answer];
 		local n;
 		
 		
@@ -295,12 +295,12 @@ function CWaypointList:getNextWaypoint(_num)
 		end
 	end
 	-- symmetry a must ... 
-	if ( self.CurrentWaypoint.RandomBefore  and not self.Direction ~= WPT_FORWARD)then
+	if ( self.Waypoints[self.CurrentWaypoint].RandomBefore  and not self.Direction ~= WPT_FORWARD)then
 	
 		math.randomseed(os.time())
 		
 		local answer = math.random(1,#self.CurrentWaypoint.RandomBefore);
-		local waypoint_id_or_tag = self.CurrentWaypoint.RandomBefore[answer];
+		local waypoint_id_or_tag = self.Waypoints[self.CurrentWaypoint].RandomBefore[answer];
 		local n;
 		
 		
@@ -328,14 +328,14 @@ function CWaypointList:getNextWaypoint(_num)
 	end
 	
 	-- we don't adjust when go random only in case we found nothing we go further
-	if not (self.CurrentWaypoint.RandomFollow  or self.CurrentWaypoint.RandomBefore) and not hf_wpnum then
+	if not ( self.Waypoints[self.CurrentWaypoint].RandomFollow  or self.Waypoints[self.CurrentWaypoint].RandomBefore) and not hf_wpnum then
 		if( self.Direction == WPT_FORWARD ) then
 			hf_wpnum = self.CurrentWaypoint + _num;
 		else
 			hf_wpnum = self.CurrentWaypoint - _num;
 		end
 	end
-	if  (self.CurrentWaypoint.RandomFollow  or self.CurrentWaypoint.RandomBefore) and _num ~= 1 and hf_wpnum then
+	if  (self.Waypoints[self.CurrentWaypoint].RandomFollow  or self.Waypoints[self.CurrentWaypoint].RandomBefore) and _num ~= 1 and hf_wpnum then
 		if( self.Direction == WPT_FORWARD ) then
 			hf_wpnum = hf_wpnum + _num;
 		else
@@ -754,9 +754,6 @@ function CWaypointList:save(filename)
 				else
 					hf_line = hf_line .. closeformat
 				end
-			end
-			if(not v.Y)then
-				v.Y = 0;
 			end
 				local type ;
 				if(v.Type == WPT_NORMAL)then
