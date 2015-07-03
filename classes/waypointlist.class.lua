@@ -640,6 +640,19 @@ function CWaypointList:updateResume()
 		end
 	end
 end
+function CWaypointList:insert(waypoint, position)
+
+	-- we added it to the end
+	if(position == nil)then
+		position = #self.Waypoints + 1;
+	end
+	
+	-- must be tested
+	for  i = position - 1, 2, -1 do             
+		self.Waypoints[i+1] = self.Waypoints[i];
+	end
+	self.Waypoints[position] = waypoint;
+end
 function CWaypointList:save(filename)
 	
 	--xml.save(list,"test.xml");
@@ -654,23 +667,23 @@ function CWaypointList:save(filename)
 	--local type = root:getAttribute("type");
 	--local elements = root:getElements();
 	
-	local type ;
+	local typebase ;
 	if(self.Type == WPT_NORMAL)then
-		type = "NORMAL";
+		typebase = "NORMAL";
 	end
 	if(self.Type == WPT_TRAVEL)then
-		type = "TRAVEL";
+		typebase = "TRAVEL";
 	end
 	if(self.Type == WPT_RUN)then
-		type = "RUN";
+		typebase = "RUN";
 	end
 
 	file:write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 	
 	local str;
 	
-	if (type)then
-		str = sprintf("<waypoints>\n"," type=\""..type.."\"");	-- create first tag
+	if (typebase)then
+		str = sprintf("<waypoints>\n"," type=\""..typebase.."\"");	-- create first tag
 	else
 		str = sprintf("<waypoints>\n");
 	end
@@ -679,14 +692,38 @@ function CWaypointList:save(filename)
 	
 	 
 	if(  onload_s )then
-		str =str.. "\n <onLoad> \n "..onload_s.."\n </onLoad> \n";
+		str =str.. "\n <onLoad>  "..onload_s.." </onLoad> \n";
 	end
 	file:write(str);					-- write first tag
 
 	local hf_line, tag_open = "", false;
 	local help_line= "";
 	local line_num = 1;
+	local running = false;
+	local type_changed = false;
 	for i,v in pairs(self.Waypoints) do
+			local type = nil;
+			if(not self.Type)then
+				type_changed = true
+			end
+			if (self.Type and v.Type and v.Type ~= self.Type)then
+				type_changed = true
+			end
+			if(v.Type and v.Type == WPT_NORMAL)then
+				if(type_changed == true)then
+					type = nil;
+				end
+			end
+			if(v.Type and v.Type == WPT_TRAVEL)then
+				if(type_changed == true)then
+					type = "TRAVEL";
+				end
+			end
+			if(v.Type and v.Type == WPT_RUN)then
+				if(type_changed == true)then
+					type = "RUN";
+				end
+			end
 			if(v.Map ~= nil )then
 				help_line = help_line.." map=\""..v.Map.."\" ";
 			end
@@ -727,10 +764,27 @@ function CWaypointList:save(filename)
 			if(v.NoStop ~=nil)then
 				if(v.NoStop)then
 					help_line = help_line.." nostop=\"true\" ";
+					running = true;
 				else
 					help_line = help_line.." nostop=\"false\" ";
+					running = false;
 				end
 			
+			end
+			if(v.Action)then
+				if(v.Action:match( "^%s*(.-)%s*$" ) == nil or v.Action:match( "^%s*(.-)%s*$" ) == "")then
+					if(not running and v.NoStop == nil)then
+						help_line = help_line.." nostop=\"true\" ";
+						running = true;
+						v.NoStop = true;
+					end
+				else
+					if(running and v.NoStop == nil)then
+						help_line = help_line.." nostop=\"false\" ";
+						running = false;
+						v.NoStop = false;
+					end
+				end
 			end
 			if(v.RandomFollow ~= nil)then
 				help_line = help_line.." randomfollow=\"";
@@ -755,16 +809,7 @@ function CWaypointList:save(filename)
 					hf_line = hf_line .. closeformat
 				end
 			end
-				local type ;
-				if(v.Type == WPT_NORMAL)then
-					type = nil;
-				end
-				if(v.Type == WPT_TRAVEL)then
-					type = "TRAVEL";
-				end
-				if(v.Type == WPT_RUN)then
-					type = "RUN";
-				end
+				
 			if(v.Type and type)then
 				
 				if(v.Action)then

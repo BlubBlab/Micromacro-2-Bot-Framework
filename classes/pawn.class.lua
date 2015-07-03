@@ -89,7 +89,26 @@ function CPawn:hasAddress()
 		return true
 	end
 end
+function CPawn:getClass(index)
 
+	if index == nil then
+		index = 1;
+	end
+	return self.Classes[index];
+end
+function CPawn:getLevel(index)
+
+	if index == nil then
+		index = 1;
+	end
+	return self.Levels[index];
+end
+function CPawn:getEnergy(name)
+	return self.Energys[name];
+end
+function CPawn:getBuff(index)
+	return self.Buffs[index];
+end
 function CPawn:update()
 	local proc = getProc();
 	local memerrmsg = "Failed to read memory";

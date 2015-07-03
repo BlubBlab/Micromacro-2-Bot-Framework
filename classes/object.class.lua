@@ -86,7 +86,22 @@ function CObject:update()
 		end]]
 	end
 
-	if( self.Address == nil ) then
+	if( self:getAddress == nil ) then
 		error("Error reading memory in CObject:update()");
 	end
+end
+function CObject:getType()
+	return self.Type;
+end
+function CObject:getName()
+	return self.Name;
+end
+return CObject:getId()
+	return self.Id;
+end
+return CObject:getPos()
+	return self.X,self.Y,self.Z;
+end
+return CObject:getAddress()
+	return self.Address;
 end
