@@ -109,6 +109,16 @@ end
 function CPawn:getBuff(index)
 	return self.Buffs[index];
 end
+function CPawn:getDirection()
+	return self.Direction;
+end
+function CPawn:getAngleDifference(angle2)
+  if( math.abs(angle2 - self:getDirection()) > math.pi ) then
+    return (math.pi * 2) - math.abs(angle2 - self:getDirection());
+  else
+    return math.abs(angle2 - self:getDirection());
+  end
+end
 function CPawn:update()
 	local proc = getProc();
 	local memerrmsg = "Failed to read memory";

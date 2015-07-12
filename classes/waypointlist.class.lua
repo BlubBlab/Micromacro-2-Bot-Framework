@@ -605,7 +605,7 @@ function CWaypointList:findPulledBeforeWaypoint()
 		if fromwp == nil then fromwp = self.Waypoints[#self.Waypoints] end
 
 		-- First find segment point
-		local segpoint = getNearestSegmentPoint(player.X, player.Z, towp.X, towp.Z, fromwp.X, fromwp.Z)
+		local segpoint = getNearestSegmentPoint3D(player.X, player.Z, player.Y, towp.X, towp.Z, towp.Y, fromwp.X, fromwp.Z, fromwp.Y)
 
 		-- if segpoint = towp or fromwp then it isn't between the wps
 		if not (segpoint.X == towp.X and segpoint.Z == towp.Z) and not (segpoint.X == fromwp.X and segpoint.Z == fromwp.Z) then
@@ -669,7 +669,7 @@ function CWaypointList:save(filename)
 	
 	local typebase ;
 	if(self.Type == WPT_NORMAL)then
-		typebase = "NORMAL";
+		typebase = nil;
 	end
 	if(self.Type == WPT_TRAVEL)then
 		typebase = "TRAVEL";
@@ -683,7 +683,7 @@ function CWaypointList:save(filename)
 	local str;
 	
 	if (typebase)then
-		str = sprintf("<waypoints>\n"," type=\""..typebase.."\"");	-- create first tag
+		str = sprintf("<waypoints %s>\n"," type=\""..typebase.."\"");	-- create first tag
 	else
 		str = sprintf("<waypoints>\n");
 	end
