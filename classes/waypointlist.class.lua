@@ -103,7 +103,9 @@ function CWaypointList:load(filename)
 				-- No type set, assume Type from header tag
 				tmp.Type = self.Type;
 			end
-				
+			-- some extra which allow to find out if an waypoint is part of the waypoint file list or 'virtual'
+			tmp.Virtual = false;
+			
 			if( tag ) then tmp.Tag = string.lower(tag); end;
 			if( map ) then tmp.Map = map; end;
 			if( comments ) then tmp.Comments = comments; end;
@@ -112,8 +114,8 @@ function CWaypointList:load(filename)
 			if( mounted ) then tmp.Mounted = mounted; end;
 			if ( id ) then 
 				tmp.Id = id; 
-				if(id ~= index)then
-					file_ok = fals
+				if(id ~= (index - 1))then
+					file_ok = false
 				end
 			else file_ok = false end;
 			if( randomfollow ) then 
@@ -584,52 +586,7 @@ function CWaypointList:clearExcludeZones()
 	self.ExcludeZones = {}
 end
 
--- After a pullback, use this function to find the waypoint you were pulled before.
-function CWaypointList:findPulledBeforeWaypoint()
-	local WPCount = #self.Waypoints
 
-	-- If 1 or 2 then it can't change.
-	if WPCount < 3 then
-		return self.CurentWaypoint
-	end
-
-	local DistLimit = 1000 -- Limits distance to look back from current waypoint.
-	local wptotest = self.CurrentWaypoint
-	local bestwaypointindex = self.CurrentWaypoint -- Best waypoint index so far
-	local bestdist -- Best distance to path so far
-	local disttotal = 0   -- Tally of distance so far
-
-	repeat
-		local towp = self.Waypoints[wptotest]
-		local fromwp = self.Waypoints[wptotest-1]
-		if fromwp == nil then fromwp = self.Waypoints[#self.Waypoints] end
-
-		-- First find segment point
-		local segpoint = getNearestSegmentPoint3D(player.X, player.Z, player.Y, towp.X, towp.Z, towp.Y, fromwp.X, fromwp.Z, fromwp.Y)
-
-		-- if segpoint = towp or fromwp then it isn't between the wps
-		if not (segpoint.X == towp.X and segpoint.Z == towp.Z) and not (segpoint.X == fromwp.X and segpoint.Z == fromwp.Z) then
-			-- Get player distance to segment
-			local tmpdist = distance(player, segpoint)
-			-- See if it's a better match
-			if bestdist == nil or tmpdist < bestdist then -- Compare
-				bestdist = tmpdist
-				bestwaypointindex = wptotest
-			end
-		end
-
-		-- Check how far we have come from curentwaypoint
-		disttotal = disttotal + distance(towp, fromwp)
-		if disttotal > DistLimit then -- Exceeded limit. Return best score
-			return bestwaypointindex
-		end
-
-		wptotest = wptotest - 1
-		if wptotest < 1 then wptotest = #self.Waypoints end
-	until wptotest == self.CurrentWaypoint -- Gone through all points
-
-	return bestwaypointindex
-end
 
 function CWaypointList:updateResume()
 	if self.Mode ~= "wander" then
@@ -639,6 +596,95 @@ function CWaypointList:updateResume()
 			file:close()
 		end
 	end
+end
+-- After a pullback, use this function to find the waypoint you were pulled before.
+function CWaypointList:findPulledBeforeWaypoint(_start, _end, _near, _look)
+	local WPCount = #self.Waypoints
+
+	-- If 1 or 2 then it can't change.
+	if WPCount < 3 then
+		return self.CurentWaypoint
+	end
+
+	--local DistLimit =  1000 -- Limits distance to look back from current waypoint.
+	local wpende =  _end or 0
+	local wptotest = _start or self.CurrentWaypoint
+	local bestwaypointindex = self.CurrentWaypoint -- Best waypoint index so far
+	local bestdist -- Best distance to path so far
+	local near_enough = _near or 30;
+	local look_further = _look or -2;
+	local found = false;
+	if( self.Direction == WPT_FORWARD ) then
+		repeat
+			local towp = self.Waypoints[wptotest]
+			local fromwp = self.Waypoints[wptotest-1]
+			if fromwp == nil then fromwp = self.Waypoints[#self.Waypoints] end
+
+			-- First find segment point
+			local segpoint = getNearestSegmentPoint3D(player.X, player.Z, player.Y, towp.X, towp.Z, towp.Y, fromwp.X, fromwp.Z, fromwp.Y)
+
+			-- if segpoint = towp or fromwp then it isn't between the wps
+			if not (segpoint.X == towp.X and segpoint.Z == towp.Z) and not (segpoint.X == fromwp.X and segpoint.Z == fromwp.Z) then
+				-- Get player distance to segment
+				local tmpdist = distance(player, segpoint)
+				-- See if it's a better match
+				if bestdist == nil or tmpdist < bestdist then -- Compare
+					bestdist = tmpdist
+					bestwaypointindex = wptotest
+				end
+				--we check the next 2 also but we found out canidate we cut the rest to avoid crossings
+				if tmpdist <= near_enough and not found then
+					wpende = wptotest - look_further;
+					found = true;
+				end
+			end
+		
+		-- Check how far we have come from currentwaypoint
+			if wpende <= wptotest then -- Exceeded limit. Return best score
+				return bestwaypointindex
+			end
+		
+			wptotest = wptotest - 1
+		
+			if wptotest < 1 then wptotest = #self.Waypoints end
+		until wptotest == self.CurrentWaypoint -- Gone through all points
+	else
+		repeat
+			local towp = self.Waypoints[wptotest]
+			local fromwp = self.Waypoints[wptotest+1]
+			if fromwp == nil then fromwp = self.Waypoints[1] end
+
+			-- First find segment point
+			local segpoint = getNearestSegmentPoint3D(player.X, player.Z, player.Y, towp.X, towp.Z, towp.Y, fromwp.X, fromwp.Z, fromwp.Y)
+
+			-- if segpoint = towp or fromwp then it isn't between the wps
+			if not (segpoint.X == towp.X and segpoint.Z == towp.Z) and not (segpoint.X == fromwp.X and segpoint.Z == fromwp.Z) then
+				-- Get player distance to segment
+				local tmpdist = distance(player, segpoint)
+				-- See if it's a better match
+				if bestdist == nil or tmpdist < bestdist then -- Compare
+					bestdist = tmpdist
+					bestwaypointindex = wptotest
+				end
+				--we check the next 2 also but we found out canidate we cut the rest to avoid crossings
+				if tmpdist <= near_enough and not found then
+					wpende = wptotest - look_further;
+					found = true;
+				end
+			end
+		
+		-- Check how far we have come from currentwaypoint
+			if wpende <= wptotest then -- Exceeded limit. Return best score
+				return bestwaypointindex
+			end
+		
+			wptotest = wptotest + 1
+		
+			
+		until wptotest == #self.CurrentWaypoint -- Gone through all points
+	end
+	
+	return bestwaypointindex
 end
 function CWaypointList:insert(waypoint, position)
 
@@ -708,10 +754,13 @@ function CWaypointList:save(filename)
 			end
 			if (self.Type and v.Type and v.Type ~= self.Type)then
 				type_changed = true
+			else
+				type_changed = false
 			end
+			
 			if(v.Type and v.Type == WPT_NORMAL)then
 				if(type_changed == true)then
-					type = nil;
+					type = "NORMAL";
 				end
 			end
 			if(v.Type and v.Type == WPT_TRAVEL)then

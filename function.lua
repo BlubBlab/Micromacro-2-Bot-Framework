@@ -542,78 +542,87 @@ function debugMsg(_debug, _reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
 
 end
 
--- Returns the point that is nearest to (X,Z) between segment (A,B) and (C,D)
-function getNearestSegmentPoint(x, z, a, b, c, d)
-
-	if a == c and b == d then
-		return CWaypoint(a, b)
-	end
-
-	local dx1 = x - a;
-	local dz1 = z - b;
-	local dx2 = c - a;
-	local dz2 = d - b;
-
-	local dot = dx1 * dx2 + dz1 * dz2;
-	local len_sq = dx2 * dx2 + dz2 * dz2;
-	local param = dot / len_sq;
-
-	local nx, nz;
-
-	if( param < 0 ) then
-		nx = a;
-		nz = b;
-	elseif( param > 1 ) then
-		nx = c;
-		nz = d;
-	else
-		nx = a + param * dx2;
-		nz = b + param * dz2;
-	end
-
-	return CWaypoint(nx, nz);
-end
 -- Returns the point that is nearest to (X,Z,Y) between segment (A,B,C) and (D,E,F)
-function getNearestSegmentPoint3D(x, z, y, a, b, c, d ,e ,f)
+function getNearestSegmentPoint(x, z, y, a, b, c, d ,e ,f)
 	
-	if( not y or not c or not f)then
-		return  getNearestSegmentPoint(x ,z ,a ,b ,d ,e)
-	end
-	if a == d and b == e and c == f then
-		return CWaypoint(a, b, c)
-	end
+	local function _2d(x, z, a, b, c, d)
+       if a == c and b == d then
+			return CWaypoint(a, b)
+		end
+		local dx1 = x - a;
+		local dz1 = z - b;
+		local dx2 = c - a;
+		local dz2 = d - b;
 
-	local dx1 = x - a;
-	local dz1 = z - b;
-	local dy1 = y - c;
+		local dot = dx1 * dx2 + dz1 * dz2;
+		local len_sq = dx2 * dx2 + dz2 * dz2;
+		local param = dot / len_sq;
+
+		local nx, nz;
+
+		if( param < 0 ) then
+			nx = a;
+			nz = b;
+		elseif( param > 1 ) then
+			nx = c;
+			nz = d;
+		else
+			nx = a + param * dx2;
+			nz = b + param * dz2;
+		end
+
+		return CWaypoint(nx, nz);
+    end
 	
-	local dx2 = d - a;
-	local dz2 = e - b;
-	local dy2 = f - c;
+	local function _3d(x, z, y, a, b, c, d, e, f)
+		if a == d and b == e and c == f then
+			return CWaypoint(a, b, c)
+		end
+		local dx1 = x - a;
+		local dz1 = z - b;
+		local dy1 = y - c;
+	
+		local dx2 = d - a;
+		local dz2 = e - b;
+		local dy2 = f - c;
 
-	local dot = dx1 * dx2 + dz1 * dz2 + dy1 * dy2;
-	local len_sq = dx2 * dx2 + dz2 * dz2 + dy2 * dy2;
-	local param = dot / len_sq;
+		local dot = dx1 * dx2 + dz1 * dz2 + dy1 * dy2;
+		local len_sq = dx2 * dx2 + dz2 * dz2 + dy2 * dy2;
+		local param = dot / len_sq;
 
-	local nx, nz , ny;
+		local nx, nz , ny;
 
-	if( param < 0 ) then
-		nx = a;
-		nz = b;
-		ny = c;
-	elseif( param > 1 ) then
-		nx = d;
-		nz = e;
-		ny = f;
-	else
-		nx = a + param * dx2;
-		nz = b + param * dz2;
-		ny = c + param * dy2;
+		if( param < 0 ) then
+			nx = a;
+			nz = b;
+			ny = c;
+		elseif( param > 1 ) then
+			nx = d;
+			nz = e;
+			ny = f;
+		else
+			nx = a + param * dx2;
+			nz = b + param * dz2;
+			ny = c + param * dy2;
+		end
+
+		return CWaypoint(nx, nz ,ny);
 	end
-
-	return CWaypoint(nx, nz ,ny);
+	
+	-- last 3 are missing assuming intended 2D calculation
+	if e == nil and d == nil and f == nil then
+        return _2d(x, z, y, a, b, c)
+	-- one ore more of every 3th argument missing(height), fall back to 2D
+    elseif y == nil or c == nil or f == nil then
+        return _2d(x, z, a, b, d, e)
+    else
+        return _3d(x, z, y, a, b, c, d, e, f)
+    end
+	
 end
-
+function getNearestSegmentPoint3D(x, z, y, a, b, c, d ,e ,f)
+	return getNearestSegmentPoint(x, z, y, a, b, c, d ,e ,f);
+end
 function waitForLoadingScreen(_maxWaitTime)
 	local oldAddress = player.Address
 

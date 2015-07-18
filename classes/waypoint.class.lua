@@ -22,6 +22,7 @@ CWaypoint = class(
 			self.Zone = copyfrom.Zone;
 			self.NoThread = copyfrom.NoThread;
 			self.Comments = copyfrom.Comments;
+			self.Virtual = copyfrom.Virtual;
 		else
 			self.X = _X;
 			self.Z = _Z;
@@ -40,6 +41,7 @@ CWaypoint = class(
 			self.Zone = nil;
 			self.NoThread = nil;
 			self.Comments = nil;
+			self.Virtual = true;
 		end
 
 		if( not self.X ) then self.X = 0.0; end;
