@@ -110,9 +110,7 @@ return CObject:getDistance( x2, z2, y2)
 	local x1,z1,y1 = self:getPos();
 	
 	if type(x2) == "table"  then
-        y2 = x2.Y or z1[3]
-        z2 = x2.Z or z1[2]
-        x2 = x2.X or z1[1]
+       return self:getDistance(x2:getPos())
     elseif z2 == nil and y2 == nil then -- assume x1,z1,x2,z2 values (2 dimensional)
 		z2 = x2
 		x2 = y1

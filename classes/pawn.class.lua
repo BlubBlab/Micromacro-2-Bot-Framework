@@ -113,11 +113,14 @@ function CPawn:getDirection()
 	return self.Direction;
 end
 function CPawn:getAngleDifference(angle2)
-  if( math.abs(angle2 - self:getDirection()) > math.pi ) then
-    return (math.pi * 2) - math.abs(angle2 - self:getDirection());
-  else
-    return math.abs(angle2 - self:getDirection());
-  end
+	if type(angle2) == "table" then
+		return self:getAngleDifference(angle2:getDirection());
+	end
+	if( math.abs(angle2 - self:getDirection()) > math.pi ) then
+		return (math.pi * 2) - math.abs(angle2 - self:getDirection());
+	else
+		return math.abs(angle2 - self:getDirection());
+	end
 end
 function CPawn:update()
 	local proc = getProc();
