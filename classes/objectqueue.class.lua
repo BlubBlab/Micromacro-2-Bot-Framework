@@ -1,5 +1,5 @@
 include("object.class.lua");
-include("objectlists.settings.lua");
+include("settings/objectlists.settings.lua");
 
 CObjectQueue = class(
 	function (self)
@@ -17,10 +17,10 @@ function CObjectQueue:update()
 	self.last = -1;
 	
 	local evalAddresse = objectslists.funcs["objectlists_eval_addresse"];
-	self.size = memoryReadInt(getProc(), addresses.staticTableSize);
+	self.size = inputoutput:ObjectListSize(self);
 
 	for i = 0,size do
-		local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, i*4);
+		local addr = inputoutput:ObjectListPtr( i );
 		if( evalAddresse( addr )) then
 			object = CObject(addr);
 			if(object ~= nil)then

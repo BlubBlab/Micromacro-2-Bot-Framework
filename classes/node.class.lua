@@ -1,4 +1,4 @@
-include("nodes.settings.lua");
+include("settings/nodes.settings.lua");
 
 CNode = class(
 	function(self, copyfrom)

@@ -612,7 +612,7 @@ function getNearestSegmentPoint(x, z, y, a, b, c, d ,e ,f)
 	-- last 3 are missing assuming intended 2D calculation
 	if e == nil and d == nil and f == nil then
         return _2d(x, z, y, a, b, c)
-	-- one ore more of every 3th argument missing(height), fall back to 2D
+	-- one or more of every 3th argument missing(height), fall back to 2D
     elseif y == nil or c == nil or f == nil then
         return _2d(x, z, a, b, d, e)
     else

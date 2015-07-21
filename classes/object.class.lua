@@ -1,4 +1,4 @@
-include("objects.settings.lua");
+include("settings/objects.settings.lua");
 
 CObject = class(
 	function (self, ptr)
@@ -23,8 +23,8 @@ function CObject:update()
 	local evalName = objects.funcs["objecte_eval_name"];
 	local evalNamePtr = objects.funcs["objecte_eval_nameptr"];
 	
-	self.Id = memoryReadUInt(proc, self.Address + addresses.pawnId_offset) or 0;
-	self.Type = memoryReadInt(proc, self.Address + addresses.pawnType_offset) or -1;
+	self.Id = inputoutput:ObjectId(self.Address)
+	self.Type = inputoutput:ObjectType(self.Address)
 
 	if( evalID( self.Id, self.Type) )then -- invalid object
 		self.Id = 0
@@ -34,15 +34,16 @@ function CObject:update()
 	end
 
 	-- Disable memory warnings for name reading only
-	showWarnings(false);
-	local namePtr = memoryReadRepeat("uint", proc, self.Address + addresses.pawnName_offset);
+	--showWarnings(false);
+	
+	local namePtr =  inputoutput:ObjectNamePtr(self.Address)
 --	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
 	if( evalNamePtr(  namePtr )) then
 		tmp = nil;
 	else
-		tmp = memoryReadString(proc, namePtr);
+		tmp = inputoutput:ObjectName( namePtr );
 	end
-	showWarnings(true); -- Re-enable warnings after reading
+	--showWarnings(true); -- Re-enable warnings after reading
 
 
 	-- UTF8 -> ASCII translation not for player names
@@ -66,24 +67,16 @@ function CObject:update()
 --		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) );
 	end
 
-	self.X = memoryReadFloat(proc, self.Address + addresses.pawnX_offset) or 0;
-	self.Y = memoryReadFloat(proc, self.Address + addresses.pawnY_offset) or 0;
-	self.Z = memoryReadFloat(proc, self.Address + addresses.pawnZ_offset) or 0;
+	self.X = inputoutput:ObjectPositon("X", self.Address ) 
+	self.Y = inputoutput:ObjectPositon("Y", self.Address ) 
+	self.Z = inputoutput:ObjectPositon("Z", self.Address ) 
 
-	--local attackableFlag = debugAssert(memoryReadUByte(proc, self.Address + addresses.pawnAttackable_offset)) or 0;
-	--printf("attackable flag: 0x%X (%s)\n", attackableFlag, self.Name);
-	--printf("check(player): %s\n", tostring( bitAnd(attackableFlag, ATTACKABLE_MASK_PLAYER) ));
+
 
 	if( self.Type == PT_MONSTER ) then
 		self.Attackable = true;
 	else
 		self.Attackable = false;
-		--[[
-		if( bitAnd(attackableFlag, ATTACKABLE_MASK_PLAYER) ) then
-			self.Attackable = true;
-		else
-			self.Attackable = false;
-		end]]
 	end
 
 	if( self:getAddress == nil ) then

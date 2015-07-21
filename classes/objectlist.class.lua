@@ -1,5 +1,5 @@
 include("object.class.lua");
-include("objectlists.settings.lua");
+include("settings/objectlists.settings.lua");
 
 CObjectList = class(
 	function (self)
@@ -10,10 +10,10 @@ CObjectList = class(
 function CObjectList:update()
 	self.Objects = {}; -- Flush all objects.
 	local evalAddresse = objectslists.funcs["objectlists_eval_addresse"];
-	local size = memoryReadInt(getProc(), addresses.staticTableSize);
+	local size = inputoutput:ObjectListSize(self);
 
 	for i = 0,size do
-		local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, i*4);
+		local addr = inputoutput:ObjectListPtr( i );
 		if( evalAddresse( addr )) then
 			self.Objects[i] = CObject(addr);
 		end

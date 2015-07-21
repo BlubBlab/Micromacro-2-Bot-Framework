@@ -1,4 +1,4 @@
-include("waypoints.settings.lua");
+include("settings/waypoints.settings.lua");
 
 CWaypoint = class(
 	function (self, _X, _Z, _Y)

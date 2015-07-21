@@ -1,5 +1,5 @@
 
-include("pawns.settings.lua");
+include("settings/pawns.settings.lua");
 include("objectqueue.class.lua");
 
 -- used in function.lua for openGiftbag()
