@@ -11,7 +11,7 @@ objects.funcs ={};
 
 -- eval funcs for object:update()
 
-objects.funcs["objecte_eval_id_and_type"] = function( id ,type )
+objects.funcs["objects_eval_id_and_type"] = function( id ,type )
 	
 	if( 1 > id or id > 999999 or type == objects.settings["PT_NONE"] )then
 		return true;
@@ -20,7 +20,7 @@ objects.funcs["objecte_eval_id_and_type"] = function( id ,type )
 	end
 end
 
-objects.funcs["objecte_eval_nameptr"] = function( nameptr )
+objects.funcs["objects_eval_nameptr"] = function( nameptr )
 
 	if(namePtr == nil or namePtr == 0)then
 		return true;
@@ -29,12 +29,28 @@ objects.funcs["objecte_eval_nameptr"] = function( nameptr )
 	end
 end
 
-objects.funcs["objecte_eval_name"] = function( name )
+objects.funcs["objects_eval_name"] = function( name )
 
 	if(name == nil )then
 		return true;
 	else
 		return false;
+	end
+end
+pawns.funcs["objects_eval_id"] = function(tmp,self)
+	if self.Id == -1 then -- First time. Get it.
+		self.Id = tmp
+		if self.Id > 999999 then self.Id = 0 end
+	elseif self.Id >= PLAYERID_MIN and self.Id <= PLAYERID_MAX then -- player ids can change
+		if tmp >= PLAYERID_MIN and tmp <= PLAYERID_MAX then
+			self.Id = tmp
+		end
+	else -- see if it changed
+		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
+			self.Id = 0
+			self.Type = 0
+			self.Name = "<UNKNOWN>"
+		end
 	end
 end
 

@@ -10,10 +10,10 @@ CObjectList = class(
 function CObjectList:update()
 	self.Objects = {}; -- Flush all objects.
 	local evalAddresse = objectslists.funcs["objectlists_eval_addresse"];
-	local size = inputoutput:ObjectListSize(self);
+	local size = InputOutput:ObjectListSize(self);
 
 	for i = 0,size do
-		local addr = inputoutput:ObjectListPtr( i );
+		local addr = InputOutput:ObjectListPtr( i );
 		if( evalAddresse( addr )) then
 			self.Objects[i] = CObject(addr);
 		end

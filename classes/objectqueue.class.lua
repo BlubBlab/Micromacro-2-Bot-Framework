@@ -17,10 +17,10 @@ function CObjectQueue:update()
 	self.last = -1;
 	
 	local evalAddresse = objectslists.funcs["objectlists_eval_addresse"];
-	self.size = inputoutput:ObjectListSize(self);
+	self.size = InputOutput:ObjectListSize(self);
 
 	for i = 0,size do
-		local addr = inputoutput:ObjectListPtr( i );
+		local addr = InputOutput:ObjectListPtr( i );
 		if( evalAddresse( addr )) then
 			object = CObject(addr);
 			if(object ~= nil)then
