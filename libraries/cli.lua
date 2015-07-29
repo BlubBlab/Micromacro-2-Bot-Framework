@@ -1,6 +1,6 @@
 local global = _G;
 
-module(...)
+
 
 black = 0;
 darkblue = 1;

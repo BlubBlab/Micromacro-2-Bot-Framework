@@ -1,6 +1,6 @@
 local global = _G;
 
-module(...)
+
 
 global.class = function(base, ctor, inheritctor)
 	local c = {};

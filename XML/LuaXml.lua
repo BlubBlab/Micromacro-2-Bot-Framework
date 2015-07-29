@@ -1,5 +1,12 @@
-local xml = require("LuaXML_lib")
+local xml;
 local base = _G
+
+if(macro.is32bit())then
+	xml = include("32bit/load.lua")
+else
+	xml = include("64bit/load.lua")
+end
+
 
 -- symbolic name for tag index, this allows accessing the tag by var[xml.TAG]
 xml.TAG = 0

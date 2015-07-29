@@ -1,3 +1,0 @@
-function dynInclude(directory)
-
-end

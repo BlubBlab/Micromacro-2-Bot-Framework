@@ -20,18 +20,16 @@ function fileExists(fullpath)
 	return success;
 end
 --require for compatibility
-require"classes";
-cli = require"cli";
+require"libraries/classes";
+cli = require"libraries/cli";
 -- loading the main framework
-include("taskframework//TaskTimer.class.lua");
-include("taskframework//TaskStack.class.lua");
-include("tableprint.lua");
-include("table_dump.lua");
--- import the LuaXML module as xml
---xml = require("LuaXml");
---include("XML/Xml.lua");
+include("libraries/taskframework/TaskTimer.class.lua");
+include("libraries/taskframework/TaskStack.class.lua");
+include("libraries/tableprint.lua");
+include("libraries/table_dump.lua");
+include("XML/Xml.lua");
+parser = CXML()
 
---include("XmlValid.lua");
 -- Any type of var including lists
 -- @type var 
 
@@ -230,12 +228,23 @@ function yrestTask(msec)
 		return STATE_PENNDING;
 end
 
-function dyinclude(dir)
+function dyinclude(dir , down_or_up)
+
+	if(down)then
+		
+		if(fileExists("../botframework/"..dir..""))then
+			return include("../botframework/"..dir.."")
+		elseif(fileExists("../meta-botframework/"..dir..""))then
+			return include("../meta-botframework/"..dir.."")
+		elseif(fileExists("../"..dir..""))then
+			return include("../"..dir.."")
+		end
 	
-	if(fileExists("../../"..dir..""))then
-		return include("../../"..dir.."")
 	else
-		if(fileExists("../"..dir..""))then
+		
+		if(fileExists("../../"..dir..""))then
+			return include("../../"..dir.."")
+		elseif(fileExists("../"..dir..""))then
 			return include("../"..dir.."")
 		else
 			return include(""..dir.."")
