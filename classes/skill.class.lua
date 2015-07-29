@@ -580,7 +580,7 @@ function CSkill:canUse(_only_friendly, target)
 			end
 		end
 	end
-
+	[[TODO:Add additional checks]]
 	return true;
 end
 
@@ -660,20 +660,20 @@ function CSkill:use()
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
 		-- Get skill name
 		local skillName = GetIdName(self.Id)
-
+		[[TODO: transfer ]]
 		-- Cast skill
 		RoMCode("CastSpellByName(\""..skillName.."\");");
 		yrest(100)
 		-- Press the macro key a second time to make sure.
 		if not self.Toggleable then
-			keyboardPress(settings.profile.hotkeys.MACRO.key);
+			InputOutput:PressKey(self, settings.profile.hotkeys.MACRO.key);
 		end
 	else
 		-- use the normal hotkeys
-		keyboardPress(self.hotkey, self.modifier);
+		InputOutput:PressKey(self, self.hotkey, self.modifier);
 		yrest(100)
 		if not self.Toggleable then
-			keyboardPress(self.hotkey, self.modifier);
+			InputOutput:PressKey(self, self.hotkey, self.modifier);
 		end
 	end
 
