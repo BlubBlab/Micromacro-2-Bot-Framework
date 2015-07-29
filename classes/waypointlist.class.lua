@@ -1,5 +1,5 @@
 include("waypoint.class.lua");
-include("waypointlists.settings.lua");
+dyinclude("meta-settings/waypointlists.settings.lua");
 
 -- check if we in test mode
 if( not player and not waypointlists.settings.test)then

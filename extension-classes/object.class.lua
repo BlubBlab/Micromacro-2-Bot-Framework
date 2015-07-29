@@ -1,4 +1,4 @@
-include("abstract.object.class.lua");
+dyinclude("classes/abstract.object.class.lua",true);
 CObject = class(CAbstractObject,
 	function (self, ptr)
 		self.Address = ptr;

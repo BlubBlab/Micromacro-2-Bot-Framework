@@ -1,6 +1,7 @@
-include("settings/nodes.settings.lua");
+dyinclude("extension-classes/object.class.lua");
+dyinclude("meta-settings/nodes.settings.lua");
 
-CNode = class(
+CAbstractNode = class(CObject,
 	function(self, copyfrom)
 		self.Name = "<NODE>";
 		self.Id = 0;

@@ -37,8 +37,8 @@ function database.load()
 		energyvalue =  v:getAttribute("energyvalue")
 		
 		--We never used them but also they won't work with energy?!
-		maxmanaper = v:getAttribute("maxenergyper");
-		minmanaper = v:getAttribute("minenergyper");
+		maxenergyper = v:getAttribute("maxenergyper");
+		minmenergyper = v:getAttribute("minenergyper");
 		
 		targetmaxhpper = v:getAttribute("targetmaxhpper");
 		targetmaxhp = v:getAttribute("targetmaxhp");
@@ -132,8 +132,31 @@ function database.load()
 
 		if(name) then tmp.Name = name; end;
 		if(id) then tmp.Id = id; end;
-		if(energytype) then tmp.EnergyType = energytype end;
-		if(energyvalue) then tmp.EnergyValue = energyvalue end;
+		if(energytype) then 
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(energytype, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.EnergyType = t;
+		end;
+		
+		if(energyvalue) then 
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(energyvalue, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.EnergyValue = tonumber( t );
+		end;
 		
 		if(range) then tmp.Range = range; end;
 		if(minrange) then tmp.MinRange = minrange; end;
@@ -146,8 +169,32 @@ function database.load()
 		if(targetmaxhp) then tmp.TargetMaxHp = targetmaxhp; end;
 		if(targetmaxhpper) then tmp.TargetMaxHpPer = targetmaxhpper; end;
 		if(maxhpper) then tmp.MaxHpPer = maxhpper; end;
-		if(maxenergyper) then tmp.MaxEngeryPer = maxenergyper; end;
-		if(minenergyper) then tmp.MinEnergyPer = minenergyper; end;
+		if(maxenergyper) then 
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(maxenergyper, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.MaxEnergyPer = tonumber(t);
+		end;
+		if(minenergyper) then 
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(minenergyper, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.MinEnergyPer = tonumber(t);
+		
+		tmp.MinEnergyPer = minenergyper;
+		end;
 		if(inbattle ~= nil) then tmp.InBattle = inbattle; end;
 		if(priority) then tmp.priority = priority; end;
 		if(level) then tmp.Level = level; end;
@@ -156,12 +203,57 @@ function database.load()
 		if(skillnum) then tmp.skillnum = skillnum; end;
 
 		if(buffname ~= "") then tmp.BuffName = buffname; end;
-		if(reqbuffcount > 0 ) then tmp.ReqBuffCount = reqbuffcount; end;
+		if(reqbuffcount ~= "" ) then 
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(reqbuffcount, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.ReqBuffCount = tonumber(t);
+		end;
 		if(reqbufftarget ~= "") then tmp.ReqBuffTarget = reqbufftarget; end;
-		if(reqbuffname ~= "") then tmp.ReqBuffName = reqbuffname; end;
-		if(nobuffcount > 0 ) then tmp.NoBuffCount = nobuffcount; end;
+		if(reqbuffname ~= "") then 
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(reqbuffname, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.ReqBuffName = t 
+		end;
+		if(nobuffcount ~="" ) then 
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(reqbuffcount, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.NoBuffCount = t;
+		end;
 		if(nobufftarget ~= "") then tmp.NoBuffTarget = nobufftarget; end;
-		if(nobuffname ~= "") then tmp.NoBuffName = nobuffname; end;
+		if(nobuffname ~= "") then 
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(reqbuffcount, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			
+			tmp.NoBuffName = t;
+		end;
 		if(aoecenter ~= "") then tmp.AOECenter = aoecenter; end;
 		if(aoerange ~= "") then tmp.AOERange = aoerange; end;
 		if(clicktocast ~= "") then tmp.ClickToCast = clicktocast; end;
@@ -174,8 +266,30 @@ function database.load()
 		if(playerblock) then tmp.PlayerBlock = true; end;
 		if(playerparalyzed~= nil) then tmp.PlayerParalyzed = playerparalyzed end;
 		if(playerdead~= nil) then tmp.Playerdead = playerdead end;
-		if(playeritem) then tmp.PlayerItem = playeritem end;
-		if(playerstate) then tmp.PlayerState = playerstate end;
+		if(playeritem ~="") then
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(playeritem, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.PlayerItem = t
+		end;
+		if(playerstate ~="") then
+			local t = {}
+			local i = 1;
+				
+			for token in string.gmatch(playerstate, "[^,]+") do
+				
+				t[i] = token;
+				i= i + 1;
+			end
+			
+			tmp.PlayerState = t;
+		end;
 		
 		if(action) then tmp.Action = action end;
 		

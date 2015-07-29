@@ -26,10 +26,10 @@ CSkill = class(
 
 		-- Information about required buffs/debuffs
 		self.BuffName = "" -- name of buff if skill type is 'buff'
-		self.ReqBuffCount = 0;
+		self.ReqBuffCount = "";
 		self.ReqBuffTarget = "player";
 		self.ReqBuffName = ""; -- Name of the buff/debuff
-		self.NoBuffCount = 0;
+		self.NoBuffCount = "";
 		self.NoBuffTarget = "player";
 		self.NoBuffName = ""; -- Name of the buff/debuff
 		self.AddWeaponRange = false;
@@ -40,8 +40,8 @@ CSkill = class(
 		self.EnemyDodge = nil;
 		self.PlayerParalyzed = nil;
 		self.Playerdead = nil;
-		self.PlayerItem =  nil;
-		self.PlayerState = nil;
+		self.PlayerItem =  "";
+		self.PlayerState = "";
 		
 		self.Action = nil;
 		
@@ -228,6 +228,7 @@ function CSkill:canUse(_only_friendly, target)
 	if( target.MaxHP == 0 ) then target.MaxHP = 1; end
 
 	target:updateType()
+	player:updateMP()
 	if target.Type ~= PT_PLAYER then -- no target or enemy target, heal self
 		if( (self.MaxHpPer < 0 and -1 or 1) * (player.HP / player.MaxHP * 100) > self.MaxHpPer ) then
 			debug_skilluse("MAXHPPER", player.HP/player.MaxHP*100, self.MaxHpPer);
@@ -240,26 +241,34 @@ function CSkill:canUse(_only_friendly, target)
 			return false;
 		end
 	end
-	[[TODO: make it for 1:n energy types in a loop currently 1:1 ]]
 	-- You are not below the maximum Mana Percent
-	player:updateMP()
-	if( (self.MaxEnergyPer < 0 and -1 or 1) * (player.Energys[self.EnergyType]/player.Energys["Max"..self.EnergyType..""]*100) > self.MaxEnergyPer ) then
-		debug_skilluse("MAXMANAPER", (player.Energys[self.EnergyType]/player.Energys["Max"..self.EnergyType..""]*100), self.MaxEnergyPer);
-		return false;
+	
+	--MaxEnergyPer
+	for key,energy in pairs(self.MaxEnergyPer) do
+		local indexType = self.EnergyType[key];
+		if( (energy < 0 and -1 or 1) * (player.Energys[ indexType]/player.Energys["Max".. indexType..""]*100) > energy ) then
+			debug_skilluse("MAXENERGYPER", (player.Energys[indexType]/player.Energys["Max"..indexType..""]*100), energy);
+			return false;
+		end
 	end
-
+	
 	-- You are not above the minimum Mana Percent
-	if( ((player.Energys[self.EnergyType]/player.Energys["Max"..self.EnergyType..""]*100) < self.MinEnergyPer ) then
-		debug_skilluse("MINMANAPER", ((player.Energys[self.EnergyType]/player.Energys["Max"..self.EnergyType..""]*100)), self.MinEnergyPer);
-		return false;
+	for key,energy in pairs(self.MinEnergyPer) do
+		local indexType = self.EnergyType[key];
+		if( ((player.Energys[indexType]/player.Energys["Max"..indexType..""]*100) < energy ) then
+			debug_skilluse("MINENERGYPER", ((player.Energys[indexType]/player.Energys["Max"..indexType..""]*100)), energy);
+			return false;
+		end
 	end
-	[[TODO end]]
+	
 	-- Not enough mana/rage/energy/focus/psi
 	player:updateMP()
-	
-	if( player.Energys[self.EnergyType] < self.EnergyValue then
-		debug_skilluse("NOENERGY");
-		return false;
+	for key,energy in pairs(self.Energys) do
+		local indexType = self.EnergyType[key];
+		if( player.Energys[indexType] < energy then
+			debug_skilluse("NOENERGY");
+			return false;
+		end
 	end
 	
 	if skills.funcs["skills_need_buff_1"](self) then
@@ -475,32 +484,44 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 	-- Check required buffs/debuffs
-	if( self.ReqBuffName ~= "" and self.ReqBuffName ~= "nil") then
-		local bool;
-		if( self.ReqBuffTarget == "player" ) then
-			bool = player:hasBuff(self.ReqBuffName, self.ReqBuffCount)
-		elseif target and ( self.ReqBuffTarget == "target" ) then
-			bool = target:hasBuff(self.ReqBuffName, self.ReqBuffCount)
+	for key,reqbuff in pairs(self.ReqBuffName) do
+		local count = 0
+		if(self.ReqBuffCount[key])then
+			count = ReqBuffCount[key]
 		end
+		if( reqbuff ~= "" and reqbuff ~= "nil") then
+			local bool;
+			if( self.ReqBuffTarget == "player" ) then
+				bool = player:hasBuff(reqbuff, count)
+			elseif target and ( self.ReqBuffTarget == "target" ) then
+				bool = target:hasBuff(reqbuff, count)
+			end
 
-		if bool == false then
-			debug_skilluse("REQBUFF");
-			return false
+			if bool == false then
+				debug_skilluse("REQBUFF");
+				return false
+			end
 		end
 	end
 
 	-- Check non-required buffs/debuffs
-	if( self.NoBuffName ~= "" and self.NoBuffName ~= "nil") then
-		local bool;
-		if( self.NoBuffTarget == "player" ) then
-			bool = player:hasBuff(self.NoBuffName, self.NoBuffCount)
-		elseif target and ( self.NoBuffTarget == "target" ) then
-			bool = target:hasBuff(self.NoBuffName, self.NoBuffCount)
+	for key,nobuff in pairs(self.NoBuffName) do
+		local count = 0
+		if(self.NoBuffCount[key])then
+			count = NoBuffCount[key]
 		end
+		if( nobuff ~= "" and nobuff ~= "nil") then
+			local bool;
+			if( self.NoBuffTarget == "player" ) then
+				bool = player:hasBuff(nobuff, count)
+			elseif target and ( self.NoBuffTarget == "target" ) then
+				bool = target:hasBuff(nobuff, count)
+			end
 
-		if bool == true then
-			debug_skilluse("NOBUFF");
-			return false
+			if bool == true then
+				debug_skilluse("NOBUFF");
+				return false
+			end
 		end
 	end
 

@@ -8,7 +8,17 @@ function getPath()
 	local sestring = string.sub(current_dir,1,num-2);
 	return sestring;
 end
+-- Checks and returns true if a file exists.
+function fileExists(fullpath)
+	local handle = io.open(fullpath, "r");
+	local success = handle ~= nil;
 
+	if( success ) then
+		handle:close();
+	end
+
+	return success;
+end
 --require for compatibility
 require"classes";
 cli = require"cli";
@@ -136,16 +146,17 @@ end
 -- @post We have waited our time.
 -- @notice The use of this function not recommend.
 function rest(msec)
-	
-	
-	os.execute("sleep -m" .. tonumber(msec))
+	local startTime = getTime();
+	--won't work execute is a child process so busy waiting
+	--os.execute("sleep -m" .. tonumber(msec))
 
-	--[[	local i = 0;
-		while( deltaTime(getTime(), startTime) < msec ) do
-			i = i + 1;
-		end
-		return i;
-		]]--
+	local i = 0;
+	while( deltaTime(getTime(), startTime) < msec ) do
+		i = i + 1;
+	end
+		
+	return deltaTime(getTime(), startTime);
+		
 end
 --- Wait function but let scheduled tasks run if possible.
 -- @function [parent=#global] yrest
@@ -205,7 +216,7 @@ end
 -- @post We have waited our time.
 -- @return #number CTask#STATE_PENNDING
 function yrestTask(msec)
-	local function wait(self,start,msec)
+		local function wait(self,start,msec)
 			tasktimer:timed_run(msec);
 			if(deltaTime(getTime(), startTime) >= msec )then
 				return STATE_SUCCESS;
@@ -219,3 +230,15 @@ function yrestTask(msec)
 		return STATE_PENNDING;
 end
 
+function dyinclude(dir)
+	
+	if(fileExists("../../"..dir..""))then
+		return include("../../"..dir.."")
+	else
+		if(fileExists("../"..dir..""))then
+			return include("../"..dir.."")
+		else
+			return include(""..dir.."")
+		end
+	end
+end

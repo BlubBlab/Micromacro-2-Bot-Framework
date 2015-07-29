@@ -1,5 +1,5 @@
-include("object.class.lua");
-include("settings/objectlists.settings.lua");
+dyinclude("extension-classes/object.class.lua");
+dyinclude("meta-settings/objectlists.settings.lua");
 
 CObjectQueue = class(
 	function (self)

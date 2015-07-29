@@ -1,4 +1,4 @@
-include("object.class.lua");
+include("extension-classes/object.class.lua");
 include("settings/objectlists.settings.lua");
 
 CObjectList = class(

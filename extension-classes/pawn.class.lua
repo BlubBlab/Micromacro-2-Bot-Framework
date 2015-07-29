@@ -1,3 +1,4 @@
+dyinclude("classes/abstract.pawn.class.lua",true);
 CPawn = class(CAbstractPawn,
 	function (self, ptr)
 		self.Address = ptr;
@@ -54,6 +55,7 @@ function CPawn:update()
 	if not self:exists() then -- Updates and checks pawn.Id
 		return
 	end
+	[[TODO: Remove those flags those aren't needed anymore]]
 	local updatelist = pawns.settings["update_flags"];
 	-- update list
 	if pawns.settings["update_flags"]["updateName"]then self:updateName() end;

@@ -1,4 +1,4 @@
-include("pawn.class.lua");
+dyinclude("extesnion-classes/pawn.class.lua");
 include("skill.lua");
 
 

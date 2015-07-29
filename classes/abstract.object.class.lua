@@ -1,5 +1,5 @@
-include("baseobject.lua");
-include("settings/objects.settings.lua");
+dyinclude("baseobject.lua");
+dyinclude("meta-settings/objects.settings.lua");
 
 CAbstractObject = class(CBaseObject,
 	function (self, ptr)
