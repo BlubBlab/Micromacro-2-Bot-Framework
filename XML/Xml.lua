@@ -183,7 +183,9 @@ function CXML:validXML( file)
 				--compare label names
 				local name1 = string.sub(line,start+2, ende )
 				local symbol = self:popS();
+				
 				local name2 = symbol[1];
+				print(" pop: "..name2.."");
 				if(name1 ~= name2)then
 					error("Missing closing tag for: "..name2.." in: line: "..symbol[2].." row: "..symbol[3].."");
 				end
@@ -210,6 +212,7 @@ function CXML:validXML( file)
 				end
 				-- push name and info
 				local name1 = string.sub(line,start+1, ende )
+				print("Push:"..name1.."");
 				self:pushS({name1,linecount,i});
 				-- skip some chars
 				i = ende;
@@ -239,6 +242,7 @@ function CXML:validXML( file)
 			-- found " and we are not in <![CDATA[ or <!
 			if(not jump and sub1 and sub1 == "\"" and last2 == 0 and last5 == 0)then
 				-- last3 we are inside < >
+				print("found \"")
 				if(last3 ~= 0)then
 					last4 = last4 + 1;
 					-- two matching "

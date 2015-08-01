@@ -1,9 +1,7 @@
 --- Example for common use
 -- @module main
 include("lib2.lua");
-include("classes/waypoint.class.lua");
-include("classes/waypointlist.class.lua");
-include("classes/waypointlist_wander.class.lua");
+
 --include("classes/node.class.lua")
 
 
@@ -42,12 +40,12 @@ function macro.init()
 	-- end
 	--validXML("p1.xml");
 	--local node = xml.load("ks-last-ks.xml"); 
-	__WPL = CWaypointList();
-	__WPL:load("ks-last-ks.xml");
+	--__WPL = CWaypointList();
+	--__WPL:load("ks-last-ks.xml");
 	--table.show(xfile); print_r(xfile);
 	--table.save(xfile,"new.lua");
-	
-	
+	database.load()
+	--database.skills[name] 
 	
 	
 end

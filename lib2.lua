@@ -19,6 +19,7 @@ function fileExists(fullpath)
 
 	return success;
 end
+getExecutionPath = filesystem.getCWD;
 --require for compatibility
 require"libraries/classes";
 cli = require"libraries/cli";
@@ -144,17 +145,7 @@ end
 -- @post We have waited our time.
 -- @notice The use of this function not recommend.
 function rest(msec)
-	local startTime = getTime();
-	--won't work execute is a child process so busy waiting
-	--os.execute("sleep -m" .. tonumber(msec))
-
-	local i = 0;
-	while( deltaTime(getTime(), startTime) < msec ) do
-		i = i + 1;
-	end
-		
-	return deltaTime(getTime(), startTime);
-		
+	system.rest(msec)
 end
 --- Wait function but let scheduled tasks run if possible.
 -- @function [parent=#global] yrest
@@ -251,3 +242,9 @@ function dyinclude(dir , down_or_up)
 		end
 	end
 end
+--first add thinks which are static
+include("function.lua");
+include("database.lua");
+include("classes/waypoint.class.lua");
+include("classes/waypointlist.class.lua");
+include("classes/waypointlist_wander.class.lua");

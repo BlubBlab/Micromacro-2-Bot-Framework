@@ -6,8 +6,12 @@ database =  {
 	giftbags = {}
 };
 
+
+--[[TODO: change in muliply sections and to a proper class]]
+
+
 function database.load()
-	local root = xml.open(getExecutionPath() .. "/database/skills.xml");
+	local root =  parser:open(getExecutionPath() .. "/database/skills.xml");
 	local elements = root:getElements();
 
 
@@ -298,7 +302,7 @@ function database.load()
 
 
 	-- import nodes/ressouces
-	root = xml.open(getExecutionPath() .. "/database/nodes.xml");
+	root =  parser:open(getExecutionPath() .. "/database/nodes.xml");
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
@@ -328,7 +332,7 @@ function database.load()
 
 
 	-- UTF-8 -> ASCII translation
-	root = xml.open(getExecutionPath() .. "/database/utf8_ascii.xml");
+	root =  parser:open(getExecutionPath() .. "/database/utf8_ascii.xml");
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
@@ -352,7 +356,7 @@ function database.load()
 
 
 	-- import consumables (potions, arrows, stones, ...)
-	root = xml.open(getExecutionPath() .. "/database/consumables.xml");
+	root =  parser:open(getExecutionPath() .. "/database/consumables.xml");
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
@@ -381,7 +385,7 @@ function database.load()
 	end
 
 	-- import giftbag contents
-	root = xml.open(getExecutionPath() .. "/database/giftbags.xml");
+	root =  parser:open(getExecutionPath() .. "/database/giftbags.xml");
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
