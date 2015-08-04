@@ -59,6 +59,8 @@ function yieldThread()
 	--os.execute("sleep 0")
 	if system.yield then
 		system.yield()
+	else
+		system.rest(0)
 	end
 	
 end

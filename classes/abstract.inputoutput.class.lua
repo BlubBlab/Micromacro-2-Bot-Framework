@@ -1,6 +1,7 @@
 CAbstractInputOutput = class(
-	function (self, procHandle))
-		self.procHandle = procHandle	
+	function (self, procHandle , hwnd))
+		self.procHandle = procHandle;
+		self.hwnd = hwnd;
 	end
 );
 
@@ -250,35 +251,38 @@ end
 function CAbstractInputOutput:PressKey(visitor, key1, key2)
 
 	if( not key2)then
-		keyboard.virtualPress(self.procHandle, key1, true);
+		keyboard.virtualPress(self.hwnd, key1, true);
 	else
-		keyboard.virtualPress(self.procHandle, key1);
+		keyboard.virtualHold(self.hwnd, key1);
 	end
 	
 	if (key2)then
-		keyboard.virtualPress(self.procHandle, key2);
+		keyboard.virtualHold(self.hwnd, key2);
+		keyboard.virtualRelease(self.hwnd, key1);
+		keyboard.virtualRelease(self.hwnd, key2);
 	end
 end
 
 function CAbstractInputOutput:PressHold(visitor, key1, key2)
 
-	keyboard.virtualHold(self.procHandle, key1);
+	keyboard.virtualHold(self.hwnd, key1);
 	
 	if (key2)then
-		keyboard.virtualHold(self.procHandle, key2);
+		keyboard.virtualHold(self.hwnd, key2);
+		
 	end
 end
 
 function CAbstractInputOutput:PressRelease(visitor, key1, key2)
 
-	keyboard.virtualRelease(self.procHandle, key1);
+	keyboard.virtualRelease(self.hwnd, key1);
 	
 	if (key2)then
-		keyboard.virtualRelease(self.procHandle, key2);
+		keyboard.virtualRelease(self.hwnd, key2);
 	end
 end
 function CAbstractInputOutput:WriteText(visitor,text)
 
-	keyboard.keyboard.virtualTyp(self.procHandle, text);
+	keyboard.keyboard.virtualTyp(self.hwnd, text);
 	
 end

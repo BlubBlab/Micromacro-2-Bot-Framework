@@ -19,11 +19,12 @@ function fileExists(fullpath)
 
 	return success;
 end
+unpack = table.unpack;
 getExecutionPath = filesystem.getCWD;
 --require for compatibility
 require"libraries/classes";
 cli = require"libraries/cli";
--- loading the main framework
+-- loading the core
 include("libraries/taskframework/TaskTimer.class.lua");
 include("libraries/taskframework/TaskStack.class.lua");
 include("libraries/tableprint.lua");
@@ -221,7 +222,7 @@ end
 
 function dyinclude(dir , down_or_up)
 
-	if(down)then
+	if(down_or_up)then
 		
 		if(fileExists("../botframework/"..dir..""))then
 			return include("../botframework/"..dir.."")
@@ -229,8 +230,10 @@ function dyinclude(dir , down_or_up)
 			return include("../meta-botframework/"..dir.."")
 		elseif(fileExists("../"..dir..""))then
 			return include("../"..dir.."")
+		elseif(fileExists(""..dir..""))then
+			return include(""..dir.."")
 		end
-	
+		
 	else
 		
 		if(fileExists("../../"..dir..""))then
@@ -242,9 +245,42 @@ function dyinclude(dir , down_or_up)
 		end
 	end
 end
---first add thinks which are static
+function seekDir(dir , down_or_up)
+
+	if(down_or_up)then
+		
+		if(fileExists("../botframework/"..dir..""))then
+			return "../botframework/"..dir..""
+		elseif(fileExists("../meta-botframework/"..dir..""))then
+			return "../meta-botframework/"..dir..""
+		elseif(fileExists("../"..dir..""))then
+			return "../"..dir..""
+		elseif(fileExists(""..dir..""))then
+			return ""..dir..""
+		end
+		--error("We didn't found it")
+	
+	else
+		
+		if(fileExists("../../"..dir..""))then
+			return "../../"..dir..""
+		elseif(fileExists("../"..dir..""))then
+			return "../"..dir..""
+		elseif(fileExists(""..dir..""))then
+			return ""..dir..""
+		end
+		
+	end
+end
 include("function.lua");
-include("database.lua");
+--first add thinks which are static
+include("classes/skill.class.lua");
 include("classes/waypoint.class.lua");
 include("classes/waypointlist.class.lua");
 include("classes/waypointlist_wander.class.lua");
+
+dyinclude("extension-classes/node.class.lua");
+dyinclude("extension-classes/database.class.lua");
+
+database = CDatabase()
+database:load()

@@ -44,7 +44,8 @@ function macro.init()
 	--__WPL:load("ks-last-ks.xml");
 	--table.show(xfile); print_r(xfile);
 	--table.save(xfile,"new.lua");
-	database.load()
+	database = CDatabase()
+	database:load()
 	--database.skills[name] 
 	
 	

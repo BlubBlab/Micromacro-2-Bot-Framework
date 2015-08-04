@@ -27,7 +27,7 @@ CAbstractObject = class(CBaseObject,
 -- end
 
 function CAbstractObject:hasAddress()
-	if self:GetAddress() == nil or self:getAddress() == 0 then
+	if self:getAddress() == nil or self:getAddress() == 0 then
 		return false
 	else
 		return true
@@ -103,16 +103,16 @@ end
 function CAbstractObject:getName()
 	return self.Name;
 end
-return CAbstractObject:getId()
+function CAbstractObject:getId()
 	return self.Id;
 end
-return CAbstractObject:getPos()
+function CAbstractObject:getPos()
 	return self.X,self.Y,self.Z;
 end
-return CAbstractObject:getAddress()
+function CAbstractObject:getAddress()
 	return self.Address;
 end
-return CAbstractObject:getDistance( x2, z2, y2)
+function CAbstractObject:getDistance( x2, z2, y2)
 	
 	local x1,z1,y1 = self:getPos();
 	

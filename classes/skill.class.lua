@@ -1,4 +1,4 @@
-include("settings/skills.settings.lua");
+dyinclude("meta-settings/skills.settings.lua");
 
 CSkill = class(
 	function (self, copyfrom)
@@ -255,7 +255,7 @@ function CSkill:canUse(_only_friendly, target)
 	-- You are not above the minimum Mana Percent
 	for key,energy in pairs(self.MinEnergyPer) do
 		local indexType = self.EnergyType[key];
-		if( ((player.Energys[indexType]/player.Energys["Max"..indexType..""]*100) < energy ) then
+		if ((player.Energys[indexType]/player.Energys["Max"..indexType..""]*100) < energy ) then
 			debug_skilluse("MINENERGYPER", ((player.Energys[indexType]/player.Energys["Max"..indexType..""]*100)), energy);
 			return false;
 		end
@@ -265,7 +265,7 @@ function CSkill:canUse(_only_friendly, target)
 	player:updateMP()
 	for key,energy in pairs(self.Energys) do
 		local indexType = self.EnergyType[key];
-		if( player.Energys[indexType] < energy then
+		if( player.Energys[indexType] < energy )then
 			debug_skilluse("NOENERGY");
 			return false;
 		end
@@ -580,7 +580,7 @@ function CSkill:canUse(_only_friendly, target)
 			end
 		end
 	end
-	[[TODO:Add additional checks]]
+	--[[TODO:Add additional checks]]
 	return true;
 end
 

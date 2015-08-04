@@ -244,8 +244,6 @@ function parse_deep(xml_table)
 	local tmp_attributes = {};
 	local tmp_value = nil;
 	
-	
-	print_r(xml_table);
 	if(xml_table[0] == nil)then
 		return nil;
 	end

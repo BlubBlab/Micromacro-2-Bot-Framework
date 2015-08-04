@@ -1,0 +1,31 @@
+<settings>
+	<hotkeys>
+		<!-- Cannot use modifiers -->
+		<hotkey description="MOVE_FORWARD" key="VK_W" modifier="" />
+		<hotkey description="MOVE_BACKWARD" key="VK_S" modifier="" />
+		<hotkey description="ROTATE_LEFT" key="VK_Q" modifier="" />
+		<hotkey description="ROTATE_RIGHT" key="VK_E" modifier="" />
+		<hotkey description="STRAFF_LEFT" key="VK_A" modifier="" />
+		<hotkey description="STRAFF_RIGHT" key="VK_D" modifier="" />
+		<hotkey description="JUMP" key="VK_SPACE" modifier="" />
+
+		<hotkey description="TARGET" key="VK_TAB" modifier="" />
+		<hotkey description="TARGET_FRIEND" key="VK_J" modifier="" />
+	</hotkeys>
+
+	<options>
+		<option name="ENABLE_FIGHT_SLOW_TURN" value="false" />
+		<option name="MELEE_DISTANCE" value="50" />
+		<option name="LANGUAGE" value="english" />	<!-- english|deutsch|french|russian -->
+		<option name="USE_CLIENT_LANGUAGE" value="true" />
+		<option name="DEBUGGING" value="false" />
+
+		<!--
+			Leave ROMDATA_PATH blank to use automatic settings.
+			If it cannot find your bindings.txt automatically,
+			place the FULL PATH to the "Runes of Magic"
+			directory here.
+		-->
+		<option name="ROMDATA_PATH" value="" />
+	</options>
+</settings>

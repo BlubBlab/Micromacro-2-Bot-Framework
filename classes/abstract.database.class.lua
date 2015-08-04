@@ -1,17 +1,68 @@
-database =  {
-	skills = {},
-	nodes = {},
-	utf8_ascii = {},
-	consumables = {},
-	giftbags = {}
-};
+CAbstractDatabase = class(CBaseObject,
+	function (self, copyfrom)
+		self.Skills = {}
+		self.Nodes = {}
+		self.Utf8_ascii = {}
+		self.Consumables = {}
+		self.Giftbags = {}
+		
+		if( type(copyfrom) == "table" ) then
+			self.Name = copyfrom.Name;
+			self.Id = copyfrom.Id;
+			self.Type = copyfrom.Type;
+		end
+	end
+	
+);
 
 
---[[TODO: change in muliply sections and to a proper class]]
+function CAbstractDatabase:load()
 
+	local dirs = seekDir("database/skills.xml")
+	
+	if( dirs )then
+		self:loadSkills(dirs);
+	else
+		print("Warning didn't found skills.xml")
+	end
+	
+	local dirn = seekDir("database/nodes.xml")
+	
+	if( dirn )then
+		self:loadNodes(dirn);
+	else
+		print("Warning didn't found nodes.xml")
+	end
+	
+	local diru = seekDir("database/utf8_ascii.xml")
+	
+	if( diru )then
+		self:loadUtf8(diru);
+	else
+		print("Warning didn't found utf8_ascii.xml")
+	end
+	
+	local dirc = seekDir("database/consumables.xml")
+	
+	if( dirc )then
+		self:loadConsumables(dirc);
+	else
+		print("Warning didn't found consumables.xml")
+	end
+	
+	local dirg = seekDir("database/giftbags.xml")
+	
+	if( dirg )then
+		self:loadGiftbags(dirg);
+	else
+		print("Warning didn't found giftbags.xml")
+	end
+end
 
-function database.load()
-	local root =  parser:open(getExecutionPath() .. "/database/skills.xml");
+function CAbstractDatabase:loadSkills(dir)
+
+	--local root =  parser:open(getExecutionPath() .. "/database/skills.xml");
+	local root =  parser:open(dir);
 	local elements = root:getElements();
 
 
@@ -37,8 +88,8 @@ function database.load()
 		maxhpper = v:getAttribute("maxhpper");
 		
 		-- What if we need multiply resources ? 
-		energytype = v:getAttribute("energytype")
-		energyvalue =  v:getAttribute("energyvalue")
+		energytype = v:getAttribute("energytype") or ""
+		energyvalue =  v:getAttribute("energyvalue") or ""
 		
 		--We never used them but also they won't work with energy?!
 		maxenergyper = v:getAttribute("maxenergyper");
@@ -57,7 +108,7 @@ function database.load()
 		playerparalyzed	= v:getAttribute("playerparalyzed")
 		playerdead = v:getAttribute("playerdead")
 		playeritem =  v:getAttribute("playeritem") --item or itemtype
-		playerstate =  v:getAttribute("playerstate") -- everything which don't fit in with the rest
+		playerstate =  v:getAttribute("playerstate") or "" -- everything which don't fit in with the rest
 		
 		buffname = tostring(v:getAttribute("buffname") or "");
 		reqbuffcount = tonumber(v:getAttribute("reqbuffcount") or 0);
@@ -220,7 +271,7 @@ function database.load()
 			tmp.ReqBuffCount = tonumber(t);
 		end;
 		if(reqbufftarget ~= "") then tmp.ReqBuffTarget = reqbufftarget; end;
-		if(reqbuffname ~= "") then 
+		if(reqbuffname and reqbuffname ~= "") then 
 			local t = {}
 			local i = 1;
 				
@@ -232,11 +283,11 @@ function database.load()
 			
 			tmp.ReqBuffName = t 
 		end;
-		if(nobuffcount ~="" ) then 
+		if(nobuffcoun and nobuffcount ~="" ) then 
 			local t = {}
 			local i = 1;
 				
-			for token in string.gmatch(reqbuffcount, "[^,]+") do
+			for token in string.gmatch(nobuffcount, "[^,]+") do
 				
 				t[i] = token;
 				i= i + 1;
@@ -245,11 +296,11 @@ function database.load()
 			tmp.NoBuffCount = t;
 		end;
 		if(nobufftarget ~= "") then tmp.NoBuffTarget = nobufftarget; end;
-		if(nobuffname ~= "") then 
+		if(nobuffname and nobuffname ~= "") then 
 			local t = {}
 			local i = 1;
 				
-			for token in string.gmatch(reqbuffcount, "[^,]+") do
+			for token in string.gmatch(nobuffname, "[^,]+") do
 				
 				t[i] = token;
 				i= i + 1;
@@ -270,7 +321,7 @@ function database.load()
 		if(playerblock) then tmp.PlayerBlock = true; end;
 		if(playerparalyzed~= nil) then tmp.PlayerParalyzed = playerparalyzed end;
 		if(playerdead~= nil) then tmp.Playerdead = playerdead end;
-		if(playeritem ~="") then
+		if(playeritem and playeritem ~="") then
 			local t = {}
 			local i = 1;
 				
@@ -282,7 +333,7 @@ function database.load()
 			
 			tmp.PlayerItem = t
 		end;
-		if(playerstate ~="") then
+		if(playerstate and playerstate ~="") then
 			local t = {}
 			local i = 1;
 				
@@ -297,12 +348,15 @@ function database.load()
 		
 		if(action) then tmp.Action = action end;
 		
-		database.skills[name] = tmp;
+		self.Skills[name] = tmp;
 	end
 
+end
 
+function CAbstractDatabase:loadNodes(dir)
 	-- import nodes/ressouces
-	root =  parser:open(getExecutionPath() .. "/database/nodes.xml");
+	--root =  parser:open(getExecutionPath() .. "/database/nodes.xml");
+	root =  parser:open(dir);
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
@@ -327,12 +381,14 @@ function database.load()
 		tmp.Type = type;
 		tmp.Level = level;
 
-		database.nodes[id] = tmp;
+		self.Nodes[id] = tmp;
 	end
 
-
+end
+function CAbstractDatabase:loadUtf8(dir)
 	-- UTF-8 -> ASCII translation
-	root =  parser:open(getExecutionPath() .. "/database/utf8_ascii.xml");
+	--root =  parser:open(getExecutionPath() .. "/database/utf8_ascii.xml");
+	root =  parser:open(dir);
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
@@ -351,12 +407,13 @@ function database.load()
 		tmp.dos_replace = dos_replace;
 
 		local key = utf8_1*1000 + utf8_2;
-		database.utf8_ascii[key] = tmp;
+		self.Utf8_ascii[key] = tmp;
 	end
-
-
+end
+function CAbstractDatabase:loadConsumables(dir)
 	-- import consumables (potions, arrows, stones, ...)
-	root =  parser:open(getExecutionPath() .. "/database/consumables.xml");
+	--root =  parser:open(getExecutionPath() .. "/database/consumables.xml");
+	root =  parser:open(dir);
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
@@ -381,11 +438,14 @@ function database.load()
 		end;
 		if (id) then tmp.Id = id; end;
 
-		database.consumables[id] = tmp;
+		self.Consumables[id] = tmp;
 	end
+end
 
+function CAbstractDatabase:loadGiftbags(dir)
 	-- import giftbag contents
-	root =  parser:open(getExecutionPath() .. "/database/giftbags.xml");
+	--root =  parser:open(getExecutionPath() .. "/database/giftbags.xml");
+	root =  parser:open(dir);
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
@@ -404,7 +464,38 @@ function database.load()
 		if (level)  then tmp.level  = level;  end;
 		if (name)   then tmp.name   = name;   end;
 
-		database.giftbags[i] = tmp;
+		self.Giftbags[i] = tmp;
 	end
 
 end
+function CAbstractDatabase:getSkills()
+	return self.Skills;
+end
+function CAbstractDatabase:getSkill(name)
+	return self.Skills[name];
+end
+function CAbstractDatabase:getNodes()
+	return self.Nodes;
+end
+function CAbstractDatabase:getNode(name)
+	return self.Nodes[name];
+end
+function CAbstractDatabase:getUtf8s()
+	return self.Utf8_ascii;
+end
+function CAbstractDatabase:getUtf8(name)
+	return self.Utf8_ascii[name];
+end
+function CAbstractDatabase:getConsumables()
+	return self.Consumables;
+end
+function CAbstractDatabase:getConsumable(name)
+	return self.Consumables[name];
+end
+function CAbstractDatabase:getGiftbags()
+	return self.Giftbags;
+end
+function CAbstractDatabase:getGiftbag(name)
+	return self.Giftbags[name];
+end
+	

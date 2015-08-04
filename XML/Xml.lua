@@ -34,7 +34,7 @@ function CXML:load(file)
 	return self.lastXML;
 end
 function CXML:open(file)
-	print(" open:"..file.."");
+	--print(" open:"..file.."");
 	--TODO: add file checks
 	local xml_load = self:load(file)
 	
@@ -86,20 +86,21 @@ function CXML:validXML( file)
 				sub9 = string.sub(line, i, i+8)
 			end
 			-- find a tag between < and > or <? and ?>
-			if(not jump and (last3 ~= 0 or last1 ~= 0 ) and string.find(sub1,"[%d-%a]+"))then
-				local start, ende =  string.find(line,"[%d-%a]+=\"[^\"]+\"",i);
-				if(start == nil)then
+			if(not jump and (last3 ~= 0 or last1 ~= 0 ) and string.find(sub1,"[%d-%a-_]+"))then
+				local start, ende =  string.find(line,"[%d-%a-_]+=\"[^\"]+\"",i);
+				if(start == nil or ende == nil)then
 					error("Miss match string in: line: "..linecount.." row: "..i.."");
 				end
 				
 				--last4 = last4 + 1;
 				-- two matching "
-				if(last4%2 == 0)then
+				if(last4%2 == 0)then 
 					last4 = 0;
 				end
 				-- we included " one too much so we must exclude it again.
-				i = ende-1;
-				
+				i = ende;
+				local subtest = string.sub(line, i, i+2)
+			--	print("What is at ende: "..subtest.."")
 				jump = true;
 			end
 			-- found a <? and we are not inside of <![CDATA[ or <!
@@ -162,9 +163,27 @@ function CXML:validXML( file)
 				-- skip some chars
 				i = i + 2;
 			end
+			if(not jump and sub2 and sub2 == "/>" and last5 == 0 and last2 == 0)then
+				
+				
+				if(last3 ~= 0) then
+					last3 = 0;
+				end
+				-- we missed a " ?
+				if(last4 ~=0)then
+					error("Unexpected end because of missing \" in: line: "..linecount.." row: "..i.."");
+				end
+				local symbol = self:popS();
+				local name2 = symbol[1];
+				--print("Pop:"..name2.."");
+				-- skip some chars
+				
+				jump = true;
+			end
 			-- we found a </ and we are not inside of <![CDATA[ or <!
 			if(not jump and sub2 and sub2 == "</" and last5 == 0 and last2 == 0)then
 				-- too many <
+				
 				if(last3 ~= 0) then
 					error("Too much < in: line: "..linecount.." row: "..i.."");
 				end
@@ -175,9 +194,9 @@ function CXML:validXML( file)
 				-- increase < counter
 				last3 = last3 + 1;
 				-- get </Label
-				local start, ende = string.find(line,"</[%d-%a]+",i)
+				local start, ende = string.find(line,"</[%d-%a-_]+",i)
 				-- no label found
-				if(start == nil)then
+				if(start == nil or ende == nil)then
 					error("Missing symbol after < in: line: "..linecount.." row: "..i.."");
 				end
 				--compare label names
@@ -185,7 +204,7 @@ function CXML:validXML( file)
 				local symbol = self:popS();
 				
 				local name2 = symbol[1];
-				print(" pop: "..name2.."");
+				--print(" pop: "..name2.."");
 				if(name1 ~= name2)then
 					error("Missing closing tag for: "..name2.." in: line: "..symbol[2].." row: "..symbol[3].."");
 				end
@@ -193,6 +212,7 @@ function CXML:validXML( file)
 				i = ende ;
 				jump = true;
 			end
+			
 			-- we found a < and we are not inside of <![CDATA[ or <!
 			if(not jump and sub1 and sub1 == "<" and last2 == 0 and last5 == 0)then
 				-- too many < or better said odd amount
@@ -205,14 +225,14 @@ function CXML:validXML( file)
 				end
 				-- get <Label
 				last3 = last3 + 1;
-				local start, ende = string.find(line,"<[%d-%a]+",i)
+				local start, ende = string.find(line,"<[%d-%a-_]+",i)
 				-- no label found
 				if(start == nil)then
 					error("Missing symbol after < in: line: "..linecount.." row: "..i.."");
 				end
 				-- push name and info
 				local name1 = string.sub(line,start+1, ende )
-				print("Push:"..name1.."");
+				--print("Push:"..name1.."");
 				self:pushS({name1,linecount,i});
 				-- skip some chars
 				i = ende;
@@ -242,7 +262,7 @@ function CXML:validXML( file)
 			-- found " and we are not in <![CDATA[ or <!
 			if(not jump and sub1 and sub1 == "\"" and last2 == 0 and last5 == 0)then
 				-- last3 we are inside < >
-				print("found \"")
+			--	print("found \"")
 				if(last3 ~= 0)then
 					last4 = last4 + 1;
 					-- two matching "
@@ -252,6 +272,12 @@ function CXML:validXML( file)
 				end
 			end
 			jump = false;
+			if(i == nil)then
+				print("WTF i is nil")
+			end
+			if(line == nil)then
+				print("WTF line is nil")
+			end
 		end
 		linecount = linecount +1;
 	end

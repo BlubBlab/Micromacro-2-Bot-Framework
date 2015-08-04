@@ -2,11 +2,11 @@ dyinclude("classes/abstract.object.class.lua",true);
 CObject = class(CAbstractObject,
 	function (self, ptr)
 		self.Address = ptr;
-		if( self ~= 0 and self ~= nil ) then self:update(); end
+		--if( self ~= 0 and self ~= nil ) then self:update(); end
 	end
 );
 
-function CAbstractObject:update()
+function CObject:update()
 	
 	self:updateType()
 	self:updateId()

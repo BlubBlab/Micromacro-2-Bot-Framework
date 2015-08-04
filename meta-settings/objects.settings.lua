@@ -37,7 +37,7 @@ objects.funcs["objects_eval_name"] = function( name )
 		return false;
 	end
 end
-pawns.funcs["objects_eval_id"] = function(tmp,self)
+objects.funcs["objects_eval_id"] = function(tmp,self)
 	if self.Id == -1 then -- First time. Get it.
 		self.Id = tmp
 		if self.Id > 999999 then self.Id = 0 end
