@@ -1,7 +1,7 @@
 include("extension-classes/object.class.lua");
 include("settings/objectlists.settings.lua");
 
-CObjectList = class(
+CObjectList = class(CBaseObject,
 	function (self)
 		self.Objects = {};
 	end

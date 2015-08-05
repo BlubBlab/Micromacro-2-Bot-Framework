@@ -1,7 +1,7 @@
 dyinclude("extension-classes/object.class.lua");
 dyinclude("meta-settings/objectlists.settings.lua");
 
-CObjectQueue = class(
+CObjectQueue = class(CBaseObject,
 	function (self)
 		self.Queue = {};
 		self.first = 0;

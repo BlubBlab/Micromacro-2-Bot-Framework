@@ -45,6 +45,13 @@ function setTextColor(...) end
 -- function redirection for compatibility
 getTime = time.getNow;
 
+function getClass(self)
+  local i = debug.getinfo(3, 'Sl');
+   return "'"..(io.open(i.source:match'@(.*)'):read'*a'
+      :gsub('.-\n','',i.currentline-1)
+      :match('(.-)[:.]%s*'..debug.getinfo(2,'n').name..'%s*%(')
+      :match'([%w_]+)%s*$' or '<unnamed>').."' at line #"..i.currentline
+end
 --- unpack function with number of arguments on the end.
 -- @function [parent=#global] unpack2
 -- @param  #vars ... Args to unpack.

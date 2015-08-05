@@ -7,9 +7,11 @@ CAbstractDatabase = class(CBaseObject,
 		self.Giftbags = {}
 		
 		if( type(copyfrom) == "table" ) then
-			self.Name = copyfrom.Name;
-			self.Id = copyfrom.Id;
-			self.Type = copyfrom.Type;
+			self.Skills = copyfrom.Skills;
+			self.Nodes = copyfrom.Nodes;
+			self.Utf8_ascii = copyfrom.Utf8_ascii;
+			self.Consumables = copyfrom.Consumables;
+			self.Giftbags = copyfrom.Giftbags;
 		end
 	end
 	
@@ -64,13 +66,19 @@ function CAbstractDatabase:loadSkills(dir)
 	--local root =  parser:open(getExecutionPath() .. "/database/skills.xml");
 	local root =  parser:open(dir);
 	local elements = root:getElements();
-
+	
+	local function push(a, x)
+		table.insert(a, x)
+	end
 
 	for i,v in pairs(elements) do
 		local tmp = CSkill();
-		local name, id, targetmaxhpper, targetmaxhp, maxhpper, maxmanaper, energytype, energyvalue
+		--legacy stuff
+		local  mana, rage, energy, focus, nature;
+		---legacy end
+		local name, id, targetmaxhpper, targetmaxhp, maxhpper, maxenergyper ,minmenergyper,  energytype, energyvalue
 		local range, minrange, casttime, cooldown, type, target, autouse;
-		local toggleable, minmanaper, inbattle, priority, level, aslevel, skilltab, skillnum;
+		local toggleable,  inbattle, priority, level, aslevel, skilltab, skillnum;
 		local buffname, reqbuffcount, reqbufftarget, reqbuffname, nobuffcount, nobufftarget, nobuffname;
 		local enemydodge, enemycritical, playerblock, playerdodge, playerparalyzed, playerdead, playeritem, playerstate 
 		local action 
@@ -90,6 +98,14 @@ function CAbstractDatabase:loadSkills(dir)
 		-- What if we need multiply resources ? 
 		energytype = v:getAttribute("energytype") or ""
 		energyvalue =  v:getAttribute("energyvalue") or ""
+		
+		--legacy stuff 	name = v:getAttribute("name");
+		mana = v:getAttribute("mana");
+		rage = v:getAttribute("rage");
+		energy = v:getAttribute("energy");
+		focus = v:getAttribute("focus");
+		nature = v:getAttribute("nature");
+		--legacy end
 		
 		--We never used them but also they won't work with energy?!
 		maxenergyper = v:getAttribute("maxenergyper");
@@ -212,7 +228,28 @@ function CAbstractDatabase:loadSkills(dir)
 			
 			tmp.EnergyValue = tonumber( t );
 		end;
-		
+		--legacy start
+		if(mana)then
+			push(energytype,"mana");
+			push(energyvalue,mana);
+		end
+		if(rage)then
+			push(energytype,"rage");
+			push(energyvalue,rage);
+		end
+		if(energy)then
+			push(energytype,"energy");
+			push(energyvalue,energy);
+		end
+		if(focus)then
+			push(energytype,"focus");
+			push(energyvalue,focus);
+		end
+		if(nature)then
+			push(energytype,"nature");
+			push(energyvalue,nature);
+		end
+		--legacy ends
 		if(range) then tmp.Range = range; end;
 		if(minrange) then tmp.MinRange = minrange; end;
 		if(casttime) then tmp.CastTime = casttime; end;
@@ -224,31 +261,29 @@ function CAbstractDatabase:loadSkills(dir)
 		if(targetmaxhp) then tmp.TargetMaxHp = targetmaxhp; end;
 		if(targetmaxhpper) then tmp.TargetMaxHpPer = targetmaxhpper; end;
 		if(maxhpper) then tmp.MaxHpPer = maxhpper; end;
-		if(maxenergyper) then 
+		if(maxenergyper and maxenergyper ~= "") then 
 			local t = {}
 			local i = 1;
 				
 			for token in string.gmatch(maxenergyper, "[^,]+") do
 				
-				t[i] = token;
+				t[i] = tonumber(token);
 				i= i + 1;
 			end
 			
 			tmp.MaxEnergyPer = tonumber(t);
 		end;
-		if(minenergyper) then 
+		if(minenergyper and minenergyper ~= "") then 
 			local t = {}
 			local i = 1;
 				
 			for token in string.gmatch(minenergyper, "[^,]+") do
 				
-				t[i] = token;
+				t[i] = tonumber(token);
 				i= i + 1;
 			end
 			
-			tmp.MinEnergyPer = tonumber(t);
-		
-		tmp.MinEnergyPer = minenergyper;
+			tmp.MinEnergyPer = t;
 		end;
 		if(inbattle ~= nil) then tmp.InBattle = inbattle; end;
 		if(priority) then tmp.priority = priority; end;
@@ -256,21 +291,22 @@ function CAbstractDatabase:loadSkills(dir)
 		if(aslevel) then tmp.aslevel = aslevel; end;
 		if(skilltab) then tmp.skilltab = skilltab; end;
 		if(skillnum) then tmp.skillnum = skillnum; end;
-
 		if(buffname ~= "") then tmp.BuffName = buffname; end;
-		if(reqbuffcount ~= "" ) then 
+		if(reqbufftarget ~= "") then tmp.ReqBuffTarget = reqbufftarget; end;
+		if(nobufftarget ~= "") then tmp.NoBuffTarget = nobufftarget; end;
+		if(reqbuffcount and reqbuffcount ~= "" ) then 
 			local t = {}
 			local i = 1;
 				
 			for token in string.gmatch(reqbuffcount, "[^,]+") do
 				
-				t[i] = token;
+				t[i] = tonumber(token);
 				i= i + 1;
 			end
 			
-			tmp.ReqBuffCount = tonumber(t);
+			tmp.ReqBuffCount = t;
 		end;
-		if(reqbufftarget ~= "") then tmp.ReqBuffTarget = reqbufftarget; end;
+		
 		if(reqbuffname and reqbuffname ~= "") then 
 			local t = {}
 			local i = 1;
@@ -283,26 +319,26 @@ function CAbstractDatabase:loadSkills(dir)
 			
 			tmp.ReqBuffName = t 
 		end;
-		if(nobuffcoun and nobuffcount ~="" ) then 
+		if(nobuffcount and nobuffcount ~="" ) then 
 			local t = {}
 			local i = 1;
 				
 			for token in string.gmatch(nobuffcount, "[^,]+") do
 				
-				t[i] = token;
+				t[i] = tonumber(token);
 				i= i + 1;
 			end
 			
 			tmp.NoBuffCount = t;
 		end;
-		if(nobufftarget ~= "") then tmp.NoBuffTarget = nobufftarget; end;
+	
 		if(nobuffname and nobuffname ~= "") then 
 			local t = {}
 			local i = 1;
 				
 			for token in string.gmatch(nobuffname, "[^,]+") do
 				
-				t[i] = token;
+				t[i] = tonumber(token);
 				i= i + 1;
 			end
 			

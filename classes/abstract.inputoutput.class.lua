@@ -1,4 +1,4 @@
-CAbstractInputOutput = class(
+CAbstractInputOutput = class(CBaseObject,
 	function (self, procHandle , hwnd))
 		self.procHandle = procHandle;
 		self.hwnd = hwnd;
