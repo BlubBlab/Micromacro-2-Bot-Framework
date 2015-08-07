@@ -9,7 +9,8 @@ CProfile = class(CAbstractProfile,
 );
 function CProfile:loadProfile(_name)
 	cprintf(cli.yellow,language[186], _name)
-
+	--TODO: move it to the database
+	
 	-- Delete old profile settings (if they even exist), restore defaults
 	settings.profile = table.copy(settings_default.profile);
 	-- search for the directory
@@ -24,11 +25,12 @@ function CProfile:loadProfile(_name)
 	self:loadFriends();
 	self:loadMobs();
 	self:loadCore(_name, elements);
-	--install and chekc the IGF function
-	self:checkMacro(_name)
+	--install and check the IGF function
+	self:checkMacro(_name, not bot.UseMacro)
 	--true deaktivates the macro function
-	self:setupLanguage(true)
-	self:checkIGF(11)
+	self:setupLanguage( not bot.UseMacro)
+	
+	self:checkIGF( bot.Ifgversion )
 	-- check if automatic targeting is active
 	if( settings.profile.options.AUTO_TARGET == false ) then
 		cprintf(cli.yellow, "Caution: Automatic targeting is deactivated with option AUTO_TARGET=\"false\"\n");

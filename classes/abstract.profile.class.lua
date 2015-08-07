@@ -570,7 +570,10 @@ function CAbstractProfile:loadCore(_name, elements)
 		end
 	end
 end
-function CAbstractProfile:checkMacro(_name)
+function CAbstractProfile:checkMacro(_name, notactiv)
+	if(notactiv)then
+		return;
+	end
 	-- checks for MACRO hotkey
 	-- print error if new macro option isn't defined
 	if( not settings.profile.hotkeys.MACRO ) then

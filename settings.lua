@@ -155,6 +155,8 @@ bot =	{ 		-- global bot values
 		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
 		LastSkillKeypressTime = getTime(),	-- remember last time we cast (press key)
 		IgfAddon = false,	-- check if igf addon is active
+		IgfVersion = 11;
+		UseMacro = false;
 		};
 
 
@@ -571,9 +573,7 @@ function settings.load()
 
 end
 
-
-
-
+-- last funct
 function settings.loadSkillSet(class)
 	-- return if player not initialized yet.
 	if not player then return end

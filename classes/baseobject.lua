@@ -34,3 +34,31 @@ function CBaseObject:toString()
 	local hash = self:hashCode()
 	return classname + "@" + string.format("%x",""..hash.."");
 end
+function CBaseObject:clone(into_new)
+	local copy = function ( new, value )
+		local t;
+		local index;
+		
+		if(new)then
+			t = new;
+		else
+			t ={];
+		end
+		
+		if(value)then
+			index = value;
+		else
+			index = self;
+		end
+		for i,v in pairs(index) do
+			if type(v) == "table" then
+				t[i] =  copy(nil,v)
+			else
+				t[i] = v;
+			end
+		end
+		return t;
+	end
+	
+	return copy(into_new)
+end
