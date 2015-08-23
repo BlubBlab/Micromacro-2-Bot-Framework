@@ -1,3 +1,4 @@
+dyinclude("classes/abstract.profile.class.lua",true);
 CProfile = class(CAbstractProfile,
 	function (self, copyfrom)
 		self.funcs = {};

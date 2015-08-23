@@ -8,7 +8,7 @@ CAbstractInputOutput = class(CBaseObject,
 function CAbstractInputOutput:read(Handle, type, Address  )
 	local result = nil;
 	local counter = 1;
-	local limit = 50;
+	local limit = 5;
 	
 	repeat	
 		result = process.read(Handle, type, Address)
@@ -21,7 +21,7 @@ end
 function CAbstractInputOutput:readPtr(Handle, type, Address, offset  )
 	local result = nil;
 	local counter = 1;
-	local limit = 50;
+	local limit = 5;
 	
 	repeat	
 		result = process.readPtr(Handle, type, Address, offset)

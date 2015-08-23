@@ -4,27 +4,36 @@ dyinclude("meta-settings/objects.settings.lua");
 CAbstractObject = class(CBaseObject,
 	function (self, ptr)
 		self.Address = ptr;
+		self.Name = "<UNKNOWN>";
+		self.Id = 0;
+		self.Type = PT_NONE;
+		self.X = 0.0;
+		self.Y = 0.0;
+		self.Z = 0.0;
+		self.Direction = 0.0;
+		self.DirectionY = 0.0;
 		--if( self ~= 0 and self ~= nil ) then self:update(); end
 	end
 );
---Abstracts can't be updated
--- function CAbstractObject:update()
-	
-	-- self:updateType()
-	-- self:updateId()
-	-- self:updateName()
-	-- self:updateXYZ()
-	
-	-- if( self.Type == PT_MONSTER ) then
-		-- self.Attackable = true;
-	-- else
-		-- self.Attackable = false;
-	-- end
 
-	-- if( self:getAddress() == nil ) then
-		-- error("Error reading memory in CAbstractObject:update()");
-	-- end
--- end
+function CAbstractObject:update()
+	
+	self:updateType()
+	self:updateId()
+	self:updateName()
+	self:updateXYZ()
+	delf:updateDirection()
+	
+	if( self.Type == PT_MONSTER ) then
+		self.Attackable = true;
+	else
+		self.Attackable = false;
+	end
+
+	if( self:getAddress() == nil ) then
+		error("Error reading memory in CAbstractObject:update()");
+	end
+-end
 
 function CAbstractObject:hasAddress()
 	if self:getAddress() == nil or self:getAddress() == 0 then
@@ -97,6 +106,24 @@ function CAbstractObject:updateXYZ()
 	self.Z = InputOutput:ObjectPositon("Z", self ) 
 	
 end
+function CAbstractObject:updateDirection()
+	if not self:hasAddress() then
+		return
+	end
+
+	local Vec1 = InputOutput:PawnDirection("X", self );
+	local Vec2 = InputOutput:PawnDirection("Z", self );
+	local Vec3 = InputOutput:PawnDirection("Y", self );
+
+	if( Vec1 == nil ) then Vec1 = 0.0; end;
+	if( Vec2 == nil ) then Vec2 = 0.0; end;
+	if( Vec3 == nil ) then Vec3 = 0.0; end;
+
+	self.Direction = math.atan2(Vec2, Vec1);
+	if(Vec3)then
+		self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
+	end
+end
 function CAbstractObject:getType()
 	return self.Type;
 end
@@ -111,6 +138,61 @@ function CAbstractObject:getPos()
 end
 function CAbstractObject:getAddress()
 	return self.Address;
+end
+function CAbstractObject:getDirection()
+	return self.Direction,self.DirectionY;
+end
+function CAbstractObject:getAngleDifference(angle2, yangle2)
+	
+	if type(angle2) == "table" then
+		return self:getAngleDifference(angle2:getDirection());
+	end
+	
+	local angle, yangle = self:getDirection();
+	local reangle,reyangle = 0;
+	
+	if( math.abs(angle2 - angle ) > math.pi ) then
+		reangle = (math.pi * 2) - math.abs(angle2 - angle);
+	else
+		reangle = math.abs(angle2 - angle);
+	end
+	
+	if( yangle2 )then
+		if( math.abs(yangle2 - yangle ) > math.pi ) then
+			reyangle = (math.pi * 2) - math.abs(yangle2 - yangle);
+		else
+			reyangle = math.abs(yangle2 - yangle);
+		end
+	end
+	
+	return rangle, reyangle;
+end
+function CAbstractObject:getPointAngle(new)
+	
+	local x,z,y = self:getPos();
+	local angle = math.atan2(z - new.Z, x - new.X);-- + math.pi;
+	
+	local yangle = 0
+	if y ~= nil then
+		yangle = math.atan2(y - new.Y, ((x - new.X)^2 + (z - new.Z)^2)^.5 );
+	end
+	
+	
+	return angle,yangle
+end
+function CAbstractObject:getPointAngleDifference(new)
+	
+	local x,z,y = self:getPos();
+	local angle = math.atan2(z - new.Z, x - new.X);-- + math.pi;
+	
+	local yangle = 0
+	if y ~= nil then
+		yangle = math.atan2(y - new.Y, ((x - new.X)^2 + (z - new.Z)^2)^.5 );
+	end
+	
+	local angleDif,angleDifY = self:angleDifference(angle,yangle);
+	
+	return angleDif,angleDifY;
 end
 function CAbstractObject:getDistance( x2, z2, y2)
 	

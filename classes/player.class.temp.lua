@@ -362,6 +362,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 		return nil;
 	end
 end
+--TODO cchange to task
 local function RestWhileCheckingForWaypoint(_duration)
 	player:updateActualSpeed()
 	if #__WPL.Waypoints > 0 and player.Moving and not player.Fighting then

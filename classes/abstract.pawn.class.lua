@@ -75,19 +75,7 @@ end
 function CAbstractPawn:getBuff(index)
 	return self.Buffs[index];
 end
-function CAbstractPawn:getDirection()
-	return self.Direction;
-end
-function CAbstractPawn:getAngleDifference(angle2)
-	if type(angle2) == "table" then
-		return self:getAngleDifference(angle2:getDirection());
-	end
-	if( math.abs(angle2 - self:getDirection()) > math.pi ) then
-		return (math.pi * 2) - math.abs(angle2 - self:getDirection());
-	else
-		return math.abs(angle2 - self:getDirection());
-	end
-end
+
 
 function CAbstractPawn:exists()
 	self:updateId()

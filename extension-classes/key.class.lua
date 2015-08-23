@@ -1,3 +1,4 @@
+dyinclude("classes/abstract.key.class.lua",true);
 CKeys = class(CAbstractKeys,
 	function (self, copyfrom)
 		self.funcs = {};
