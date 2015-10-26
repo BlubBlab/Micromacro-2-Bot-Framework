@@ -267,7 +267,7 @@ function CPlayer:updateGlobalCooldown()
 	self.GlobalCooldown = memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase)/10
 end
 function CPlayer:updateLevels()
-	[[TODO: move to Levels]]
+	--[[TODO: move to Levels]]
 	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset) or self.Level
 	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset) or self.Level2
 	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset) or self.Level3
@@ -855,7 +855,7 @@ function CPlayer:moveTo(task, waypoint, ignoreCycleTargets, dontStopAtEnd)
 		settings.profile.options.DROPHEIGHT = 35;
 	end
 	if(waypoint.Y and math.abs(player.Y - waypoint.Y) > settings.profile.options.DROPHEIGHT)then
-		if(failreason and (failreason == WF_TARGET or failreason == WF_COMBAT) or waypoint.Virtual == true then
+		if(failreason and (failreason == WF_TARGET or failreason == WF_COMBAT) or waypoint.Virtual == true) then
 			
 			--return success, failreason;
 		end

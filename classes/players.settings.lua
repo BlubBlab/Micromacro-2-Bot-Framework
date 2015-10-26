@@ -2,18 +2,18 @@ players = {};
 players.settings = {};
 
 players.settings["craft_list"] = {"CRAFT_BLACKSMITHING","CRAFT_CARPENTRY","CRAFT_ARMORCRAFTING",
-								"CRAFT_TAILORING","CRAFT_COOKING","CRAFT_ALCHEMY",
-								"CRAFT_MINING","CRAFT_WOODCUTTING","CRAFT_HERBALISM"};
+  "CRAFT_TAILORING","CRAFT_COOKING","CRAFT_ALCHEMY",
+  "CRAFT_MINING","CRAFT_WOODCUTTING","CRAFT_HERBALISM"};
 players.settings["craft_types"] = {CRAFT_BLACKSMITHING = 0,CRAFT_CARPENTRY = 1,CRAFT_ARMORCRAFTING = 2,
-									CRAFT_TAILORING = 3,CRAFT_COOKING = 4,CRAFT_ALCHEMY = 5,
-									CRAFT_MINING = 6,CRAFT_WOODCUTTING = 7,CRAFT_HERBALISM = 8};
+  CRAFT_TAILORING = 3,CRAFT_COOKING = 4,CRAFT_ALCHEMY = 5,
+  CRAFT_MINING = 6,CRAFT_WOODCUTTING = 7,CRAFT_HERBALISM = 8};
 
 players.funcs["player_eval_id"] = function(tmpId)
-	if not tmpId or tmpId < PLAYERID_MIN or tmpId > PLAYERID_MAX then
-		-- invalid address
-		return true
-	end
-	return false;
+  if not tmpId or tmpId < PLAYERID_MIN or tmpId > PLAYERID_MAX then
+    -- invalid address
+    return true
+  end
+  return false;
 end
 
 
@@ -29,15 +29,28 @@ ONLY_FRIENDLY = true;	-- only cast friendly spells HEAL / HOT / BUFF
 JUMP_FALSE = false		-- don't jump to break cast
 JUMP_TRUE = true		-- jump to break cast
 
+
+
 --[[ REDO it as table 
+
 -- The craft numbers correspond with their order in memory
+
 CRAFT_BLACKSMITHING = 0
+
 CRAFT_CARPENTRY = 1
+
 CRAFT_ARMORCRAFTING = 2
+
 CRAFT_TAILORING = 3
+
 CRAFT_COOKING = 4
+
 CRAFT_ALCHEMY = 5
+
 CRAFT_MINING = 6
+
 CRAFT_WOODCUTTING = 7
+
 CRAFT_HERBALISM = 8
+
 ]]--

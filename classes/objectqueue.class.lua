@@ -6,7 +6,7 @@ CObjectQueue = class(CBaseObject,
 		self.Queue = {};
 		self.first = 0;
 		self.last = -1;
-		self.size
+		self.size = 0;
 	end
 );
 
@@ -33,7 +33,7 @@ function CObjectQueue:update()
 end
 
 function CObjectQueue:peek( type )
-	local first = self.first:
+	local first = self.first;
 	
 	if first > self.last then 
 		--last try
