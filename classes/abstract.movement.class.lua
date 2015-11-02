@@ -121,7 +121,16 @@ function CAbstractMovement:moveRotate(task, object)
   local finished = false;
 
   if deltaTime(curtime, movementLastUpdateR) > delta then
-    player:updateDirection();
+	-- QUICK_TURN only
+	if( settings.profile.options.QUICK_TURN == true ) then
+		self:faceDirection(angle, yangle);
+		camera:setRotation(angle);
+		--angleDif = angleDifference(angle, self.Direction);
+	else
+		self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
+	end
+	player:updateDirection();
+  
 
     local angle,yangle = player:getPointAngle(object)
     local angleDif,angleDifY = player:getPointAngleDifference(object)
@@ -180,19 +189,102 @@ function CAbstractMovement:moveRotate(task, object)
 
   end
 end
-function CAbstractMovement:moveFoward(task, object)
+function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd, range))
 
   local movementLastUpdateF  = task:getVar("movementLastUpdatFe");
   local notMovingTime = task:getVar("notMovingTime");
 
   local curtime = getTime();
   local delta = 100;
+  
+	if( ignoreCycleTargets == nil ) then
+		ignoreCycleTargets = false;
+	end;
+  if settings.profile.options.PARTYLEADER_WAIT and GetPartyMemberName(1) then
+		if not checkparty(150) then
+			releaseKeys()
+			repeat yrest(500) player:updateBattling() until checkparty(150) or player.Battling
+		end
+	end
+	local function passed_point(lastpos, point)
+		local X,Y,Z = player:getPos();
+		point.X = tonumber(point.X)
+		point.Z = tonumber(point.Z)
 
+		local posbuffer = 5
+
+		local passed = true
+		if lastpos.X < point.X and X < point.X - posbuffer then
+			return false
+		end
+		if lastpos.X > point.X and X > point.X + posbuffer then
+			return false
+		end
+		if lastpos.Z < point.Z and Z < point.Z - posbuffer then
+			return false
+		end
+		if lastpos.Z > point.Z and Z > point.Z + posbuffer then
+			return false
+		end
+
+		return true
+	end
+	
   if(movementLastUpdateF == nil)then
     movementLastUpdateF = getTime()
   end
-
+  --we rotate the char
+  local rotateState = self:moveRotate(task,object);
+  -- make sure everything has stopped
+  if(rotateState == STATE_SUCCESS)then
+	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+	keyboardRelease( settings.hotkeys.ROTATE_UP.key );
+	keyboardRelease( settings.hotkeys.ROTATE_DOWN.key );
+  end
+	
   if deltaTime(curtime, movementLastUpdateF) > delta then
+		-- Make sure we don't have a garbage (dead) target
+	player:updateTargetPtr()
+	if( player.TargetPtr ~= 0 ) then
+		local target = CPawn.new(self.TargetPtr)
+		if target:exists() then -- Target exists
+			target:updateHP()
+			if( target.HP <= 1 ) then
+				player:clearTarget();
+			end
+		end
+	end
+	
+	
+	if(__WPL:getMode()   == "wander"  and
+	   __WPL:getRadius() == 0     )   then
+	   	--[[TODO: replace with task:]]--
+		player:restrnd(100, 1, 4);	-- wait 3 sec
+
+		player:updateDirection()
+		angle = self.Direction
+
+		-- we will not move back to WP if wander and radius = 0
+		-- so one can move the character manual and use the bot only as fight support
+		-- there we set the WP to the actual player position
+		player:updateXYZ()
+		waypoint.Z = self.Z;
+		waypoint.X = self.X;
+
+	end;
+  
+	-- look for a target before start movig
+	player:updateBattling()
+	if((not player.Fighting) and (not ignoreCycleTargets)) then
+		if player:target(player:findEnemy(false, nil, evalTargetDefault, player.IgnoreTarget)) then	-- find a new target
+			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
+			success = false;
+			failreason = WF_TARGET;
+			return STATE_FAIL, success, failreason;
+		end;
+	end;
+	
     player:updateXYZ()
     local X,Y,Z = player:getPos();
     local LastX =  task:getVar("LastX") or X;
@@ -200,7 +292,7 @@ function CAbstractMovement:moveFoward(task, object)
     local LastY =  task:getVar("LastY") or Y;
 
     if 1 > player:distance(LastX,LastZ,LastY) then
-      if not self.notMovingTime then
+      if not notMovingTime then
         --expose to task and also here in the next if
         notMovingTime = getTime();
         task:setVar("notMovingTime", getTime());
@@ -216,8 +308,12 @@ function CAbstractMovement:moveFoward(task, object)
         keyboardPress(key.VK_SPACE)
       end
     else
-      --self.notMovingTime = nil	-- we moved successfully
-      return STATE_SUCCESS;
+		local lastpos = {X=LastX, Z=LastZ, Y=LastY}
+      --Check if past waypoint
+		if passed_point(lastpos, waypoint) then
+		   -- waypoint reached
+			return STATE_SUCCESS;
+		end
     end
     task:setVar("LastX", X);
     task:setVar("LastZ", Z);
