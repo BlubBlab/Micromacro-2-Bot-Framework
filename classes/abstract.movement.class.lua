@@ -146,14 +146,14 @@ function CAbstractMovement:moveRotate(task, object)
 
     if( pangle < angleDif ) then
 
-      inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
-      inputoutput:PressHold(self, settings.hotkeys.ROTATE_LEFT.key );
+      InputOutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+      InputOutput:PressHold(self, settings.hotkeys.ROTATE_LEFT.key );
     -- move camara
 
     else
 
-      inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
-      inputoutput:PressHold(self, settings.hotkeys.ROTATE_RIGHT.key );
+      InputOutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+      InputOutput:PressHold(self, settings.hotkeys.ROTATE_RIGHT.key );
     -- move camara
 
     end
@@ -161,21 +161,21 @@ function CAbstractMovement:moveRotate(task, object)
 
       if not(yangleDif > math.rad(65) ) then
 
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
         finished = true and finished;
       end
 
       if( ypangle < yangleDif ) then
 
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
-        inputoutput:PressHold(self, settings.hotkeys.ROTATE_DOWN.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
+        InputOutput:PressHold(self, settings.hotkeys.ROTATE_DOWN.key );
       -- move camara
 
       else
 
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
-        inputoutput:PressHold(self, settings.hotkeys.ROTATE_UP.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
+        InputOutput:PressHold(self, settings.hotkeys.ROTATE_UP.key );
       -- move camara
 
       end
@@ -241,10 +241,10 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
   local rotateState = self:moveRotate(task,object);
   -- make sure everything has stopped
   if(rotateState == STATE_SUCCESS)then
-    inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
-    inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
-    inputoutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
-    inputoutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
+    InputOutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+    InputOutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+    InputOutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
+    InputOutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
   end
 
   if deltaTime(curtime, movementLastUpdateF) > delta then
@@ -264,7 +264,7 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
       end
     end
 
-
+    player:updateXYZ()
     if(__WPL:getMode()   == "wander"  and
       __WPL:getRadius() == 0     )   then
       --TODO: replace with task--
@@ -277,7 +277,6 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
       -- we will not move back to WP if wander and radius = 0
       -- so one can move the character manual and use the bot only as fight support
       -- there we set the WP to the actual player position
-      player:updateXYZ()
       local x1,y1,z1 = player:getPos();
       waypoint.Z = z1;
       waypoint.X = x1;
@@ -296,7 +295,7 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
       end;
     end;
 
-    player:updateXYZ()
+    
     local X,Y,Z = player:getPos();
     local LastX =  task:getVar("LastX") or X;
     local LastZ =  task:getVar("LastZ") or Z;
@@ -317,7 +316,7 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
         -- TODO: unstick state
         logger:log('info',"not moving");
         -- deal with not moving here.
-        inputoutput:PressKey(self,key.VK_SPACE)
+        InputOutput:PressKey(self,key.VK_SPACE)
       end
     else
       local lastpos = {X=LastX, Z=LastZ, Y=LastY}
@@ -326,14 +325,14 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
         -- within range
         if (settings.profile.options.WP_NO_STOP ~= false) then
           if (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
-            inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+            InputOutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
           end
         else
-          inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+          InputOutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
         end
 
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
         return STATE_SUCCESS;
       end
       --Check if past waypoint
@@ -341,28 +340,28 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
         -- waypoint reached
         if (settings.profile.options.WP_NO_STOP ~= false) then
           if (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
-            inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+            InputOutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
           end
         else
-          inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+          InputOutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
         end
 
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
         return STATE_SUCCESS;
       end
       -- Check if close to waypoint.
       if dist < successdist then
         if (settings.profile.options.WP_NO_STOP ~= false) then
           if (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
-            inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+            InputOutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
           end
         else
-          inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+          InputOutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
         end
 
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
-        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+        InputOutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
         return STATE_SUCCESS;
       end
     end
@@ -372,7 +371,7 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
     task:setVar("movementLastUpdateF",getTime());
     -- Ensure we're moving foward
     --  memoryWriteInt(proc, addresses.moveForward, 1);
-    inputoutput:PressHold(self,  settings.hotkeys.MOVE_FORWARD.key );
+    InputOutput:PressHold(self,  settings.hotkeys.MOVE_FORWARD.key );
     return STATE_PENNDING;
 
   end
