@@ -283,6 +283,6 @@ function CAbstractInputOutput:PressRelease(visitor, key1, key2)
 end
 function CAbstractInputOutput:WriteText(visitor,text)
 
-  keyboard.keyboard.virtualTyp(self.hwnd, text);
+  keyboard.keyboard.virtualType(self.hwnd, text);
 
 end

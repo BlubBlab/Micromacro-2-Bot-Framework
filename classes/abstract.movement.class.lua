@@ -71,7 +71,7 @@ function CAbstractMovement:moveTo_step()
       self:move("forward")
     else
       logger:log('debug',"at Player:moveTo_step: stopMoving() we are close at (%d,%d) dist %d < %d", x, z, dist, _dist);
-      self:stopMoving()		-- no moving after being there
+      self:stopMoving()   -- no moving after being there
       return true
     end
   else
@@ -101,7 +101,7 @@ function CAbstractMovement:facedirection(task,x, z, _angle, dist)
     end
   else
     logger:log('debug-moving','at Player:facedirection: facing ok, angleDif: %.2f < _angle: %.2f', angleDif, _angle);
-    self:stopTurning()		-- no turning after looking in right direction
+    self:stopTurning()    -- no turning after looking in right direction
     return true
   end
 end
@@ -121,20 +121,23 @@ function CAbstractMovement:moveRotate(task, object)
   local finished = false;
 
   if deltaTime(curtime, movementLastUpdateR) > delta then
-	-- QUICK_TURN only
-	if( settings.profile.options.QUICK_TURN == true ) then
-		self:faceDirection(angle, yangle);
-		camera:setRotation(angle);
-		--angleDif = angleDifference(angle, self.Direction);
-	else
-		self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
-	end
-	player:updateDirection();
-  
+    -- QUICK_TURN only
+
+    player:updateDirection();
+
 
     local angle,yangle = player:getPointAngle(object)
     local angleDif,angleDifY = player:getPointAngleDifference(object)
     local pangle, pyangle = player:angleDifference(angle - 0.01, yangle - 0.01);
+
+    if( settings.profile.options.QUICK_TURN == true ) then
+      self:faceDirection(angle, yangle);
+      camera:setRotation(angle);
+    --angleDif = angleDifference(angle, self.Direction);
+    else
+      local direction = player:getDirection();
+      self:faceDirection(direction, yangle); -- change only 'Y' angle with 'faceDirection'.
+    end
 
     if not(angleDif > math.rad(65)  )then
       self:stopTurning()
@@ -143,14 +146,14 @@ function CAbstractMovement:moveRotate(task, object)
 
     if( pangle < angleDif ) then
 
-      keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-      keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
+      inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+      inputoutput:PressHold(self, settings.hotkeys.ROTATE_LEFT.key );
     -- move camara
 
     else
 
-      keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-      keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
+      inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+      inputoutput:PressHold(self, settings.hotkeys.ROTATE_RIGHT.key );
     -- move camara
 
     end
@@ -158,21 +161,21 @@ function CAbstractMovement:moveRotate(task, object)
 
       if not(yangleDif > math.rad(65) ) then
 
-        keyboardRelease( settings.hotkeys.ROTATE_UP.key );
-        keyboardRelease( settings.hotkeys.ROTATE_DOWN.key );
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
         finished = true and finished;
       end
 
       if( ypangle < yangleDif ) then
 
-        keyboardRelease( settings.hotkeys.ROTATE_UP.key );
-        keyboardHold( settings.hotkeys.ROTATE_DOWN.key );
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
+        inputoutput:PressHold(self, settings.hotkeys.ROTATE_DOWN.key );
       -- move camara
 
       else
 
-        keyboardRelease( settings.hotkeys.ROTATE_DOWN.key );
-        keyboardHold( settings.hotkeys.ROTATE_UP.key );
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
+        inputoutput:PressHold(self, settings.hotkeys.ROTATE_UP.key );
       -- move camara
 
       end
@@ -189,47 +192,48 @@ function CAbstractMovement:moveRotate(task, object)
 
   end
 end
-function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd, range))
+function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd, range)
 
-  local movementLastUpdateF  = task:getVar("movementLastUpdatFe");
+  local movementLastUpdateF  = task:getVar("movementLastUpdateF");
   local notMovingTime = task:getVar("notMovingTime");
 
   local curtime = getTime();
   local delta = 100;
-  
-	if( ignoreCycleTargets == nil ) then
-		ignoreCycleTargets = false;
-	end;
+
+  if( ignoreCycleTargets == nil ) then
+    ignoreCycleTargets = false;
+  end;
   if settings.profile.options.PARTYLEADER_WAIT and GetPartyMemberName(1) then
-		if not checkparty(150) then
-			releaseKeys()
-			repeat yrest(500) player:updateBattling() until checkparty(150) or player.Battling
-		end
-	end
-	local function passed_point(lastpos, point)
-		local X,Y,Z = player:getPos();
-		point.X = tonumber(point.X)
-		point.Z = tonumber(point.Z)
+    if not checkparty(150) then
+      releaseKeys()
+      repeat yrest(500) player:updateBattling() until checkparty(150) or player.Battling
+    end
+  end
 
-		local posbuffer = 5
+  local function passed_point(lastpos, point)
+    local X,Y,Z = player:getPos();
+    point.X = tonumber(point.X)
+    point.Z = tonumber(point.Z)
 
-		local passed = true
-		if lastpos.X < point.X and X < point.X - posbuffer then
-			return false
-		end
-		if lastpos.X > point.X and X > point.X + posbuffer then
-			return false
-		end
-		if lastpos.Z < point.Z and Z < point.Z - posbuffer then
-			return false
-		end
-		if lastpos.Z > point.Z and Z > point.Z + posbuffer then
-			return false
-		end
+    local posbuffer = 5
 
-		return true
-	end
-	
+    local passed = true
+    if lastpos.X < point.X and X < point.X - posbuffer then
+      return false
+    end
+    if lastpos.X > point.X and X > point.X + posbuffer then
+      return false
+    end
+    if lastpos.Z < point.Z and Z < point.Z - posbuffer then
+      return false
+    end
+    if lastpos.Z > point.Z and Z > point.Z + posbuffer then
+      return false
+    end
+
+    return true
+  end
+
   if(movementLastUpdateF == nil)then
     movementLastUpdateF = getTime()
   end
@@ -237,54 +241,61 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
   local rotateState = self:moveRotate(task,object);
   -- make sure everything has stopped
   if(rotateState == STATE_SUCCESS)then
-	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-	keyboardRelease( settings.hotkeys.ROTATE_UP.key );
-	keyboardRelease( settings.hotkeys.ROTATE_DOWN.key );
+    inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+    inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+    inputoutput:PressRelease(self, settings.hotkeys.ROTATE_UP.key );
+    inputoutput:PressRelease(self, settings.hotkeys.ROTATE_DOWN.key );
   end
-	
+
   if deltaTime(curtime, movementLastUpdateF) > delta then
-		-- Make sure we don't have a garbage (dead) target
-	player:updateTargetPtr()
-	if( player.TargetPtr ~= 0 ) then
-		local target = CPawn.new(self.TargetPtr)
-		if target:exists() then -- Target exists
-			target:updateHP()
-			if( target.HP <= 1 ) then
-				player:clearTarget();
-			end
-		end
-	end
-	
-	
-	if(__WPL:getMode()   == "wander"  and
-	   __WPL:getRadius() == 0     )   then
-	   	--[[TODO: replace with task:]]--
-		player:restrnd(100, 1, 4);	-- wait 3 sec
+    local X,Y,Z = player:getPos();
+    local dist = player:getDistance(object);
+    local angle,yangle = player:getPointAngle(object);
 
-		player:updateDirection()
-		angle = self.Direction
+    -- Make sure we don't have a garbage (dead) target
+    player:updateTargetPtr()
+    if( player.TargetPtr ~= 0 ) then
+      local target = CPawn.new(self.TargetPtr)
+      if target:exists() then -- Target exists
+        target:updateHP()
+        if( target.HP <= 1 ) then
+          player:clearTarget();
+        end
+      end
+    end
 
-		-- we will not move back to WP if wander and radius = 0
-		-- so one can move the character manual and use the bot only as fight support
-		-- there we set the WP to the actual player position
-		player:updateXYZ()
-		waypoint.Z = self.Z;
-		waypoint.X = self.X;
 
-	end;
-  
-	-- look for a target before start movig
-	player:updateBattling()
-	if((not player.Fighting) and (not ignoreCycleTargets)) then
-		if player:target(player:findEnemy(false, nil, evalTargetDefault, player.IgnoreTarget)) then	-- find a new target
-			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
-			success = false;
-			failreason = WF_TARGET;
-			return STATE_FAIL, success, failreason;
-		end;
-	end;
-	
+    if(__WPL:getMode()   == "wander"  and
+      __WPL:getRadius() == 0     )   then
+      --TODO: replace with task--
+     --[[what the hell is up with this stuff ?
+      player:restrnd(100, 1, 4);  -- wait 3 sec
+
+      player:updateDirection()
+      angle = player:getDirection();
+      ]]--
+      -- we will not move back to WP if wander and radius = 0
+      -- so one can move the character manual and use the bot only as fight support
+      -- there we set the WP to the actual player position
+      player:updateXYZ()
+      local x1,y1,z1 = player:getPos();
+      waypoint.Z = z1;
+      waypoint.X = x1;
+
+    end;
+
+    --TODO: move to bot.lua
+    -- look for a target before start movig
+    player:updateBattling()
+    if((not player.Fighting) and (not ignoreCycleTargets)) then
+      if player:target(player:findEnemy(false, nil, evalTargetDefault, player.IgnoreTarget)) then -- find a new target
+        cprintf(cli.turquoise, language[86]); -- stopping waypoint::target acquired before moving
+        success = false;
+        failreason = WF_TARGET;
+        return STATE_FAIL, success, failreason;
+      end;
+    end;
+
     player:updateXYZ()
     local X,Y,Z = player:getPos();
     local LastX =  task:getVar("LastX") or X;
@@ -297,30 +308,71 @@ function CAbstractMovement:moveTo(task, object,ignoreCycleTargets, dontStopAtEnd
         notMovingTime = getTime();
         task:setVar("notMovingTime", getTime());
       end
-      if deltaTime(getTime(), notMovingTime ) > 5000 then 	-- we stick for more then 5 sec, stop the bot
+      if deltaTime(getTime(), notMovingTime ) > 5000 then   -- we stick for more then 5 sec, stop the bot
         --error('we dont move since more then 5 seconds. We stop the bot',0)
         --TODO: unstick
         return STATE_FAILED,"not moving";
 
-      elseif deltaTime(getTime(), notMovingTime ) > 200 then -- TODO: unstick state
+      elseif deltaTime(getTime(), notMovingTime ) > 200 then
+        -- TODO: unstick state
         logger:log('info',"not moving");
         -- deal with not moving here.
-        keyboardPress(key.VK_SPACE)
+        inputoutput:PressKey(self,key.VK_SPACE)
       end
     else
-		local lastpos = {X=LastX, Z=LastZ, Y=LastY}
+      local lastpos = {X=LastX, Z=LastZ, Y=LastY}
+      -- Check if within range if range specified
+      if range and range > dist then
+        -- within range
+        if (settings.profile.options.WP_NO_STOP ~= false) then
+          if (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
+            inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+          end
+        else
+          inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+        end
+
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+        return STATE_SUCCESS;
+      end
       --Check if past waypoint
-		if passed_point(lastpos, waypoint) then
-		   -- waypoint reached
-			return STATE_SUCCESS;
-		end
+      if passed_point(lastpos, waypoint) then
+        -- waypoint reached
+        if (settings.profile.options.WP_NO_STOP ~= false) then
+          if (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
+            inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+          end
+        else
+          inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+        end
+
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+        return STATE_SUCCESS;
+      end
+      -- Check if close to waypoint.
+      if dist < successdist then
+        if (settings.profile.options.WP_NO_STOP ~= false) then
+          if (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
+            inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+          end
+        else
+          inputoutput:PressRelease(self, settings.hotkeys.MOVE_FORWARD.key );
+        end
+
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_LEFT.key );
+        inputoutput:PressRelease(self, settings.hotkeys.ROTATE_RIGHT.key );
+        return STATE_SUCCESS;
+      end
     end
     task:setVar("LastX", X);
     task:setVar("LastZ", Z);
     task:setVar("LastY", Y);
     task:setVar("movementLastUpdateF",getTime());
     -- Ensure we're moving foward
-    memoryWriteInt(proc, addresses.moveForward, 1);
+    --  memoryWriteInt(proc, addresses.moveForward, 1);
+    inputoutput:PressHold(self,  settings.hotkeys.MOVE_FORWARD.key );
     return STATE_PENNDING;
 
   end

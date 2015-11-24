@@ -1,4 +1,6 @@
+
 -- get current directory (theres gotho be an easier way)
+
 function currDir()
   os.execute("cd > cd.tmp")
   local f = io.open("cd.tmp", r)
