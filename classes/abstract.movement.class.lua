@@ -1,3 +1,4 @@
+
 CAbstractMovement = class(CBaseObject,
   function (self, copyfrom)
     self.type = "defualt"
@@ -8,26 +9,7 @@ CAbstractMovement = class(CBaseObject,
 
 );
 
-function CAbstractMovement:moveTo(task, waypoint, ignoreCycleTargets, dontStopAtEnd)
 
-
-  local movementLastUpdateF  = task:getVar("movementLastUpdatFe");
-  local notMovingTime = task:getVar("notMovingTime");
-
-  local curtime = getTime();
-  local delta = 100;
-
-  if(movementLastUpdateF == nil)then
-    movementLastUpdateF = getTime()
-  end
-
-  if deltaTime(curtime, movementLastUpdateF) > delta then
-
-
-    task:setVar("movementLastUpdateF",getTime());
-  end
-
-end
 function CAbstractMovement:stopMoving()
 
   -- Ensure we're not moving
@@ -42,42 +24,35 @@ function CAbstractMovement:stopTurning()
   memoryWriteInt(proc, addresses.turnRight, 0);
 
 end
-function CAbstractMovement:moveTo_step()
-
-  _dist = _dist or 5
-  coordsupdate()
-  x = x or 0;
-  z = z or 0;
-  local angle
-  local dist = distance(self.X, self.Z, x, z)
-
-  if 15 > dist then
-    angle = 0.5
+-- Forces the player to face a direction.
+-- 'dir' should be in radians
+function CPlayer:faceDirection(dir,diry)
+  local Vec3 = 0
+  if diry then
+    Vec3 = math.sin(diry);
   else
-    angle = 0.2
+    Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
   end
+  local hypotenuse = (1 - Vec3^2)^.5
+  local Vec1 = math.cos(dir) * hypotenuse;
+  local Vec2 = math.sin(dir) * hypotenuse;
 
-  logger:log('debug-moving',"at Player:moveTo_step: Distance %d from WP (%d,%d)", dist, x, z);
-  if self:facedirection(x, z, angle, dist) then
-    if dist > 10 and memoryReadInt(proc, addresses.moveForward) == 1 then
-      local tar = targetnearestmob()
-      if tar then
-        self:stopMoving()
-        stateman:pushState(FirstattackState())
-        return
-      end
-    end
-    if dist > _dist then
-      self:move("forward")
-    else
-      logger:log('debug',"at Player:moveTo_step: stopMoving() we are close at (%d,%d) dist %d < %d", x, z, dist, _dist);
-      self:stopMoving()   -- no moving after being there
-      return true
-    end
+  self.Direction = math.atan2(Vec2, Vec1);
+  self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
+
+  local tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.charPtrMounted_offset);
+  self:updateMounted()
+  if self.Mounted and tmpMountAddress and tmpMountAddress ~= 0 then
+    memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirXUVec_offset, Vec1);
+    memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirZUVec_offset, Vec2);
+    memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirYUVec_offset, Vec3);
   else
-    logger:log('debug-moving','at Player:moveTo_step: not moving because self:facedirection() = false');
+    memoryWriteFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset, Vec1);
+    memoryWriteFloat(getProc(), self.Address + addresses.pawnDirZUVec_offset, Vec2);
+    memoryWriteFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset, Vec3);
   end
 end
+
 function CAbstractMovement:facedirection(task,x, z, _angle, dist)
   self.curtime = getTime()
   player:updateXYZ();

@@ -101,9 +101,9 @@ function CAbstractObject:updateXYZ()
     self.Z = 0;
     return
   end
-  self.X = InputOutput:ObjectPositon("X", self )
-  self.Y = InputOutput:ObjectPositon("Y", self )
-  self.Z = InputOutput:ObjectPositon("Z", self )
+  self.X = InputOutput:ObjectPositon("x", self )
+  self.Y = InputOutput:ObjectPositon("y", self )
+  self.Z = InputOutput:ObjectPositon("z", self )
 
 end
 function CAbstractObject:updateDirection()
@@ -111,9 +111,9 @@ function CAbstractObject:updateDirection()
     return
   end
 
-  local Vec1 = InputOutput:PawnDirection("X", self );
-  local Vec2 = InputOutput:PawnDirection("Z", self );
-  local Vec3 = InputOutput:PawnDirection("Y", self );
+  local Vec1 = InputOutput:PawnDirection("x", self );
+  local Vec2 = InputOutput:PawnDirection("z", self );
+  local Vec3 = InputOutput:PawnDirection("y", self );
 
   if( Vec1 == nil ) then Vec1 = 0.0; end;
   if( Vec2 == nil ) then Vec2 = 0.0; end;
@@ -136,9 +136,7 @@ end
 function CAbstractObject:getPos()
   return self.X,self.Y,self.Z;
 end
-function CAbstractObject:getAddress()
-  return self.Address;
-end
+
 function CAbstractObject:getDirection()
   return self.Direction,self.DirectionY;
 end

@@ -32,7 +32,9 @@ end
 function CBaseObject:hashCode()
   return string.dump(self)
 end
-
+function CAbstractObject:getAddress()
+  return self.Address;
+end
 function CBaseObject:toString()
   local classname = getClass()
   local hash = self:hashCode()
