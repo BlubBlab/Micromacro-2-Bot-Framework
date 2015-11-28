@@ -279,15 +279,4 @@ function seekDir(dir , down_or_up)
 
   end
 end
-include("function.lua");
---first add thinks which are static
-include("classes/skill.class.lua");
-include("classes/waypoint.class.lua");
-include("classes/waypointlist.class.lua");
-include("classes/waypointlist_wander.class.lua");
 
-dyinclude("extension-classes/node.class.lua");
-dyinclude("extension-classes/database.class.lua");
-
-database = CDatabase()
-database:load()
