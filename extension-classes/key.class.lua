@@ -1,15 +1,15 @@
 dyinclude("classes/abstract.key.class.lua",true);
 CKeys = class(CAbstractKeys,
-  function (self, copyfrom)
-    self.funcs = {};
-    if( type(copyfrom) == "table" ) then
-      self.funcs = copyfrom.funcs;
-    end
-  end
+	function (self, copyfrom)
+		self.funcs = {};
+		if( type(copyfrom) == "table" ) then
+			self.funcs = copyfrom.funcs;
+		end
+	end
 
 );
 function CKeys:loadKeys()
-  local filename = seekDir("settings.xml");
+	local filename = seekDir("settings.xml");
 
-  self:loadSettings(filename, bot.Gamedirectory, bot.Keybindfile);
+	self:loadSettings(filename, bot.Gamedirectory, bot.Keybindfile);
 end

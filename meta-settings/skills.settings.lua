@@ -17,7 +17,7 @@ end
 skills.funcs["skills_need_buff_1"] = function(self)
 	-- Needs Willpower state. Willpower Blade, Willpower Construct
 	if self.Psi > 0 and (not player:hasBuff(501571)) and (not player:hasBuff(501572)) then
-		
+
 		return true
 	end
 	return false
@@ -25,9 +25,9 @@ end
 skills.funcs["skills_need_buff_2"] = function(self)
 	-- Main buffs that require 6 psi but don't consume psi.
 	if (GetIdName(self.Id) == GetIdName(497955) or -- Willpower Blade
-	   GetIdName(self.Id) == GetIdName(497956)) and -- Willpower Construct
-	   player.Psi < 6 then
-		
+		GetIdName(self.Id) == GetIdName(497956)) and -- Willpower Construct
+		player.Psi < 6 then
+
 		return true
 	end
 	return false
@@ -40,7 +40,7 @@ skills.funcs["skills_pet_summon"] = function(self)
 				PetWaitTimer = 0
 				return true;
 			end
-		end
+	end
 	end
 
 	if PetWaitTimer == nil or PetWaitTimer == 0 then -- Start timer
@@ -52,7 +52,7 @@ skills.funcs["skills_pet_summon"] = function(self)
 	return false;
 end
 skills.funcs["skills_pet_heal"] = function(self)
--- warden pet heal
+	-- warden pet heal
 	if self.Name == "WARDEN_ELVEN_PRAYER" then
 		petupdate()
 		if pet.Name == "<UNKNOWN>" or ( pet.HP / pet.MaxHP * 100) > 70 then
@@ -69,9 +69,9 @@ skills.funcs["skills_use_summon"] = function(self)
 			petupdate()		-- code in classes/pet.lua
 			-- dont summon warden pet if already summoned.
 			if (skillName == GetIdName(493333) and pet.Name ~= GetIdName(102297)) or
-			   (skillName == GetIdName(493344) and pet.Name ~= GetIdName(102325)) or
-			   (skillName == GetIdName(493343) and pet.Name ~= GetIdName(102324)) or
-			   (skillName == GetIdName(494212) and pet.Name ~= GetIdName(102803)) then
+				(skillName == GetIdName(493344) and pet.Name ~= GetIdName(102325)) or
+				(skillName == GetIdName(493343) and pet.Name ~= GetIdName(102324)) or
+				(skillName == GetIdName(494212) and pet.Name ~= GetIdName(102803)) then
 				RoMCode("CastSpellByName(\""..skillName.."\");");
 				repeat
 					yrest(1000)

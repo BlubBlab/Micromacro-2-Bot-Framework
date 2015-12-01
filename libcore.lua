@@ -3,21 +3,21 @@
 --
 --
 function getPath()
-  current_dir = filesystem.getCWD();
-  local num = string.find(current_dir,"scripts",1,true) or string.find(current_dir,"lib",1,true)
-  local sestring = string.sub(current_dir,1,num-2);
-  return sestring;
+	current_dir = filesystem.getCWD();
+	local num = string.find(current_dir,"scripts",1,true) or string.find(current_dir,"lib",1,true)
+	local sestring = string.sub(current_dir,1,num-2);
+	return sestring;
 end
 -- Checks and returns true if a file exists.
 function fileExists(fullpath)
-  local handle = io.open(fullpath, "r");
-  local success = handle ~= nil;
+	local handle = io.open(fullpath, "r");
+	local success = handle ~= nil;
 
-  if( success ) then
-    handle:close();
-  end
+	if( success ) then
+		handle:close();
+	end
 
-  return success;
+	return success;
 end
 unpack = table.unpack;
 getExecutionPath = filesystem.getCWD;
@@ -46,11 +46,11 @@ function setTextColor(...) end
 getTime = time.getNow;
 
 function getClass(self)
-  local i = debug.getinfo(3, 'Sl');
-  return "'"..(io.open(i.source:match'@(.*)'):read'*a'
-    :gsub('.-\n','',i.currentline-1)
-    :match('(.-)[:.]%s*'..debug.getinfo(2,'n').name..'%s*%(')
-    :match'([%w_]+)%s*$' or '<unnamed>').."' at line #"..i.currentline
+	local i = debug.getinfo(3, 'Sl');
+	return "'"..(io.open(i.source:match'@(.*)'):read'*a'
+		:gsub('.-\n','',i.currentline-1)
+		:match('(.-)[:.]%s*'..debug.getinfo(2,'n').name..'%s*%(')
+		:match'([%w_]+)%s*$' or '<unnamed>').."' at line #"..i.currentline
 end
 --- unpack function with number of arguments on the end.
 -- @function [parent=#global] unpack2
@@ -58,14 +58,14 @@ end
 -- @return #table t the unpacked args
 -- @return #number n Number of args.
 function unpack2(...)
-  local n = select('#', ...);
-  local t = {};
-  for i = 1,n do
-    local v = select(i, ...);
-    t[i] = v;
-  end
+	local n = select('#', ...);
+	local t = {};
+	for i = 1,n do
+		local v = select(i, ...);
+		t[i] = v;
+	end
 
-  return t, n;
+	return t, n;
 end
 --- Time delta in milliseconds
 -- @function [parent=#global] deltaTime
@@ -73,14 +73,14 @@ end
 -- @param #table time_c The second time table for compare
 -- @return #number diffrence in milliseconds between the two times.
 function deltaTime(time_a,time_b)
-  return time.diff(time_a,time_b) *1000;
+	return time.diff(time_a,time_b) *1000;
 end
 --- Convert hours to timer value
 -- @function [parent=#global] hoursToTimer
 -- @param #number hours  The time in hours
 -- @return #number The time in milliseconds
 function hoursToTimer(hours)
-  return math.floor( hours * 3600000 );
+	return math.floor( hours * 3600000 );
 end
 
 --- Convert minutes to timer value
@@ -88,7 +88,7 @@ end
 -- @param #number minutes  The time in minutes
 -- @return #number The time in milliseconds
 function minutesToTimer(minutes)
-  return math.floor( minutes * 60000 );
+	return math.floor( minutes * 60000 );
 end
 
 --- Converts seconds to timer value
@@ -96,25 +96,25 @@ end
 -- @param  #number secounds The time in secounds
 -- @return #number The time in milliseconds
 function secondsToTimer(seconds)
-  return math.floor( seconds * 1000 );
+	return math.floor( seconds * 1000 );
 end
 --- Make a deep copy of a table
 -- @function [parent=#global] deepcopy
 -- @param  #table orig The table which should be copy
 -- @return #table copy Your new copy
 function deepcopy(orig)
-  local orig_type = type(orig)
-  local copy
-  if orig_type == 'table' then
-    copy = {}
-    for orig_key, orig_value in next, orig, nil do
-      copy[deepcopy(orig_key)] = deepcopy(orig_value)
-    end
-    setmetatable(copy, deepcopy(getmetatable(orig)))
-  else -- number, string, boolean, etc
-    copy = orig
-  end
-  return copy
+	local orig_type = type(orig)
+	local copy
+	if orig_type == 'table' then
+		copy = {}
+		for orig_key, orig_value in next, orig, nil do
+			copy[deepcopy(orig_key)] = deepcopy(orig_value)
+		end
+		setmetatable(copy, deepcopy(getmetatable(orig)))
+	else -- number, string, boolean, etc
+		copy = orig
+	end
+	return copy
 end
 
 --- Factory function for making a new task
@@ -127,10 +127,10 @@ end
 -- @return #number STATE_PENNDING
 function taskFactory(name, func,...)
 
-  taskstack:push_state(name, func );
-  taskstack:push_args(...)
+	taskstack:push_state(name, func );
+	taskstack:push_args(...)
 
-  return STATE_PENNDING;
+	return STATE_PENNDING;
 
 end
 --- Factory function for making a new scheduled task
@@ -143,9 +143,9 @@ end
 -- @return #number STATE_PENNDING
 function timerFactory(name, time, func, ...)
 
-  tasktimer:registerTask(name, time, func, ...);
+	tasktimer:registerTask(name, time, func, ...);
 
-  return STATE_PENNDING;
+	return STATE_PENNDING;
 end
 --- Wait function
 -- @function [parent=#global] rest
@@ -153,7 +153,7 @@ end
 -- @post We have waited our time.
 -- @notice The use of this function not recommend.
 function rest(msec)
-  system.rest(msec)
+	system.rest(msec)
 end
 --- Wait function but let scheduled tasks run if possible.
 -- @function [parent=#global] yrest
@@ -162,27 +162,27 @@ end
 -- @post We have waited our time.
 -- @notice The use of this function not recommend.
 function yrest(msec)
-  if( msec == nil ) then error("yrest() cannot rest for \'nil\'.\n", 2); end;
+	if( msec == nil ) then error("yrest() cannot rest for \'nil\'.\n", 2); end;
 
-  local resttime = 10;
-  local startTime = getTime();
+	local resttime = 10;
+	local startTime = getTime();
 
-  if( msec < resttime ) then
-    rest(msec);
-    return;
-  else
+	if( msec < resttime ) then
+		rest(msec);
+		return;
+	else
 
-    while( deltaTime(getTime(), startTime) < msec ) do
-      -- timedstate should be an global object.
-      tasktimer:timed_run(msec);
-      if(deltaTime(getTime(), startTime) < msec )then
-        rest(resttime);
-      end
-    end
+		while( deltaTime(getTime(), startTime) < msec ) do
+			-- timedstate should be an global object.
+			tasktimer:timed_run(msec);
+			if(deltaTime(getTime(), startTime) < msec )then
+				rest(resttime);
+			end
+		end
 
-  end
+	end
 
-  return deltaTime(getTime(), startTime);
+	return deltaTime(getTime(), startTime);
 end
 --- Create a new Task for the purpose of waiting
 -- @function [parent=#global] restTask
@@ -191,18 +191,18 @@ end
 -- @return #number CTask#STATE_PENNDING
 -- @notice This will not stop scheduled tasks from running;
 function restTask(msec)
-  local function wait(self,start,msec)
+	local function wait(self,start,msec)
 
-    if(deltaTime(getTime(), startTime) >= msec )then
-      return STATE_SUCCESS;
-    else
-      return STATE_PENNDING;
-    end
-  end
-  taskstack:push_state("STATE_REST_TASK",wait );
-  taskstack:push_args(getTime(),msec)
+		if(deltaTime(getTime(), startTime) >= msec )then
+			return STATE_SUCCESS;
+		else
+			return STATE_PENNDING;
+		end
+	end
+	taskstack:push_state("STATE_REST_TASK",wait );
+	taskstack:push_args(getTime(),msec)
 
-  return STATE_PENNDING;
+	return STATE_PENNDING;
 end
 --- Create a new Task for the purpose of waiting
 --
@@ -213,70 +213,77 @@ end
 -- @post We have waited our time.
 -- @return #number CTask#STATE_PENNDING
 function yrestTask(msec)
-  local function wait(self,start,msec)
-    tasktimer:timed_run(msec);
-    if(deltaTime(getTime(), startTime) >= msec )then
-      return STATE_SUCCESS;
-    else
-      return STATE_PENNDING;
-    end
-  end
-  taskstack:push_state("STATE_YREST_TASK", wait );
-  taskstack:push_args(getTime(),msec)
+	local function wait(self,start,msec)
+		tasktimer:timed_run(msec);
+		if(deltaTime(getTime(), startTime) >= msec )then
+			return STATE_SUCCESS;
+		else
+			return STATE_PENNDING;
+		end
+	end
+	taskstack:push_state("STATE_YREST_TASK", wait );
+	taskstack:push_args(getTime(),msec)
 
-  return STATE_PENNDING;
+	return STATE_PENNDING;
 end
 
 function dyinclude(dir , down_or_up)
 
-  if(down_or_up)then
+	if(down_or_up)then
 
-    if(fileExists("../botframework/"..dir..""))then
-      return include("../botframework/"..dir.."")
-    elseif(fileExists("../meta-botframework/"..dir..""))then
-      return include("../meta-botframework/"..dir.."")
-    elseif(fileExists("../"..dir..""))then
-      return include("../"..dir.."")
-    elseif(fileExists(""..dir..""))then
-      return include(""..dir.."")
-    end
+		if(fileExists("../botframework/"..dir..""))then
+			return include("../botframework/"..dir.."")
+		elseif(fileExists("../meta-botframework/"..dir..""))then
+			return include("../meta-botframework/"..dir.."")
+		elseif(fileExists("../"..dir..""))then
+			return include("../"..dir.."")
+		elseif(fileExists(""..dir..""))then
+			return include(""..dir.."")
+		end
 
-  else
+	else
 
-    if(fileExists("../../"..dir..""))then
-      return include("../../"..dir.."")
-    elseif(fileExists("../"..dir..""))then
-      return include("../"..dir.."")
-    else
-      return include(""..dir.."")
-    end
-  end
+		if(fileExists("../../"..dir..""))then
+			return include("../../"..dir.."")
+		elseif(fileExists("../"..dir..""))then
+			return include("../"..dir.."")
+		else
+			return include(""..dir.."")
+		end
+	end
 end
 function seekDir(dir , down_or_up)
 
-  if(down_or_up)then
+	if(down_or_up)then
 
-    if(fileExists("../botframework/"..dir..""))then
-      return "../botframework/"..dir..""
-    elseif(fileExists("../meta-botframework/"..dir..""))then
-      return "../meta-botframework/"..dir..""
-    elseif(fileExists("../"..dir..""))then
-      return "../"..dir..""
-    elseif(fileExists(""..dir..""))then
-      return ""..dir..""
-    end
-    --error("We didn't found it")
+		if(fileExists("../botframework/"..dir..""))then
+			return "../botframework/"..dir..""
+		elseif(fileExists("../meta-botframework/"..dir..""))then
+			return "../meta-botframework/"..dir..""
+		elseif(fileExists("../"..dir..""))then
+			return "../"..dir..""
+		elseif(fileExists(""..dir..""))then
+			return ""..dir..""
+		end
+		--error("We didn't found it")
 
-  else
+	else
 
-    if(fileExists("../../"..dir..""))then
-      return "../../"..dir..""
-    elseif(fileExists("../"..dir..""))then
-      return "../"..dir..""
-    elseif(fileExists(""..dir..""))then
-      return ""..dir..""
-    end
+		if(fileExists("../../"..dir..""))then
+			return "../../"..dir..""
+		elseif(fileExists("../"..dir..""))then
+			return "../"..dir..""
+		elseif(fileExists(""..dir..""))then
+			return ""..dir..""
+		end
 
-  end
+	end
 end
+
+
+
+
+
+
+
 

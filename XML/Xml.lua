@@ -8,12 +8,12 @@ function loadXML(file)
 end
 
 CXML = class(
-function (self)
-	-- <mylabel,</mylabel
-	self.xml = require("LuaXml");
-	self.stack = {};
-	self.lastXML = {};
-end
+	function (self)
+		-- <mylabel,</mylabel
+		self.xml = require("LuaXml");
+		self.stack = {};
+		self.lastXML = {};
+	end
 );
 
 function CXML:pushS(symbol)
@@ -30,14 +30,14 @@ function CXML:load(file)
 	print(" load:"..file.."");
 	self:validXML(file)
 	self.lastXML = loadXML(file);
-	
+
 	return self.lastXML;
 end
 function CXML:open(file)
 	--print(" open:"..file.."");
 	--TODO: add file checks
 	local xml_load = self:load(file)
-	
+
 	local node = parse_deep(xml_load)
 	return node;
 end
@@ -52,17 +52,17 @@ function CXML:getCore()
 	return xmlDLL;
 end
 function CXML:validXML( file)
-	
+
 	file = assert(io.open(file, "r"))
-	
+
 	local last1 = 0, last1line, last1row; -- <? , ?>
 	local last2 = 0, last2line, last2row; --<![CDATA[ , ]]>
 	local last3 = 0, last3line, last3row; -- < , >
 	local last4 = 0, last4line, last4row; --"
-	local last5 = 0, last5line, last5row; --<! 
+	local last5 = 0, last5line, last5row; --<!
 
 	local linecount = 1;
-	
+
 	for line in file:lines() do
 		local i = 0;
 		while(i < string.len(line)) do
@@ -91,16 +91,16 @@ function CXML:validXML( file)
 				if(start == nil or ende == nil)then
 					error("Miss match string in: line: "..linecount.." row: "..i.."");
 				end
-				
+
 				--last4 = last4 + 1;
 				-- two matching "
-				if(last4%2 == 0)then 
+				if(last4%2 == 0)then
 					last4 = 0;
 				end
 				-- we included " one too much so we must exclude it again.
 				i = ende;
 				local subtest = string.sub(line, i, i+2)
-			--	print("What is at ende: "..subtest.."")
+				--	print("What is at ende: "..subtest.."")
 				jump = true;
 			end
 			-- found a <? and we are not inside of <![CDATA[ or <!
@@ -143,7 +143,7 @@ function CXML:validXML( file)
 				i = i + 8;
 				jump = true;
 			end
-			-- found <! for comments 
+			-- found <! for comments
 			if(not jump and sub2 and sub2 == "<!")then
 				-- increase <! counter
 				last5 = last5 + 1;
@@ -164,8 +164,8 @@ function CXML:validXML( file)
 				i = i + 2;
 			end
 			if(not jump and sub2 and sub2 == "/>" and last5 == 0 and last2 == 0)then
-				
-				
+
+
 				if(last3 ~= 0) then
 					last3 = 0;
 				end
@@ -177,13 +177,13 @@ function CXML:validXML( file)
 				local name2 = symbol[1];
 				--print("Pop:"..name2.."");
 				-- skip some chars
-				
+
 				jump = true;
 			end
 			-- we found a </ and we are not inside of <![CDATA[ or <!
 			if(not jump and sub2 and sub2 == "</" and last5 == 0 and last2 == 0)then
 				-- too many <
-				
+
 				if(last3 ~= 0) then
 					error("Too much < in: line: "..linecount.." row: "..i.."");
 				end
@@ -202,7 +202,7 @@ function CXML:validXML( file)
 				--compare label names
 				local name1 = string.sub(line,start+2, ende )
 				local symbol = self:popS();
-				
+
 				local name2 = symbol[1];
 				--print(" pop: "..name2.."");
 				if(name1 ~= name2)then
@@ -212,7 +212,7 @@ function CXML:validXML( file)
 				i = ende ;
 				jump = true;
 			end
-			
+
 			-- we found a < and we are not inside of <![CDATA[ or <!
 			if(not jump and sub1 and sub1 == "<" and last2 == 0 and last5 == 0)then
 				-- too many < or better said odd amount
@@ -239,14 +239,14 @@ function CXML:validXML( file)
 				-- skip rest of the round
 				jump = true;
 			end
-			-- we found a > and we are not inside <![CDATA[ 
+			-- we found a > and we are not inside <![CDATA[
 			if(not jump and sub1 and sub1 == ">" and last2 == 0)then
 				last3 = last3 - 1;
 				-- close any <
 				if(last3 ~= 0) then
 					last3 = 0;
-					-- need testing don't know behaviour of LuaXML
-					-- error(1,"Unknown > in: line: "..linecount.." row: "..i..);
+				-- need testing don't know behaviour of LuaXML
+				-- error(1,"Unknown > in: line: "..linecount.." row: "..i..);
 				end
 				-- close --<!
 				if(last5 ~= 0)then
@@ -262,7 +262,7 @@ function CXML:validXML( file)
 			-- found " and we are not in <![CDATA[ or <!
 			if(not jump and sub1 and sub1 == "\"" and last2 == 0 and last5 == 0)then
 				-- last3 we are inside < >
-			--	print("found \"")
+				--	print("found \"")
 				if(last3 ~= 0)then
 					last4 = last4 + 1;
 					-- two matching "
@@ -281,7 +281,7 @@ function CXML:validXML( file)
 		end
 		linecount = linecount +1;
 	end
-	
+
 	if(#self.stack~=0)then
 		local symbol = popS();
 		error("Missing closing tag for: "..symbol[1].." in: line: "..symbol[2].." row: "..symbol[3].." until the end of the file");

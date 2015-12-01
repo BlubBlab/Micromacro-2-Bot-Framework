@@ -12,7 +12,7 @@ objects.funcs ={};
 -- eval funcs for object:update()
 
 objects.funcs["objects_eval_id_and_type"] = function( id ,type )
-	
+
 	if( 1 > id or id > 999999 or type == objects.settings["PT_NONE"] )then
 		return true;
 	else
@@ -44,13 +44,13 @@ objects.funcs["objects_eval_id"] = function(tmp,self)
 	elseif self.Id >= PLAYERID_MIN and self.Id <= PLAYERID_MAX then -- player ids can change
 		if tmp >= PLAYERID_MIN and tmp <= PLAYERID_MAX then
 			self.Id = tmp
-		end
+	end
 	else -- see if it changed
 		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
 			self.Id = 0
 			self.Type = 0
 			self.Name = "<UNKNOWN>"
-		end
+	end
 	end
 end
 

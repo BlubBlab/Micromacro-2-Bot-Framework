@@ -5,7 +5,7 @@ CAbstractSkillSet = class(CBaseObject,
 			self.funcs = copyfrom.funcs;
 		end
 	end
-	
+
 );
 
 
@@ -59,8 +59,8 @@ function CAbstractSkillSet:loadSkillSet(class)
 
 		if( realRange > 100  and
 			( v.Type == STYPE_DAMAGE or
-			  v.Type == STYPE_DOT ) and
-			  v.Available) then
+			v.Type == STYPE_DOT ) and
+			v.Available) then
 			rangedSkills = true;
 			printf(language[176], v.Name);		-- Ranged skill found
 			break;
@@ -78,18 +78,18 @@ function CAbstractSkillSet:loadSkillSet(class)
 
 	-- default combat type if not in profile defined
 	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and
-	    settings.profile.options.COMBAT_TYPE ~= "melee" ) then
+		settings.profile.options.COMBAT_TYPE ~= "melee" ) then
 		if( player.Class1 == CLASS_WARRIOR or
-		    player.Class1 == CLASS_ROGUE   or
-		    player.Class1 == CLASS_WARDEN  or
-		    player.Class1 == CLASS_KNIGHT  or
+			player.Class1 == CLASS_ROGUE   or
+			player.Class1 == CLASS_WARDEN  or
+			player.Class1 == CLASS_KNIGHT  or
 			player.Class1 == CLASS_CHAMPION  ) then
 			settings.profile.options.COMBAT_TYPE  = "melee";
 		elseif(
-		    player.Class1 == CLASS_PRIEST  or
-		    player.Class1 == CLASS_SCOUT   or
-		    player.Class1 == CLASS_DRUID   or
-		    player.Class1 == CLASS_MAGE    or
+			player.Class1 == CLASS_PRIEST  or
+			player.Class1 == CLASS_SCOUT   or
+			player.Class1 == CLASS_DRUID   or
+			player.Class1 == CLASS_MAGE    or
 			player.Class1 == CLASS_WARLOCK ) then
 			settings.profile.options.COMBAT_TYPE  = "ranged";
 		else
@@ -108,8 +108,8 @@ function CAbstractSkillSet:loadSkillSet(class)
 
 		if( realRange > best_range and
 			( v.Type == STYPE_DAMAGE or
-			  v.Type == STYPE_DOT ) and
-			  v.Available) then
+			v.Type == STYPE_DOT ) and
+			v.Available) then
 			best_range = realRange;
 		end
 	end

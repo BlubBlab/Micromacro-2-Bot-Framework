@@ -21,19 +21,19 @@ local function explicitCast(_value, _type)
 end
 
 Node = class(
-function (self, name, subtable)
-	--- @list <CTask#task>
-	self.name =	name;
-	self.attributes ={};	
-	self.nodes = {};
-	self.value = nil;
-	self.subtable = subtable;
-end
+	function (self, name, subtable)
+		--- @list <CTask#task>
+		self.name =	name;
+		self.attributes ={};
+		self.nodes = {};
+		self.value = nil;
+		self.subtable = subtable;
+	end
 );
 
 
 function Node.new(name,attributes,subtable)
-	return Node(name,attributes); 
+	return Node(name,attributes);
 end
 
 -- get a single element by it's name or index
@@ -196,43 +196,43 @@ function Node:setAttributes(attributes)
 	self.attributes = attributes;
 end
 function Node:prase()
-	
+
 	local tmp_nodes = {};
 	local tmp_attributes = {};
 	local tmp_value = nil;
 	local xml_table = self.subtable;
-	
-	
+
+
 	if(xml_table[0] == nil)then
 		return nil;
 	end
 	for key,value in pairs(xml_table) do
 		if( type(key)~= "number")then
 			tmp_attributes[key] = implicitCast(value);
-			--print("value N: "..value);
+		--print("value N: "..value);
 		end
 	end
-	--Name? 
+	--Name?
 	if(	xml_table[1] ~= nil and type(xml_table[1]) ~= "table" and type(implicitCast(xml_table[1])) == "string")then
 		tmp_value = implicitCast(xml_table[1]);
-		--print("value unknown: "..xml_table[1]);
+	--print("value unknown: "..xml_table[1]);
 	end
-	
+
 	for i = 1, #xml_table do
 		if(xml_table[i]~= nil and type(xml_table[i] == "table"))then
 			if(xml_table[i][0] ~= nil)then
-			local node = Node(implicitCast(xml_table[i][0]),xml_table[i] );
-			node:prase(); -- we going recursive;
-			--local tablex = node:getAttributes()
-			--print("Deep")
-			--print_r(tablex);
-			table.insert(tmp_nodes,node);
+				local node = Node(implicitCast(xml_table[i][0]),xml_table[i] );
+				node:prase(); -- we going recursive;
+				--local tablex = node:getAttributes()
+				--print("Deep")
+				--print_r(tablex);
+				table.insert(tmp_nodes,node);
 			end
 		end
 	end
-	
+
 	--local node_main = Node(implicitCast(xml_table[0],xml_table))
-	
+
 	self:setAttributes(tmp_attributes);
 	self:setNodes(tmp_nodes);
 	self:setValue(tmp_value);
@@ -243,31 +243,31 @@ function parse_deep(xml_table)
 	local tmp_nodes = {};
 	local tmp_attributes = {};
 	local tmp_value = nil;
-	
+
 	if(xml_table[0] == nil)then
 		return nil;
 	end
 	for key,value in pairs(xml_table) do
 		if( type(key)~= "number")then
 			tmp_attributes[key] = implicitCast(value);
-			--print("attribute: "..value);
+		--print("attribute: "..value);
 		end
 	end
 	if(	xml_table[1] ~= nil and type(xml_table[1]) == "string")then
 		tmp_value = implicitCast(xml_table[1]);
-		--print("value"..xml_table[1]);
+	--print("value"..xml_table[1]);
 	end
 	for i = 1, #xml_table do
 		if(xml_table[i]~= nil and type(xml_table[i]) == "table")then
 			if(xml_table[i][0] ~= nil)then
-			local node = Node(implicitCast(xml_table[i][0]),xml_table[i] );
-			node:prase(); -- we going recursive;
-			--local tablex = node:getAttributes()
-			---print("not deep")
-			--print_r(tablex);
-			--local val = node:getValue();
-			--print_r(val);
-			table.insert(tmp_nodes,node);
+				local node = Node(implicitCast(xml_table[i][0]),xml_table[i] );
+				node:prase(); -- we going recursive;
+				--local tablex = node:getAttributes()
+				---print("not deep")
+				--print_r(tablex);
+				--local val = node:getValue();
+				--print_r(val);
+				table.insert(tmp_nodes,node);
 			end
 		end
 	end
@@ -277,4 +277,11 @@ function parse_deep(xml_table)
 	node_main:setValue(tmp_value);
 	return node_main;
 end
+
+
+
+
+
+
+
 

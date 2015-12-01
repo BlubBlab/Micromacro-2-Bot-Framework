@@ -1,12 +1,14 @@
 dyinclude("extesnion-classes/pawn.class.lua");
-include("skill.lua");
+dyinclude("extesnion-classes/movement.class.lua");
+--? loaded already in main loadlib
+--include("skill.lua");
 
 
 local BreakFromFight = false
 local break_fight = false;	-- flag to avoid kill counts for breaked fights
 local lootIgnoreList = {}
 local lootIgnoreListPos = 0
-
+local Movement = CMovement();
 CPlayer = class(CPawn,
 	function (self, ptr)
 		CPawn.constructor(self) -- call pawn constructor manually without 'ptr' arg.
@@ -122,7 +124,16 @@ function CPlayer:update()
 	local tmpId = memoryReadRepeat("uint", getProc(), tmpAddress + addresses.pawnId_offset) or 0
 	if players.funcs["player_eval_id"](tmpId) then
 		-- invalid address
-		return
+		local counter_error = 0;
+		--Todo recheck the error if their is a better solution possible a flag argument or return value?
+		-- loop invariants ( 9 < 10) => 0-> 9 = 10 tries
+		while(counter_error < 10 or players.funcs["player_eval_id"](tmpId))do
+			tmpId = memoryReadRepeat("uint", getProc(), tmpAddress + addresses.pawnId_offset) or 0
+			rest(1000)
+			counter_error = counter_error + 1;
+		 end
+		
+		error("Player update failed");
 	end
 
 	-- Else address good. If changed, update.
@@ -804,96 +815,8 @@ function CPlayer:lootAll(task)
 		end
 	return STATE_PENNDING;
 end
-function CPlayer:moveTo(task, waypoint, ignoreCycleTargets, dontStopAtEnd)
-	if(waypoint.Zone == nil) then  waypoint.Zone = 0; end;
-
-	local function passed_point(lastpos, point)
-		point.X = tonumber(point.X)
-		point.Z = tonumber(point.Z)
-
-		local posbuffer = 5 + waypoint.Zone;
-
-		local passed = true
-		if lastpos.X < point.X and self.X < point.X - posbuffer then
-			return false
-		end
-		if lastpos.X > point.X and self.X > point.X + posbuffer then
-			return false
-		end
-		if lastpos.Z < point.Z and self.Z < point.Z - posbuffer then
-			return false
-		end
-		if lastpos.Z > point.Z and self.Z > point.Z + posbuffer then
-			return false
-		end
-
-		return true
-	end
-	
-	local function do_when_finished()
-		
-		if (settings.profile.options.WP_NO_STOP ~= false) then
-		--cprintf(cli.green,"WP_NO_STOP = true \n ");
-		if (dontStopAtEnd ~= true) --[[or (settings.profile.options.QUICK_TURN == false)]] then
-			
-			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-		end
-		
-	else
-		--cprintf(cli.green,"WP_NO_STOP = false \n ");
-		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-	end
-
-	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-	--code for record Y values 
-	 -- if(waypoint.Y == nil and success)then
-		 -- __WPL.Waypoints[__WPL.CurrentWaypoint].Y = player.Y
-	 -- end
-	
-	if(not settings.profile.options.DROPHEIGHT)then
-		settings.profile.options.DROPHEIGHT = 35;
-	end
-	if(waypoint.Y and math.abs(player.Y - waypoint.Y) > settings.profile.options.DROPHEIGHT)then
-		if(failreason and (failreason == WF_TARGET or failreason == WF_COMBAT) or waypoint.Virtual == true) then
-			
-			--return success, failreason;
-		end
-		cprintf(cli.green,"We have drooped down so we search the next Waypoint \n");
-		__WPL:setWaypointIndex(__WPL:findPulledBeforeWaypoint()(player.X, player.Z, player.Y));
-	end	
-	end
-	local angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
-	local yangle = 0
-	if waypoint.Y ~= nil then
-		yangle = math.atan2(waypoint.Y - self.Y, ((waypoint.X - self.X)^2 + (waypoint.Z - self.Z)^2)^.5 );
-	end
-	self:updateDirection()
-	local angleDif = angleDifference(angle, self.Direction);
-	
-	if(task:getVar("startTime") == nil)then
-		local startTime = os.time();
-		task:setVar("startTime",startTime);
-	end
-	
-	ignoreTargets = ignoreTargets or false;
-
-	if( ignoreCycleTargets == nil ) then
-		ignoreCycleTargets = false;
-	end;
-
-	if( waypoint.Type == WPT_TRAVEL or waypoint.Type == WPT_RUN ) then
-		if( settings.profile.options.DEBUG_TARGET ) then
-			cprintf(cli.yellow, "[DEBUG] waypoint type RUN or TRAVEL. We don't target mobs.\n");
-		end
-		ignoreCycleTargets = true;	-- don't target mobs
-	end;
-	
-	
-	
-	
-	
-end
+function CPlayer:moveTo(task, waypoint, ignoreCycleTargets, dontStopAtEnd, range)
+	Movement:moveTo(task, waypoint,ignoreCycleTargets, dontStopAtEnd, range)
 function CPlayer:fight(task)
 
 end

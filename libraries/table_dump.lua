@@ -1,28 +1,53 @@
 --[[
+
 	Save Table to File
+
 	Load Table from File
+
 	v 1.0
+
 	
+
 	Lua 5.2 compatible
+
 	
+
 	Only Saves Tables, Numbers and Strings
+
 	Insides Table References are saved
+
 	Does not save Userdata, Metatables, Functions and indices of these
+
 	----------------------------------------------------
+
 	table.save( table , filename )
+
 	
+
 	on failure: returns an error msg
+
 	
+
 	----------------------------------------------------
+
 	table.load( filename or stringtable )
+
 	
+
 	Loads a table that has been saved via the table.save function
+
 	
+
 	on success: returns a previously saved table
+
 	on failure: returns as second argument an error msg
+
 	----------------------------------------------------
+
 	
+
 	Licensed under the same terms as Lua itself.
+
 ]]--
 do
 	-- declare local variables
@@ -67,7 +92,7 @@ do
 			for i,v in pairs( t ) do
 				-- escape handled values
 				if (not thandled[i]) then
-				
+
 					local str = ""
 					local stype = type( i )
 					-- handle index
@@ -82,7 +107,7 @@ do
 					elseif stype == "number" then
 						str = charS.."["..tostring( i ).."]="
 					end
-				
+
 					if str ~= "" then
 						stype = type( v )
 						-- handle value
@@ -105,7 +130,7 @@ do
 		file:write( "}" )
 		file:close()
 	end
-	
+
 	--// The Load Function
 	function table.load( sfile )
 		local ftables,err = loadfile( sfile )
@@ -128,7 +153,9 @@ do
 		end
 		return tables[1]
 	end
--- close do
+	-- close do
 end
+
+
 
 -- ChillCode

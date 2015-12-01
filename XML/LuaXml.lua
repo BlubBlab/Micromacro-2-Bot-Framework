@@ -14,7 +14,7 @@ xml.TAG = 0
 -- sets or returns tag of a LuaXML object
 function xml.tag(var,tag)
 	if base.type(var)~="table" then return end
-	if base.type(tag)=="nil" then 
+	if base.type(tag)=="nil" then
 		return var[TAG]
 	end
 	var[TAG] = tag
@@ -22,7 +22,7 @@ end
 
 -- creates a new LuaXML object either by setting the metatable of an existing Lua table or by setting its tag
 function xml.new(arg)
-	if base.type(arg)=="table" then 
+	if base.type(arg)=="table" then
 		base.setmetatable(arg,{__index=xml, __tostring=xml.str})
 		return arg
 	end
@@ -51,14 +51,14 @@ function xml.str(var,indent,tagValue)
 	if base.type(var)=="table" then
 		local tag = var[0] or tagValue or base.type(var)
 		local s = indentStr.."<"..tag
-		for k,v in base.pairs(var) do -- attributes 
+		for k,v in base.pairs(var) do -- attributes
 			if base.type(k)=="string" then
 				if base.type(v)=="table" and k~="_M" then -- otherwise recursiveness imminent
 					tableStr = tableStr..xml.str(v,indent+1,k)
 				else
 					s = s.." "..k.."=\""..xml.encode(base.tostring(v)).."\""
 				end
-			end
+		end
 		end
 		if #var==0 and #tableStr==0 then
 			s = s.." />\n"
@@ -69,9 +69,9 @@ function xml.str(var,indent,tagValue)
 			for k,v in base.ipairs(var) do -- elements
 				if base.type(v)=="string" then
 					s = s..indentStr.."	"..xml.encode(v).." \n"
-				else
-					s = s..xml.str(v,indent+1)
-				end
+			else
+				s = s..xml.str(v,indent+1)
+			end
 			end
 			s=s..tableStr..indentStr.."</"..tag..">\n"
 		end

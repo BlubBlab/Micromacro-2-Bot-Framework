@@ -40,7 +40,7 @@ global.printf = function(format, ...)
 		end
 
 		if( type(v) == "table" or type(v) == "boolean" or type(v) == "function"
-		or type(v) == "thread" or type(v) == "userdata" ) then
+			or type(v) == "thread" or type(v) == "userdata" ) then
 			t[i] = tostring(t[i]);
 		end
 
@@ -69,7 +69,7 @@ global.sprintf = function(format, ...)
 		end
 
 		if( type(v) == "table" or type(v) == "boolean" or type(v) == "function"
-		or type(v) == "thread" or type(v) == "userdata" ) then
+			or type(v) == "thread" or type(v) == "userdata" ) then
 			t[i] = tostring(t[i]);
 		end
 
