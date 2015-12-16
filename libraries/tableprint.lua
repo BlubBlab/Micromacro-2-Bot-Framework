@@ -4,15 +4,21 @@ function table.show(t, name, indent)
 
 	--[[ counts the number of elements in a table
 
+
    local function tablecount(t)
+
 
       local n = 0
 
+
       for _, _ in pairs(t) do n = n+1 end
+
 
       return n
 
+
    end
+
 
    ]]
 	-- (RiciLake) returns true if the table is empty

@@ -1,4 +1,5 @@
 dyinclude("classes/abstract.camera.class.lua",true);
+
 CCamera = class(CAbstractCamera,
 	function(self, ptr)
 		self.Address = ptr;
@@ -15,3 +16,7 @@ CCamera = class(CAbstractCamera,
 		end
 	end
 );
+
+
+
+

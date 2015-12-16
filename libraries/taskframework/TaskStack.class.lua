@@ -1,7 +1,7 @@
 --- The class for the task stack
--- 
+--
 -- version 0.91 beta for the task stack
--- 
+--
 -- @module CTaskStack
 
 include("Task.class.lua");
@@ -11,7 +11,7 @@ local degbug_state = false;
 
 ---
 -- Any type of var including lists
--- @type var 
+-- @type var
 
 ---
 -- One or more incoming argument.
@@ -22,10 +22,10 @@ local degbug_state = false;
 -- @function [parent=#global] CTaskStack
 -- @post Object is generated
 CTaskStack = class(
-function (self)
-	--- @list <CTask#task>
-	self.entry = {};
-end
+	function (self)
+		--- @list <CTask#task>
+		self.entry = {};
+	end
 );
 
 --- It's a fabric method for objects of the class CTaskStack
@@ -206,7 +206,7 @@ end
 -- @pre A instance of the object must be generated previously.
 -- @pre A task should be on top of the stack.
 -- @callof #pop, #push, #peek, #push_args.
--- @return #boolean if call was success full, 
+-- @return #boolean if call was success full,
 -- @return CTask#CONSTANCE What happend STATE_PENNDING, STATE_FAILED ,STATE_SUCCESS, STATE_NIL.
 -- @return #vars Unknown amount of args from the called function.
 -- @post task are removed from the top of the stack if the called function hasn't returned STATE_PENNDING

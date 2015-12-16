@@ -15,7 +15,7 @@ function CObjectQueue:update()
 	-- rest the counters
 	self.first = 0;
 	self.last = -1;
-	
+
 	local evalAddresse = objectslists.funcs["objectlists_eval_addresse"];
 	self.size = InputOutput:ObjectListSize(self);
 
@@ -28,17 +28,17 @@ function CObjectQueue:update()
 			end
 		end
 	end
-	
+
 	--self.Pointer = #self.Queue;
 end
 
 function CObjectQueue:peek( type )
 	local first = self.first;
-	
-	if first > self.last then 
+
+	if first > self.last then
 		--last try
 		local size = memoryReadInt(getProc(), addresses.staticTableSize);
-		
+
 		if(size > self.size)then
 			local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, (self.size + 1)*4);
 			if( evalAddresse( addr )) then
@@ -54,14 +54,14 @@ function CObjectQueue:peek( type )
 				return nil;
 			end
 		end
-		
+
 		return nil;
-	end	
-	
+	end
+
 	if(self.Queue[first] ~= nil)then
 		--update object
 		self.Queue[first]:update();
-		
+
 		if(self.Queue[first] ~= nil)then
 			if(not type or self.Queue[first].Type == type)then
 				local value = self.Queue[first]
@@ -72,28 +72,28 @@ function CObjectQueue:peek( type )
 			else
 				self.Queue[first] = nil        -- to allow garbage collection
 				self.first = first + 1
-				return self:peek();	
+				return self:peek();
 			end
 		else
 			self.Queue[first] = nil        -- to allow garbage collection
 			self.first = first + 1
-			return self:peek();	
+			return self:peek();
 		end
 	else
 		self.Queue[first] = nil        -- to allow garbage collection
 		self.first = first + 1
-		return self:peek();	
+		return self:peek();
 	end
 
 end
 
 function CObjectQueue:poll( type )
-	local first = self.first:
-	
-	if first > self.last then 
+	local first = self.first;
+
+	if first > self.last then
 		--last try
 		local size = memoryReadInt(getProc(), addresses.staticTableSize);
-		
+
 		if(size > self.size)then
 			local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, (self.size + 1)*4);
 			if( evalAddresse( addr )) then
@@ -110,12 +110,12 @@ function CObjectQueue:poll( type )
 			end
 		end
 		return nil;
-	end	
-	
+	end
+
 	if(self.Queue[first] ~= nil)then
 		--update object
 		self.Queue[first]:update();
-		
+
 		if(self.Queue[first] ~= nil)then
 			if(not type or self.Queue[first].Type == type)then
 				local value = self.Queue[first]
@@ -125,22 +125,22 @@ function CObjectQueue:poll( type )
 			else
 				self.Queue[first] = nil        -- to allow garbage collection
 				self.first = first + 1
-				return self:poll();	
+				return self:poll();
 			end
 		else
 			self.Queue[first] = nil        -- to allow garbage collection
 			self.first = first + 1
-			return self:poll();	
+			return self:poll();
 		end
 	else
 		self.Queue[first] = nil        -- to allow garbage collection
 		self.first = first + 1
-		return self:poll();	
+		return self:poll();
 	end
 end
--
+
 function CObjectQueue:add(object)
-	
+
 	--pushright
 	local last = self.last + 1
 	self.last = last;

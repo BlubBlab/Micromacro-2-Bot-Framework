@@ -68,36 +68,36 @@ end
 --
 
 local fifo_new = function()
-    return { first = 1, count = 0}
+	return { first = 1, count = 0}
 end
 
 local fifo_push = function( fifo, ...)
-    local first, count, added = fifo.first, fifo.count, select( '#', ...)
-    local start = first + count - 1
-    for i = 1, added do
-        fifo[start + i] = select( i, ...)
-    end
-    fifo.count = count + added
+	local first, count, added = fifo.first, fifo.count, select( '#', ...)
+	local start = first + count - 1
+	for i = 1, added do
+		fifo[start + i] = select( i, ...)
+	end
+	fifo.count = count + added
 end
 
 local fifo_peek = function( fifo, count)
-    if count <= fifo.count then
-			local first = fifo.first
-			local last = first + count - 1
-			return unpack( fifo, first, last)
-    end
+	if count <= fifo.count then
+		local first = fifo.first
+		local last = first + count - 1
+		return unpack( fifo, first, last)
+	end
 end
 
 local fifo_pop = function( fifo, count)
-    local first = fifo.first
-    local last = first + count - 1
-    local out = { unpack( fifo, first, last)}
-    for i = first, last do
-        fifo[i] = nil
-    end
-    fifo.first = first + count
-    fifo.count = fifo.count - count
-    return unpack( out)
+	local first = fifo.first
+	local last = first + count - 1
+	local out = { unpack( fifo, first, last)}
+	for i = first, last do
+		fifo[i] = nil
+	end
+	fifo.first = first + count
+	fifo.count = fifo.count - count
+	return unpack( out)
 end
 
 
@@ -125,13 +125,13 @@ local _limits= {}
 -- Gives appropriate tables for a certain Linda (creates them if needed)
 --
 local function tables( ud )
-    -- tables are created either all or nothing
-    --
-    if not _data[ud] then
-        _data[ud]= {}
-        _limits[ud]= {}
-    end
-    return _data[ud], _limits[ud]
+	-- tables are created either all or nothing
+	--
+	if not _data[ud] then
+		_data[ud]= {}
+		_limits[ud]= {}
+	end
+	return _data[ud], _limits[ud]
 end
 
 -----
@@ -148,26 +148,26 @@ end
 --
 function send( ud, key, ...)
 
-    local data, limits = tables( ud)
+	local data, limits = tables( ud)
 
-    local n = select( '#', ...)
+	local n = select( '#', ...)
 
-    -- Initialize queue for all keys that have been used with ':send()'
-    --
-    if data[key] == nil then
-        data[key] = fifo_new()
-    end
-    local fifo = data[key]
+	-- Initialize queue for all keys that have been used with ':send()'
+	--
+	if data[key] == nil then
+		data[key] = fifo_new()
+	end
+	local fifo = data[key]
 
-    local len = fifo.count
-    local m = limits[key]
+	local len = fifo.count
+	local m = limits[key]
 
-    if m and len+n > m then
-        return false    -- would exceed the limit; try again later
-    end
+	if m and len+n > m then
+		return false    -- would exceed the limit; try again later
+	end
 
-    fifo_push( fifo, ...)
-    return true
+	fifo_push( fifo, ...)
+	return true
 end
 
 
@@ -179,18 +179,18 @@ end
 --
 function receive( ud, ...)
 
-    local data = tables( ud)
+	local data = tables( ud)
 
-    for i = 1, select( '#', ...) do
-        local key = select( i, ...)
-        local fifo = data[key]
-        if fifo and fifo.count > 0 then
-            local val = fifo_pop( fifo, 1)
-            if val ~= nil then
-                return key, val
-            end
-        end
-    end
+	for i = 1, select( '#', ...) do
+		local key = select( i, ...)
+		local fifo = data[key]
+		if fifo and fifo.count > 0 then
+			local val = fifo_pop( fifo, 1)
+			if val ~= nil then
+				return key, val
+			end
+		end
+	end
 end
 
 
@@ -200,17 +200,17 @@ end
 -- Read a single key, consuming the data found.
 --
 receive_batched = function( ud, key, min_count, max_count)
-    if min_count > 0 then
-        local fifo = tables( ud)[key]
-        if fifo then
-            local fifo_count = fifo.count
-            if fifo_count >= min_count then
-                max_count = max_count or min_count
-                max_count = (max_count > fifo_count) and fifo_count or max_count
-                return key, fifo_pop( fifo, max_count)
-            end
-        end
-    end
+	if min_count > 0 then
+		local fifo = tables( ud)[key]
+		if fifo then
+			local fifo_count = fifo.count
+			if fifo_count >= min_count then
+				max_count = max_count or min_count
+				max_count = (max_count > fifo_count) and fifo_count or max_count
+				return key, fifo_pop( fifo, max_count)
+			end
+		end
+	end
 end
 
 
@@ -219,9 +219,9 @@ end
 --
 function limit( ud, key, n)
 
-    local _, limits = tables( ud)
+	local _, limits = tables( ud)
 
-    limits[key] = n
+	limits[key] = n
 end
 
 
@@ -230,17 +230,17 @@ end
 --
 function set( ud, key, val)
 
-    local data, _ = tables( ud)
+	local data, _ = tables( ud)
 
-    -- Setting a key to 'nil' really clears it; only queing uses sentinels.
-    --
-    if val ~= nil then
-        local fifo = fifo_new()
-        fifo_push( fifo, val)
-        data[key] = fifo
-    else
-        data[key] = nil
-    end
+	-- Setting a key to 'nil' really clears it; only queing uses sentinels.
+	--
+	if val ~= nil then
+		local fifo = fifo_new()
+		fifo_push( fifo, val)
+		data[key] = fifo
+	else
+		data[key] = nil
+	end
 end
 
 
@@ -248,9 +248,9 @@ end
 -- [val]= get( linda_deep_ud, key )
 --
 function get( ud, key)
-    local data, _ = tables( ud)
-    local fifo = data[key]
-    return fifo and fifo_peek( fifo, 1)
+	local data, _ = tables( ud)
+	local fifo = data[key]
+	return fifo and fifo_peek( fifo, 1)
 end
 
 
@@ -262,33 +262,33 @@ end
 -- linda:count(key) returns the number of items waiting in the key
 -- linda:count(key,...) -> returns a table telling, for each key, the number of items
 function count( ud, ...)
-    local data, _ = tables( ud)
-    local n = select( '#', ...)
-    if n == 0 then
-        local out
-        for key, _ in pairs( data) do
+	local data, _ = tables( ud)
+	local n = select( '#', ...)
+	if n == 0 then
+		local out
+		for key, _ in pairs( data) do
 			local fifo = data[key]
 			local count = fifo and fifo.count or 0
 			out = out or {}
-            out[key] = count
-            found = true
-        end
-        return out
-    elseif n == 1 then
-        local key = ...
-        local fifo = data[key]
+			out[key] = count
+			found = true
+		end
+		return out
+	elseif n == 1 then
+		local key = ...
+		local fifo = data[key]
 		return fifo and fifo.count or nil
-    else -- more than 1 key
-        local out
-        for i = 1, n do
-            local key = select( i, ...)
+	else -- more than 1 key
+		local out
+		for i = 1, n do
+			local key = select( i, ...)
 			local fifo = data[key]
 			local count = fifo and fifo.count or nil
 			out = out or {}
-            out[key] = count
+			out[key] = count
 		end
-        return out
-    end
+		return out
+	end
 end
 
 
@@ -299,6 +299,6 @@ end
 --
 function clear( ud)
 
-    _data[ud]= nil
-    _limits[ud]= nil
+	_data[ud]= nil
+	_limits[ud]= nil
 end

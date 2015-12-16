@@ -25,4 +25,6 @@ function CObject:update()
 end
 
 
+
+
 --implment your own stuff or overwrite existing functions

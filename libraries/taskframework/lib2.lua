@@ -1,6 +1,6 @@
 --- The Help Modul
 -- @module lib2
--- 
+--
 --
 
 --require for compatibility
@@ -12,7 +12,7 @@ include("TaskStack.class.lua");
 
 ---
 -- Any type of var including lists
--- @type var 
+-- @type var
 
 ---
 -- One or more incoming argument.
@@ -26,9 +26,9 @@ getTime = time.getNow;
 --- unpack function with number of arguments on the end.
 -- @function[parent=#global] pack
 -- @param  #vars ... Args to pack
-pack = table.pack; 
+pack = table.pack;
 -- function pack(...)
-  -- return { n = select("#", ...), ... }
+-- return { n = select("#", ...), ... }
 -- end
 --- unpack function with number of arguments on the end.
 -- @function [parent=#global] unpack
@@ -36,14 +36,14 @@ pack = table.pack;
 -- @return #table t the unpacked args
 unpack = table.unpack;
 -- function unpack(...)
-	-- local n = select('#', ...);
-	-- local t = {};
-	-- for i = 1,n do
-		-- local v = select(i, ...);
-		-- t[i] = v;
-	-- end
+-- local n = select('#', ...);
+-- local t = {};
+-- for i = 1,n do
+-- local v = select(i, ...);
+-- t[i] = v;
+-- end
 
-	-- return t;
+-- return t;
 -- end
 --- unpack function with number of arguments on the end.
 -- @function [parent=#global] unpack2
@@ -70,7 +70,7 @@ function deltaTime(time_a,time_b)
 end
 --- Convert hours to timer value
 -- @function [parent=#global] hoursToTimer
--- @param #number hours  The time in hours 
+-- @param #number hours  The time in hours
 -- @return #number The time in milliseconds
 function hoursToTimer(hours)
 	return math.floor( hours * 3600000 );
@@ -91,7 +91,7 @@ end
 function secondsToTimer(seconds)
 	return math.floor( seconds * 1000 );
 end
---- Make a deep copy of a table 
+--- Make a deep copy of a table
 -- @function [parent=#global] deepcopy
 -- @param  #table orig The table which should be copy
 -- @return #table copy Your new copy
@@ -119,26 +119,26 @@ end
 -- @post The new task has been added to the task stack.
 -- @return #number STATE_PENNDING
 function taskFactory(name, func,...)
-		
-		taskstack:push_state(name, func );
-		taskstack:push_args(...)
-		
-		return STATE_PENNDING;
+
+	taskstack:push_state(name, func );
+	taskstack:push_args(...)
+
+	return STATE_PENNDING;
 
 end
 --- Factory function for making a new scheduled task
 -- @function [parent=#global] timerFactory
 -- @pre The TaskTimer class must have been loaded previously in the lib2.lua
--- @param #string name The label for the task 
+-- @param #string name The label for the task
 -- @param #number time The interval for the task in  milliseconds.
 -- @param #function  func The function which should be called for the task
 -- @param #vars ... Any additional args for the task.
 -- @return #number STATE_PENNDING
 function timerFactory(name, time, func, ...)
 
-		tasktimer:registerTask(name, time, func, ...);
-		
-		return STATE_PENNDING;
+	tasktimer:registerTask(name, time, func, ...);
+
+	return STATE_PENNDING;
 end
 --- Wait function
 -- @function [parent=#global] rest
@@ -146,15 +146,20 @@ end
 -- @post We have waited our time.
 -- @notice The use of this function not recommend.
 function rest(msec)
-	
-	
+
+
 	os.execute("sleep -m" .. tonumber(msec))
 
 	--[[	local i = 0;
+
 		while( deltaTime(getTime(), startTime) < msec ) do
+
 			i = i + 1;
+
 		end
+
 		return i;
+
 		]]--
 end
 --- Wait function but let scheduled tasks run if possible.
@@ -193,18 +198,18 @@ end
 -- @return #number CTask#STATE_PENNDING
 -- @notice This will not stop scheduled tasks from running;
 function restTask(msec)
-		local function wait(self,start,msec)
-			
-			if(deltaTime(getTime(), startTime) >= msec )then
-				return STATE_SUCCESS;
-			else
-				return STATE_PENNDING;
-			end
+	local function wait(self,start,msec)
+
+		if(deltaTime(getTime(), startTime) >= msec )then
+			return STATE_SUCCESS;
+		else
+			return STATE_PENNDING;
 		end
-		taskstack:push_state("STATE_REST_TASK",wait );
-		taskstack:push_args(getTime(),msec)
-		
-		return STATE_PENNDING;
+	end
+	taskstack:push_state("STATE_REST_TASK",wait );
+	taskstack:push_args(getTime(),msec)
+
+	return STATE_PENNDING;
 end
 --- Create a new Task for the purpose of waiting
 --
@@ -216,16 +221,17 @@ end
 -- @return #number CTask#STATE_PENNDING
 function yrestTask(msec)
 	local function wait(self,start,msec)
-			tasktimer:timed_run(msec);
-			if(deltaTime(getTime(), startTime) >= msec )then
-				return STATE_SUCCESS;
-			else
-				return STATE_PENNDING;
-			end
+		tasktimer:timed_run(msec);
+		if(deltaTime(getTime(), startTime) >= msec )then
+			return STATE_SUCCESS;
+		else
+			return STATE_PENNDING;
 		end
-		taskstack:push_state("STATE_YREST_TASK", wait );
-		taskstack:push_args(getTime(),msec)
-		
-		return STATE_PENNDING;
+	end
+	taskstack:push_state("STATE_YREST_TASK", wait );
+	taskstack:push_args(getTime(),msec)
+
+	return STATE_PENNDING;
 end
+
 

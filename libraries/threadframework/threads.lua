@@ -5,7 +5,7 @@ if(macro.is32bit())then
 else
 	lanes = include("64bit/load.lua")
 end
-[[Question: in c and c# threads are functions in Java they are objects which way?]]
+--[[Question: in c and c# threads are functions in Java they are objects which way?]]
 local ThreadList ={}
 local LindaList = {}
 local LookList = {}
@@ -18,7 +18,7 @@ function createRealThread( name, func, args, prior)
 		local thread = lanes.gen("*",{globals = _G, priority = prior},func)(args)
 	end
 	ThreadList[name] = thread;
-end 
+end
 function killRealThread( name, timeout, force)
 	local thread = ThreadList[name]
 	if(thread ~= nil)then
@@ -36,7 +36,7 @@ function getRealThreadStatus(name)
 	end
 end
 --Lindas are thread safe queues
-[[ ? create a wrapper class for lindas?]]
+--[[ ? create a wrapper class for lindas?]]
 function createLinda(name)
 	linda = lanes.linda()
 	if(name ~= nil)then
@@ -53,7 +53,7 @@ end
 function sleepThread(msec)
 	system.rest(msec)
 end
-[[TODO implement SwitchToThread() in MM2]]
+--[[TODO implement SwitchToThread() in MM2]]
 function yieldThread()
 	-- this won't work because execute is a child process
 	--os.execute("sleep 0")
@@ -62,7 +62,7 @@ function yieldThread()
 	else
 		system.rest(0)
 	end
-	
+
 end
 function createLock(name)
 	local linda = lanes.linda()
@@ -75,7 +75,7 @@ end
 function getLock(name)
 	return LookList[name];
 end
-[
+
 function lock(lockOject)
 	lockObject(1)
 end

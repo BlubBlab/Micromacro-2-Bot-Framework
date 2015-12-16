@@ -1,9 +1,9 @@
 --- The class for the tasks
--- 
+--
 --  version 0.5 beta for the task class
---  
+--
 -- @module CTask
- 
+
 --- debug on/off
 local debug_task = false;
 --constants for the states.
@@ -23,7 +23,7 @@ STATE_NIL = 3;
 
 ---
 -- Any type of var including lists
--- @type var 
+-- @type var
 
 ---
 -- One or more incoming argument.
@@ -56,42 +56,42 @@ STATE_NIL = 3;
 -- @param #function success_func (optional)The function which should be called if the previous task success.
 -- @post Object is generated
 CTask = class(
-function (self, name , func ,fail_name , fail_func, success_name , success_func)
-	--- @list <#state>
-	self.entry = {};
-	
-	if(func == nil or type(func) ~= "function")then
-		local err = "Error: Non-function type passed to Task constructor where a function is expected.";
-		setTextColor(cli.yellow);
-		error(err, 2);
-		return;
-	end
+	function (self, name , func ,fail_name , fail_func, success_name , success_func)
+		--- @list <#state>
+		self.entry = {};
 
-	if(fail_func and type(fail_func) ~= "function")then
-		local err = "Error: Non-function type passed to Task constructor where a function is expected(failed).";
-		setTextColor(cli.yellow);
-		error(err, 2);
-		return;
-	end
+		if(func == nil or type(func) ~= "function")then
+			local err = "Error: Non-function type passed to Task constructor where a function is expected.";
+			setTextColor(cli.yellow);
+			error(err, 2);
+			return;
+		end
 
-	if(success_func and type(success_func) ~= "function")then
-		local err = "Error: Non-function type passed to Task constructor where a function is expected(success).";
-		setTextColor(cli.yellow);
-		error(err, 2);
-		return;
+		if(fail_func and type(fail_func) ~= "function")then
+			local err = "Error: Non-function type passed to Task constructor where a function is expected(failed).";
+			setTextColor(cli.yellow);
+			error(err, 2);
+			return;
+		end
+
+		if(success_func and type(success_func) ~= "function")then
+			local err = "Error: Non-function type passed to Task constructor where a function is expected(success).";
+			setTextColor(cli.yellow);
+			error(err, 2);
+			return;
+		end
+		self.entry.state_name = name or "STATE_DEFAULT";
+		self.entry.state_func = func;
+		self.entry.last_call = nil;
+		self.entry.last_success = nil;
+		self.entry.fail_name = fail_name or "STATE_DEFAULT";
+		self.entry.fail_func = fail_func;
+		self.entry.success_name =  success_name or "STATE_DEFAULT";
+		self.entry.success_func = success_func;
+		self.entry.args = nil;
+		self.entry.success_args = nil;
+		self.entry.fail_args = nil;
 	end
-	self.entry.state_name = name or "STATE_DEFAULT";
-	self.entry.state_func = func;
-	self.entry.last_call = nil;
-	self.entry.last_success = nil;
-	self.entry.fail_name = fail_name or "STATE_DEFAULT";
-	self.entry.fail_func = fail_func;
-	self.entry.success_name =  success_name or "STATE_DEFAULT";
-	self.entry.success_func = success_func;
-	self.entry.args = nil;
-	self.entry.success_args = nil;
-	self.entry.fail_args = nil;
-end
 );
 --- Return a custom var for the task
 -- @function [parent=#CTask]  getVar
@@ -108,7 +108,7 @@ end
 -- @param #var var The var which should be saved.
 -- @post The var is internal saved.
 function CTask:setVar(var_name, var)
-	
+
 	if(var_name =="state_name" or var_name =="state_func" or var_name =="args" )then
 		local err = "Error: Illegal access on predefined var with task:setVar() .";
 		setTextColor(cli.yellow);
@@ -146,7 +146,7 @@ end
 --- Return and generate the task on the fail case
 -- @function [parent=#CTask] getFailTask
 -- @pre A instance of the object must be generated previously
--- @pre Infos about the fail case should have been added previously 
+-- @pre Infos about the fail case should have been added previously
 -- @return #CTask The requested new task.
 function CTask:getFailTask()
 	return  CTask(self.entry.fail_name,self.entry.fail_func);
@@ -154,7 +154,7 @@ end
 --- Return the fails args.
 -- @function [parent=#CTask] getFailArgs
 -- @pre A instance of the object must be generated previously
--- @pre Args about the fail case should have been added previously 
+-- @pre Args about the fail case should have been added previously
 -- @return #table The requested args of the fails case.
 function CTask:getFailArgs()
 	return self.entry.fail_args;
@@ -162,7 +162,7 @@ end
 --- Return the success args
 -- @function [parent=#CTask] getSuccessArgs
 -- @pre A instance of the object must be generated previously
--- @pre Args about the fail case should have been added previously 
+-- @pre Args about the fail case should have been added previously
 -- @return #table The requested args of the fails case.
 function CTask:getSuccessArgs()
 	return self.entry.success_args;
@@ -170,7 +170,7 @@ end
 --- Return and generate the task on the success case
 -- @function [parent=#CTask] getSuccessTask
 -- @pre A instance of the object must be generated previously
--- @pre Infos about the success case should have been added previously 
+-- @pre Infos about the success case should have been added previously
 -- @return #CTask The requested new task
 function CTask:getSuccessTask()
 	return  CTask(self.entry.success_name,self.entry.success_func);

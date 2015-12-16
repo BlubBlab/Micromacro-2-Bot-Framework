@@ -16,3 +16,5 @@ CDatabase = class(CAbstractDatabase,
 	end
 
 );
+
+

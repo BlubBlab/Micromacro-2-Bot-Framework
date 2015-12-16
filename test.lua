@@ -63,7 +63,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 		I also implemented yrestTask(msec) and restTaks(msec) if you need to wait for something
+
+
+
+
+
 
 
 
@@ -79,7 +89,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 		function/task by return yrestTask(..). 
+
+
+
+
+
 
 
 
@@ -95,7 +115,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 		If everything break yrest and rest also avaible but the use isn't recommended.
+
+
+
+
+
 
 
 
@@ -113,7 +143,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 		The (new) format for task functions is:
+
+
+
+
+
 
 
 
@@ -129,7 +169,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 			
+
+
+
+
+
 
 
 
@@ -145,6 +195,11 @@ function macro.main()
 
 
 
+
+
+
+
+
 			task:setVar("myvar",var);
 
 
@@ -153,7 +208,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 			
+
+
+
+
+
 
 
 
@@ -169,7 +234,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 			local myvar = task:getVar("mayVar");
+
+
+
+
+
 
 
 
@@ -185,7 +260,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 			Depending what you want you need return one of those 3:
+
+
+
+
+
 
 
 
@@ -201,6 +286,11 @@ function macro.main()
 
 
 
+
+
+
+
+
 			return 	SomeoneOfThese, arg1 , arg2 ,...argN;
 
 
@@ -209,7 +299,17 @@ function macro.main()
 
 
 
+
+
+
+
+
 		end
+
+
+
+
+
 
 
 

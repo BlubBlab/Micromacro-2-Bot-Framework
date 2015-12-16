@@ -1,9 +1,9 @@
 --- The class for task
--- 
+--
 -- This is version 0.9 beta of the class for tasks
--- 
+--
 -- @module CTaskTimer
--- 
+--
 
 include("Task.class.lua");
 --- debug on/off
@@ -11,7 +11,7 @@ local degbug_timed_state = false;
 
 ---
 -- Any type of var including lists
--- @type var 
+-- @type var
 
 ---
 -- One or more incoming argument.
@@ -22,12 +22,12 @@ local degbug_timed_state = false;
 -- @function [parent=#global] CTaskTimer
 -- @post Object is generated
 CTaskTimer = class(
-function (self)
-	--- @list <CTask#CTask>
-	self.entry = {};
-	
-	self.lastkey = nil;
-end
+	function (self)
+		--- @list <CTask#CTask>
+		self.entry = {};
+
+		self.lastkey = nil;
+	end
 );
 --- It's a fabric method for objects of the class CTaskStack
 -- @function [parent=#CTaskTimer] new
@@ -82,9 +82,13 @@ function CTaskTimer:unregisterTaskTimer(name)
 		end
 	end
 	--[[
+
 	if( self.entry[name] ) then
+
 	self.entry[name] = nil;
+
 	end;
+
 	]]--
 end
 --- Get the size of the list
@@ -188,5 +192,7 @@ end
 --- A global object of the class CTaskTimer
 --  This is the default object
 tasktimer = CTaskTimer.new();
+
+
 
 

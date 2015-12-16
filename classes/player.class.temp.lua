@@ -1,7 +1,7 @@
-dyinclude("extesnion-classes/pawn.class.lua");
-dyinclude("extesnion-classes/movement.class.lua");
---? loaded already in main loadlib
---include("skill.lua");
+dyinclude("meta-settings/player.settings.lua");
+dyinclude("extension-classes/pawn.class.lua");
+dyinclude("extension-classes/movement.class.lua");
+
 
 
 local BreakFromFight = false
@@ -9,6 +9,7 @@ local break_fight = false;	-- flag to avoid kill counts for breaked fights
 local lootIgnoreList = {}
 local lootIgnoreListPos = 0
 local Movement = CMovement();
+
 CPlayer = class(CPawn,
 	function (self, ptr)
 		CPawn.constructor(self) -- call pawn constructor manually without 'ptr' arg.
@@ -37,7 +38,7 @@ CPlayer = class(CPawn,
 		self.Nature = 0;
 		self.Psi = 0;
 
-		--WE MAKE A CLASS POTION out of this
+		--TODO:We make a  class called POTION out of this
 		--self.PotionLastUseTime = 0;
 		--self.PotionHpUsed = 0;			-- counts use of HP over time potions
 		--self.PotionManaUsed = 0;		-- counts use of mana over time potions
@@ -125,14 +126,15 @@ function CPlayer:update()
 	if players.funcs["player_eval_id"](tmpId) then
 		-- invalid address
 		local counter_error = 0;
-		--Todo recheck the error if their is a better solution possible a flag argument or return value?
+		-- TODO: recheck the error if their is a better solution possible a flag argument or return value?
+		-- TODO: do it for the rest too
 		-- loop invariants ( 9 < 10) => 0-> 9 = 10 tries
 		while(counter_error < 10 or players.funcs["player_eval_id"](tmpId))do
 			tmpId = memoryReadRepeat("uint", getProc(), tmpAddress + addresses.pawnId_offset) or 0
 			rest(1000)
 			counter_error = counter_error + 1;
-		 end
-		
+		end
+
 		error("Player update failed");
 	end
 
@@ -164,13 +166,13 @@ function CPlayer:update()
 			if( addressChanged == true)then
 				zoned = true;
 			end
-			
+
 			addressChanged = false
 		end
 	end
-	
-	
-	
+
+
+
 
 	self:updateClasses()
 	self:updateLevels()
@@ -197,13 +199,13 @@ function CPlayer:update()
 	end
 	self:updatePsi()
 	self:updateGlobalCooldown()
-		if(zoned == true)then
-	--new event onZoneChange
+	if(zoned == true)then
+		--new event onZoneChange
 		if( type(settings.profile.events.onZoneChange) == "function" ) then
 			local status,err = pcall(settings.profile.events.onZoneChange);
 			if( status == false ) then
 				local msg = sprintf(language[555], err);--555 new error message
-			error(msg);
+				error(msg);
 			end
 		end
 		addressChanged2 = false;
@@ -307,8 +309,8 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 			local target = CPawn.new(self.TargetPtr)
 			target:updateLastHP()
 			if target.TargetPtr == self.Address or
-			target:targetIsFriend() or
-			target.LastHP > 0 then
+				target:targetIsFriend() or
+				target.LastHP > 0 then
 				return target
 			end
 		end
@@ -345,7 +347,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 					pawn:updateXYZ()
 					pawn:updateInParty()
 					if ((pawn.TargetPtr == self.Address or pawn:targetIsFriend()) and
-					aggroOnly == true) or aggroOnly == false then
+						aggroOnly == true) or aggroOnly == false then
 						local currentScore = 0;
 						pawn:updateHP()
 						currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
@@ -373,7 +375,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 		return nil;
 	end
 end
---TODO cchange to task
+--TODO: change to task
 local function RestWhileCheckingForWaypoint(_duration)
 	player:updateActualSpeed()
 	if #__WPL.Waypoints > 0 and player.Moving and not player.Fighting then
@@ -382,7 +384,7 @@ local function RestWhileCheckingForWaypoint(_duration)
 		local curWP = __WPL.Waypoints[__WPL.CurrentWaypoint]
 		local lastdist = distance(player.X,player.Z,curWP.X, curWP.Z)
 		repeat
-			startdist = lastdist
+			local startdist = lastdist
 			yrest(10)
 			player:updateXYZ()
 			lastdist = distance(player.X, player.Z, curWP.X, curWP.Z)
@@ -407,7 +409,7 @@ function evalTargetDefault(address, target)
 
 	local function debug_target(_place)
 		if settings.profile.options.DEBUG_TARGET and
-		   player.TargetPtr ~= player.LastTargetPtr then
+			player.TargetPtr ~= player.LastTargetPtr then
 			cprintf(cli.yellow, "[DEBUG] "..(target.Address or 0).." ".._place.."\n");
 			player.LastTargetPtr = player.TargetPtr;		-- remember target address to avoid msg spam
 		end
@@ -471,11 +473,11 @@ function evalTargetDefault(address, target)
 	player:updateBattling()
 	if player.Battling then -- Battling flag is on
 		if target.TargetPtr == player.Address or -- We are being targeted
-		  target:targetIsFriend(true) then -- Or friend is being targeted
-			if target.Type ~= PT_PLAYER or settings.profile.options.PVP ~= false then --  Check PVP
-				return true
+			target:targetIsFriend(true) then -- Or friend is being targeted
+		if target.Type ~= PT_PLAYER or settings.profile.options.PVP ~= false then --  Check PVP
+			return true
 			end
-		end
+	end
 	end
 
 	--== Non aggro checks ==--
@@ -490,11 +492,11 @@ function evalTargetDefault(address, target)
 	-- Check height difference
 	target:updateXYZ()
 	player:updateXYZ()
-	
+
 	if( not settings.profile.options.DROPHEIGHT)then
 		settings.profile.options.DROPHEIGHT = 35;
 	end
-	
+
 	if( math.abs(target.Y - player.Y) > settings.profile.options.DROPHEIGHT ) then
 		debug_target("target height difference is too great")
 		return false;
@@ -503,7 +505,7 @@ function evalTargetDefault(address, target)
 	-- check level of target against our leveldif settings
 	target:updateLevel()
 	if( ( target.Level - player.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_ABOVE)  or
-	( player.Level - target.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_BELOW)  ) then
+		( player.Level - target.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_BELOW)  ) then
 		debug_target("target lvl above/below profile settings without battling")
 		return false;			-- he is not a valid target
 	end;
@@ -601,7 +603,7 @@ function evalTargetDefault(address, target)
 	-- target is to strong for us
 	if (settings.profile.options.PARTY_INSTANCE ~= true ) then
 		if( target.MaxHP > player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
---				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+			--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
 			printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
 			return false;		-- he is not a valid target
 		end;
@@ -662,7 +664,7 @@ function evalTargetLootable(address, target)
 	if(not settings.profile.options.DROPHEIGHT)then
 		settings.profile.options.DROPHEIGHT = 35;
 	end
-	
+
 	if( math.abs(target.Y - player.Y) > settings.profile.options.DROPHEIGHT ) then
 		return false;
 	end
@@ -710,7 +712,7 @@ function evalTargetLootable(address, target)
 		end
 		return false;			-- he is not a valid target
 	end;
-	
+
 
 	return true
 end
@@ -752,7 +754,7 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 	return -- means you found nothing, so returns nil
 end
 function CPlayer:lootAll(task)
-	
+
 	if( settings.profile.options.LOOT ~= true ) then
 		if( settings.profile.options.DEBUG_LOOT) then
 			cprintf(cli.yellow, "[DEBUG] don't loot all reason: settings.profile.options.LOOT ~= true\n");
@@ -774,60 +776,61 @@ function CPlayer:lootAll(task)
 
 
 
-		-- Check if inventory is full. We don't loot if inventory is full.
-		if inventory:itemTotalCount(0) == 0 then
-			if( settings.profile.options.DEBUG_LOOT) then
-				cprintf(cli.yellow, "[DEBUG] don't loot all reason: inventory is full\n");
-			end;
+	-- Check if inventory is full. We don't loot if inventory is full.
+	if inventory:itemTotalCount(0) == 0 then
+		if( settings.profile.options.DEBUG_LOOT) then
+			cprintf(cli.yellow, "[DEBUG] don't loot all reason: inventory is full\n");
+		end;
+		return
+	end
+
+	self:updateBattling()
+	if( self.Battling  and
+		self:findEnemy(true,nil,evalTargetDefault)) then
+		return STATE_FAILED;
+	end
+
+	local Lootable = self:findNearestNameOrId("", nil, evalTargetLootable)
+
+	if Lootable == nil then
+		return STATE_SUCCESS;
+	else
+		Lootable = CPawn(Lootable.Address)
+	end
+
+	self:target(Lootable)
+	self:updateTargetPtr()
+	if self.TargetPtr ~= 0 then -- Target's still there.
+		self:loot()
+		if self:findEnemy(true, nil, evalTargetDefault) then
+			-- not looting because of aggro
 			return
 		end
-
-		self:updateBattling()
-		if( self.Battling  and
-			self:findEnemy(true,nil,evalTargetDefault)) then
-			return STATE_FAILED;
+		yrest(50)
+		Lootable:updateLootable();
+		if Lootable.Lootable == true then
+			-- Failed to loot. Add to ignore list
+			lootIgnoreListPos = lootIgnoreListPos + 1
+			if lootIgnoreListPos > settings.profile.options.LOOT_IGNORE_LIST_SIZE then lootIgnoreListPos = 1 end
+			lootIgnoreList[lootIgnoreListPos] = Lootable.Address
 		end
-
-		local Lootable = self:findNearestNameOrId("", nil, evalTargetLootable)
-
-		if Lootable == nil then
-			return STATE_SUCCESS;
-		else
-			Lootable = CPawn(Lootable.Address)
-		end
-
-		self:target(Lootable)
-		self:updateTargetPtr()
-		if self.TargetPtr ~= 0 then -- Target's still there.
-			self:loot()
-			if self:findEnemy(true, nil, evalTargetDefault) then
-				-- not looting because of aggro
-				return
-			end
-			yrest(50)
-			Lootable:updateLootable();
-			if Lootable.Lootable == true then
-				-- Failed to loot. Add to ignore list
-				lootIgnoreListPos = lootIgnoreListPos + 1
-				if lootIgnoreListPos > settings.profile.options.LOOT_IGNORE_LIST_SIZE then lootIgnoreListPos = 1 end
-				lootIgnoreList[lootIgnoreListPos] = Lootable.Address
-			end
-		end
+	end
 	return STATE_PENNDING;
 end
 function CPlayer:moveTo(task, waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	Movement:moveTo(task, waypoint,ignoreCycleTargets, dontStopAtEnd, range)
+end
 function CPlayer:fight(task)
 
 end
-[[TODO: Over work for task run possible change it to AI solution]]
+--[[TODO: Over work for task run possible change it to AI solution]]
 -- Attempt to unstick the player
 function CPlayer:unstick(task)
--- after 2x unsuccesfull unsticks try to reach last waypoint
+	-- after 2x unsuccesfull unsticks try to reach last waypoint
 	if( self.Unstick_counter == 3 ) then
-	if unStick3 then
-  			unStick3()
-	elseif( self.Returning ) then
+		if unStick3 then
+			unStick3()
+		elseif( self.Returning ) then
 			__RPL:backward();
 		else
 			__WPL:backward();
@@ -837,11 +840,11 @@ function CPlayer:unstick(task)
 	end
 
 
--- after 5x unsuccesfull unsticks try to reach next waypoint after sticky one
+	-- after 5x unsuccesfull unsticks try to reach next waypoint after sticky one
 	if( self.Unstick_counter == 6 ) then
-	if unStick6 then
-  			unStick6()
-	elseif( self.Returning ) then
+		if unStick6 then
+			unStick6()
+		elseif( self.Returning ) then
 			__RPL:advance();	-- forward to sticky wp
 			__RPL:advance();	-- and one more
 		else
@@ -853,10 +856,10 @@ function CPlayer:unstick(task)
 	end
 
 
--- after 8x unstick try to run away a little and then go to the nearest waypoint
+	-- after 8x unstick try to run away a little and then go to the nearest waypoint
 	if( self.Unstick_counter == 9 ) then
 		if unStick9 then
-				unStick9()
+			unStick9()
 		else
 			-- turn and move back for 10 seconds
 			keyboardHold(settings.hotkeys.ROTATE_RIGHT.key);
@@ -875,7 +878,7 @@ function CPlayer:unstick(task)
 		end;
 	end
 
- 	-- Move back for x seconds
+	-- Move back for x seconds
 	keyboardHold(settings.hotkeys.MOVE_BACKWARD.key);
 	yrest(1000);
 	keyboardRelease(settings.hotkeys.MOVE_BACKWARD.key);
