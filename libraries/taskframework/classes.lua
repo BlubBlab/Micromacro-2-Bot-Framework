@@ -1,17 +1,14 @@
-local global = _G;
 
-
-
-global.class = function(base, ctor, inheritctor)
+class = function(base, ctor, inheritctor)
 	local c = {};
 
 	if( inheritctor == nil ) then inheritctor = true; end;
 
-	if( not ctor and global.type(base) == 'function' ) then
+	if( not ctor and type(base) == 'function' ) then
 		ctor = base;
 		base = nil;
-	elseif( global.type(base) == 'table' ) then
-		for i,v in global.pairs(base) do
+	elseif( type(base) == 'table' ) then
+		for i,v in pairs(base) do
 			c[i] = v;
 		end
 		c.parent = base;
@@ -25,7 +22,7 @@ global.class = function(base, ctor, inheritctor)
 	local metatable = {};
 	metatable.__call = function(class_tbl, ...)
 		local obj = {};
-		global.setmetatable(obj, c);
+		setmetatable(obj, c);
 
 		--obj.parent = class_tbl;
 
@@ -37,7 +34,7 @@ global.class = function(base, ctor, inheritctor)
 				local ctorlist = {};
 				while( cbase ) do
 					if( cbase.constructor ) then
-						global.table.insert(ctorlist, cbase.constructor);
+						table.insert(ctorlist, cbase.constructor);
 
 						if( cbase.inheritctor ~= true ) then break; end;
 						cbase = cbase.parent;
@@ -65,8 +62,8 @@ global.class = function(base, ctor, inheritctor)
 
 
 	c.is_a = function(self, _basetype)
-		local mt = global.getmetatable(self);
-		local parent_mt = global.getmetatable(_basetype);
+		local mt = getmetatable(self);
+		local parent_mt = getmetatable(_basetype);
 		while( mt ) do
 			if( mt == _basetype or mt == parent_mt ) then
 				return true;
@@ -79,6 +76,6 @@ global.class = function(base, ctor, inheritctor)
 	end;
 
 
-	global.setmetatable(c, metatable);
+	setmetatable(c, metatable);
 	return c;
 end

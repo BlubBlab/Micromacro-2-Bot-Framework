@@ -1,6 +1,6 @@
 dyinclude("meta-settings/potions.settings.lua");
 
-CAbstractPotion = class(baseobject,
+CAbstractPotion = class(CBaseObject,
 	function (self, copyfrom)
 	
 	end

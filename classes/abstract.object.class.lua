@@ -16,13 +16,14 @@ CAbstractObject = class(CBaseObject,
 	end
 );
 
+
 function CAbstractObject:update()
 
 	self:updateType()
 	self:updateId()
 	self:updateName()
 	self:updateXYZ()
-	delf:updateDirection()
+	self:updateDirection()
 
 	if( self.Type == PT_MONSTER ) then
 		self.Attackable = true;
